@@ -862,13 +862,13 @@ footer {
 
 <header>
   <h1>SPECMAP Migration Dashboard</h1>
-  <div class="subtitle">0 projets &middot; 0 actif &middot; 0 programmes LIVE</div>
-  <div class="last-updated">Dernière mise à jour : 24 février 2026 à 01:54</div>
+  <div class="subtitle">29 projets &middot; 1 actif &middot; 212 programmes LIVE</div>
+  <div class="last-updated">Dernière mise à jour : 24 février 2026 à 02:35</div>
 </header>
 
 <nav class="project-tabs-bar">
   <button class="project-tab active" data-project="global"><span class="tab-dot tab-dot-global"></span>Vue Globale</button>
-  
+  <button class="project-tab" data-project="ADH"><span class="tab-dot tab-dot-active"></span>ADH</button>
 </nav>
 
 <div class="action-bar" id="action-bar">
@@ -1126,21 +1126,21 @@ migration-factory analyze --dir ADH                # Analyser les modules</pre>
 <section class="kpi-grid">
   
   <div class="kpi-card">
-    <div class="kpi-value" style="color: var(--purple)">0/0</div>
+    <div class="kpi-value" style="color: var(--purple)">1/29</div>
     <div class="kpi-label">Projets actifs</div>
-    <div class="kpi-detail">0 en attente</div>
+    <div class="kpi-detail">28 en attente</div>
   </div>
   
   <div class="kpi-card">
-    <div class="kpi-value" style="color: var(--blue)">0</div>
+    <div class="kpi-value" style="color: var(--blue)">212</div>
     <div class="kpi-label">Programmes LIVE</div>
     <div class="kpi-detail">Tous projets confondus</div>
   </div>
   
   <div class="kpi-card">
-    <div class="kpi-value" style="color: var(--green)">0/0</div>
+    <div class="kpi-value" style="color: var(--green)">19/212</div>
     <div class="kpi-label">Vérifiés</div>
-    <div class="kpi-detail">0% (0 enrichis, 0 analysés)</div>
+    <div class="kpi-detail">9% (35 enrichis, 0 analysés)</div>
   </div>
   
   <div class="kpi-card">
@@ -1157,17 +1157,17 @@ migration-factory analyze --dir ADH                # Analyser les modules</pre>
     <div class="pipeline-row">
       <span class="pipeline-label">Vérifié</span>
       <div class="bar-track">
-        <div class="bar-fill" style="width: 0%; background: var(--green)"></div>
+        <div class="bar-fill" style="width: 9%; background: var(--green)"></div>
       </div>
-      <span class="pipeline-count">0 (0%)</span>
+      <span class="pipeline-count">19 (9%)</span>
     </div>
     
     <div class="pipeline-row">
       <span class="pipeline-label">Enrichi</span>
       <div class="bar-track">
-        <div class="bar-fill" style="width: 0%; background: var(--blue)"></div>
+        <div class="bar-fill" style="width: 17%; background: var(--blue)"></div>
       </div>
-      <span class="pipeline-count">0 (0%)</span>
+      <span class="pipeline-count">35 (17%)</span>
     </div>
     
     <div class="pipeline-row">
@@ -1181,9 +1181,9 @@ migration-factory analyze --dir ADH                # Analyser les modules</pre>
     <div class="pipeline-row">
       <span class="pipeline-label">En attente</span>
       <div class="bar-track">
-        <div class="bar-fill" style="width: 0%; background: var(--gray)"></div>
+        <div class="bar-fill" style="width: 75%; background: var(--gray)"></div>
       </div>
-      <span class="pipeline-count">0 (0%)</span>
+      <span class="pipeline-count">158 (75%)</span>
     </div>
   </div>
 </section>
@@ -1192,11 +1192,3327 @@ migration-factory analyze --dir ADH                # Analyser les modules</pre>
   <h2>Projets</h2>
   <div class="project-cards-grid">
     
+      <div class="project-card project-card-active" data-goto="ADH">
+        <div class="project-card-name">ADH</div>
+        <div class="project-card-desc">Adherents/Caisse</div>
+        <div class="project-card-status"><span class="badge badge-blue">EN COURS</span></div>
+        <div class="project-card-progress">
+          <div class="bar-track bar-small">
+            <div class="bar-fill" style="width:9%; background:var(--green)"></div>
+          </div>
+          <span class="project-card-pct">9%</span>
+        </div>
+        <div class="project-card-stats">
+          <span>212 LIVE</span>
+          <span>19 vérifiés</span>
+          <span>0 analysés</span>
+          <span>18 modules</span>
+          
+        </div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">CAB</div>
+        <div class="project-card-desc">Caisse batch</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">23 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">CAP</div>
+        <div class="project-card-desc">Caisse parametres</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">24 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">EXB</div>
+        <div class="project-card-desc">Exports batch</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">25 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">EXF</div>
+        <div class="project-card-desc">Exports fichiers</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">26 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">EXM</div>
+        <div class="project-card-desc">Exports manuels</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">18 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">FIN</div>
+        <div class="project-card-desc">Finance</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">16 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">GES</div>
+        <div class="project-card-desc">Gestion</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">54 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">Import</div>
+        <div class="project-card-desc">Imports donnees</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">454 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">LOG</div>
+        <div class="project-card-desc">Logging</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">20 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">MAI</div>
+        <div class="project-card-desc">Maintenance</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">60 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">Menu</div>
+        <div class="project-card-desc">Menus</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">18 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">NET</div>
+        <div class="project-card-desc">Network</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">10 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">PBG</div>
+        <div class="project-card-desc">Planification/Batch</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">180 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">PBP</div>
+        <div class="project-card-desc">Editions/Exports</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">242 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">PBS</div>
+        <div class="project-card-desc">Batch secondaire</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">59 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">POO</div>
+        <div class="project-card-desc">Pooling</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">59 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">PTR</div>
+        <div class="project-card-desc">Pointage</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">27 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">PUG</div>
+        <div class="project-card-desc">Purge</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">16 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">PVE</div>
+        <div class="project-card-desc">Point de Vente/POS</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">160 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">QUA</div>
+        <div class="project-card-desc">Qualite</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">22 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">REF</div>
+        <div class="project-card-desc">Reference (tables partagees)</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">738 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">REQ</div>
+        <div class="project-card-desc">Requetes</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">51 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">RET</div>
+        <div class="project-card-desc">Retours</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">12 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">TPE</div>
+        <div class="project-card-desc">Terminal paiement</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">3 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">TST</div>
+        <div class="project-card-desc">Tests</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">5 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">UTILS</div>
+        <div class="project-card-desc">Utilitaires (.NET)</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">2 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">VIL</div>
+        <div class="project-card-desc">Village</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">100 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">WEL</div>
+        <div class="project-card-desc">Welcome/Accueil</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DÉMARRÉ</span></div>
+        <div class="project-card-stat">68 programmes</div>
+      </div>
   </div>
 </section>
 </div>
 
 
+<div class="tab-content" data-tab="ADH">
+  
+<section class="kpi-grid">
+  
+  <div class="kpi-card">
+    <div class="kpi-value" style="color: var(--blue)">212</div>
+    <div class="kpi-label">Programmes LIVE</div>
+    <div class="kpi-detail">138 orphelins, 28 partages</div>
+  </div>
+  
+  <div class="kpi-card">
+    <div class="kpi-value" style="color: var(--green)">19/212</div>
+    <div class="kpi-label">Vérifiés</div>
+    <div class="kpi-detail">9% (35 enrichis, 0 analysés)</div>
+  </div>
+  
+  <div class="kpi-card">
+    <div class="kpi-value" style="color: var(--purple)">1/18</div>
+    <div class="kpi-label">Modules livrables</div>
+    <div class="kpi-detail">6% des modules</div>
+  </div>
+  
+  <div class="kpi-card">
+    <div class="kpi-value" style="color: var(--orange)">0/212</div>
+    <div class="kpi-label">Décommissionnables</div>
+    <div class="kpi-detail">0% du legacy</div>
+  </div>
+  
+</section>
+  
+<section class="card">
+  <h2>Pipeline de migration</h2>
+  <div class="pipeline">
+    
+    <div class="pipeline-row">
+      <span class="pipeline-label">Vérifié</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width: 9%; background: var(--green)"></div>
+      </div>
+      <span class="pipeline-count">19 (9%)</span>
+    </div>
+    
+    <div class="pipeline-row">
+      <span class="pipeline-label">Enrichi</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width: 17%; background: var(--blue)"></div>
+      </div>
+      <span class="pipeline-count">35 (17%)</span>
+    </div>
+    
+    <div class="pipeline-row">
+      <span class="pipeline-label">Analysé</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width: 0%; background: var(--yellow)"></div>
+      </div>
+      <span class="pipeline-count">0 (0%)</span>
+    </div>
+    
+    <div class="pipeline-row">
+      <span class="pipeline-label">En attente</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width: 75%; background: var(--gray)"></div>
+      </div>
+      <span class="pipeline-count">158 (75%)</span>
+    </div>
+  </div>
+  <div class="pipeline-donut-row">
+    
+    <div class="donut-container">
+      <svg viewBox="0 0 100 100" class="donut">
+        <circle cx="50" cy="50" r="40" fill="none" stroke="var(--green)" stroke-width="18" stroke-dasharray="22.52462657290795 228.8027857142755" stroke-dashoffset="0" />
+        <circle cx="50" cy="50" r="40" fill="none" stroke="var(--blue)" stroke-width="18" stroke-dasharray="41.492733160619906 209.83467912656354" stroke-dashoffset="-22.52462657290795" />
+        <circle cx="50" cy="50" r="40" fill="none" stroke="var(--gray)" stroke-width="18" stroke-dasharray="187.31005255365557 64.01735973352788" stroke-dashoffset="-64.01735973352785" />
+      </svg>
+      <div class="donut-center">9%</div>
+    </div>
+    <div class="legend"><span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Vérifié: 19</span><span class="legend-item"><span class="legend-dot" style="background:var(--blue)"></span>Enrichi: 35</span><span class="legend-item"><span class="legend-dot" style="background:var(--gray)"></span>En attente: 158</span></div>
+  </div>
+</section>
+  
+<section class="card">
+  <h2>Estimation &amp; Effort</h2>
+  <div class="estimation-grid">
+    <div class="estimation-kpi">
+      
+  <div class="kpi-card">
+    <div class="kpi-value" style="color: var(--purple)">240.6h</div>
+    <div class="kpi-label">Effort total</div>
+    <div class="kpi-detail">Score moyen: 7</div>
+  </div>
+      
+  <div class="kpi-card">
+    <div class="kpi-value" style="color: var(--orange)">215.2h</div>
+    <div class="kpi-label">Effort restant</div>
+    <div class="kpi-detail">11% terminé</div>
+  </div>
+    </div>
+    <div class="estimation-donut">
+      
+    <div class="donut-container">
+      <svg viewBox="0 0 100 100" class="donut">
+        <circle cx="50" cy="50" r="40" fill="none" stroke="var(--blue)" stroke-width="18" stroke-dasharray="17.782599925979962 233.5448123612035" stroke-dashoffset="0" />
+        <circle cx="50" cy="50" r="40" fill="none" stroke="var(--green)" stroke-width="18" stroke-dasharray="233.54481236120347 17.78259992597998" stroke-dashoffset="-17.782599925979962" />
+      </svg>
+      <div class="donut-center">7%</div>
+    </div>
+    <div class="legend"><span class="legend-item"><span class="legend-dot" style="background:var(--blue)"></span>Grade C: 15</span><span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Grade D: 197</span></div>
+    </div>
+  </div>
+  <div class="effort-bar-container">
+    <div class="bar-track bar-large">
+      <div class="bar-fill" style="width: 11%; background: linear-gradient(90deg, var(--green), var(--blue))"></div>
+    </div>
+    <div class="effort-bar-label">25.4h terminés / 240.6h total (11%)</div>
+  </div>
+  
+  <h3 style="margin-top:16px;margin-bottom:8px;font-size:14px;color:var(--text-dim)">Top 10 programmes les plus complexes</h3>
+  <div class="table-scroll">
+    <table>
+      <thead><tr>
+        <th>ID</th><th>Nom</th><th class="center">Grade</th><th class="center">Score</th><th class="center">Est.</th><th>Statut</th>
+      </tr></thead>
+      <tbody><tr>
+      <td>163</td>
+      <td>Menu caisse GM - scroll</td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">30</td>
+      <td class="center">4.5h</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+    </tr><tr>
+      <td>121</td>
+      <td>Gestion caisse</td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">29</td>
+      <td class="center">4.4h</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+    </tr><tr>
+      <td>131</td>
+      <td>Fermeture caisse</td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">29</td>
+      <td class="center">4.4h</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+    </tr><tr>
+      <td>122</td>
+      <td>Ouverture caisse</td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">27</td>
+      <td class="center">4.1h</td>
+      <td><span class="status-pill status-verified">vérifié</span></td>
+    </tr><tr>
+      <td>111</td>
+      <td>Garantie sur compte</td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">25</td>
+      <td class="center">3.8h</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+    </tr><tr>
+      <td>112</td>
+      <td>Garantie sur compte PMS-584</td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">25</td>
+      <td class="center">3.8h</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+    </tr><tr>
+      <td>237</td>
+      <td>Transaction Nouv vente avec GP</td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">25</td>
+      <td class="center">3.8h</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+    </tr><tr>
+      <td>238</td>
+      <td>Transaction Nouv vente PMS-584</td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">25</td>
+      <td class="center">3.8h</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+    </tr><tr>
+      <td>316</td>
+      <td>Saisie transaction Nouv vente</td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">25</td>
+      <td class="center">3.8h</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+    </tr><tr>
+      <td>69</td>
+      <td>Extrait de compte</td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">22</td>
+      <td class="center">3.3h</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+    </tr></tbody>
+    </table>
+  </div>
+</section>
+  
+<section class="card">
+  <h2>Modules (1 livrables / 18 total)</h2>
+  <div class="module-filters">
+    <button class="filter-btn active" data-filter="all">Tous (18)</button>
+    <button class="filter-btn" data-filter="deliverable">Livrables (1)</button>
+    <button class="filter-btn" data-filter="close">Proches &ge;80% (0)</button>
+    <button class="filter-btn" data-filter="progress">En cours (5)</button>
+    <button class="filter-btn" data-filter="notstarted">Non démarré (12)</button>
+  </div>
+  <div class="module-sort">
+    <span class="sort-label">Trier par:</span>
+    <button class="sort-btn active" data-sort="priority">Priorité</button>
+    <button class="sort-btn" data-sort="readiness">Avancement</button>
+    <button class="sort-btn" data-sort="name">Nom</button>
+  </div>
+  <div class="module-list">
+    
+    <div class="module-row" data-status="deliverable" data-rank="1" data-readiness="100" data-name="Ouverture Session">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P1</span><span class="tag tag-purple">B1</span>Ouverture Session</span>
+        <span class="tag tag-teal">Caisse</span>
+        <span class="badge badge-green">LIVRABLE</span>
+      </div>
+      <div class="module-stats">
+        <span>8 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 100%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 100%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 100%"></div>
+        </div>
+        <span class="module-pct">100% vérifié</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">8 vérifiés</span>
+        <span class="tag tag-blue">8 enrichis</span>
+        <span class="tag tag-yellow">8 analysés</span>
+        <span class="tag tag-gray">0 en attente</span>
+      </div>
+      <div class="module-deps">
+        <span>Débloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Dépend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="progress" data-rank="2" data-readiness="29" data-name="Caisse">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P2</span><span class="tag tag-purple">B2</span>Caisse</span>
+        <span class="tag tag-teal">Caisse</span><span class="tag tag-green">Complexité D</span><span class="tag tag-dim">~25.7h</span>
+        <span class="badge badge-yellow">EN COURS</span>
+      </div>
+      <div class="module-stats">
+        <span>17 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 29%"></div>
+          <div class="bar-fill bar-enriched" style="width: 71%; left: 29%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 100%"></div>
+        </div>
+        <span class="module-pct">29% vérifié</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">5 vérifiés</span>
+        <span class="tag tag-blue">17 enrichis</span>
+        <span class="tag tag-yellow">17 analysés</span>
+        <span class="tag tag-gray">0 en attente</span>
+      </div>
+      <div class="module-deps">
+        <span>Débloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Dépend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="progress" data-rank="3" data-readiness="8" data-name="General (1/2)">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P3</span><span class="tag tag-purple">B3</span>General (1/2)</span>
+        <span class="tag tag-teal">General</span><span class="tag tag-green">Complexité D</span><span class="tag tag-dim">~29.3h</span>
+        <span class="badge badge-yellow">EN COURS</span>
+      </div>
+      <div class="module-stats">
+        <span>25 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 8%"></div>
+          <div class="bar-fill bar-enriched" style="width: 92%; left: 8%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 100%"></div>
+        </div>
+        <span class="module-pct">8% vérifié</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">2 vérifiés</span>
+        <span class="tag tag-blue">25 enrichis</span>
+        <span class="tag tag-yellow">25 analysés</span>
+        <span class="tag tag-gray">0 en attente</span>
+      </div>
+      <div class="module-deps">
+        <span>Débloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Dépend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="notstarted" data-rank="4" data-readiness="0" data-name="General (2/2)">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P4</span><span class="tag tag-purple">B4</span>General (2/2)</span>
+        <span class="tag tag-teal">General</span><span class="tag tag-green">Complexité D</span><span class="tag tag-dim">~9.6h</span>
+        <span class="badge badge-gray">NON DÉMARRÉ</span>
+      </div>
+      <div class="module-stats">
+        <span>23 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 0%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 0%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 0%"></div>
+        </div>
+        <span class="module-pct">0% vérifié</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">0 vérifiés</span>
+        <span class="tag tag-blue">0 enrichis</span>
+        <span class="tag tag-yellow">0 analysés</span>
+        <span class="tag tag-gray">23 en attente</span>
+      </div>
+      <div class="module-deps">
+        <span>Débloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Dépend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="progress" data-rank="5" data-readiness="8" data-name="Impression">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P5</span><span class="tag tag-purple">B5</span>Impression</span>
+        <span class="tag tag-teal">Impression</span><span class="tag tag-green">Complexité D</span><span class="tag tag-dim">~17.1h</span>
+        <span class="badge badge-yellow">EN COURS</span>
+      </div>
+      <div class="module-stats">
+        <span>13 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 8%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 8%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 8%"></div>
+        </div>
+        <span class="module-pct">8% vérifié</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">1 vérifiés</span>
+        <span class="tag tag-blue">1 enrichis</span>
+        <span class="tag tag-yellow">1 analysés</span>
+        <span class="tag tag-gray">12 en attente</span>
+      </div>
+      <div class="module-deps">
+        <span>Débloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Dépend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="notstarted" data-rank="6" data-readiness="0" data-name="Compte">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P6</span><span class="tag tag-purple">B6</span>Compte</span>
+        <span class="tag tag-teal">Compte</span><span class="tag tag-green">Complexité D</span><span class="tag tag-dim">~14.6h</span>
+        <span class="badge badge-gray">NON DÉMARRÉ</span>
+      </div>
+      <div class="module-stats">
+        <span>8 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 0%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 0%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 0%"></div>
+        </div>
+        <span class="module-pct">0% vérifié</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">0 vérifiés</span>
+        <span class="tag tag-blue">0 enrichis</span>
+        <span class="tag tag-yellow">0 analysés</span>
+        <span class="tag tag-gray">8 en attente</span>
+      </div>
+      <div class="module-deps">
+        <span>Débloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Dépend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="progress" data-rank="7" data-readiness="20" data-name="Change">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P7</span><span class="tag tag-purple">B7</span>Change</span>
+        <span class="tag tag-teal">Change</span><span class="tag tag-green">Complexité D</span><span class="tag tag-dim">~10h</span>
+        <span class="badge badge-yellow">EN COURS</span>
+      </div>
+      <div class="module-stats">
+        <span>10 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 20%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 20%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 20%"></div>
+        </div>
+        <span class="module-pct">20% vérifié</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">2 vérifiés</span>
+        <span class="tag tag-blue">2 enrichis</span>
+        <span class="tag tag-yellow">2 analysés</span>
+        <span class="tag tag-gray">8 en attente</span>
+      </div>
+      <div class="module-deps">
+        <span>Débloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Dépend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="notstarted" data-rank="8" data-readiness="0" data-name="Stock">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P8</span><span class="tag tag-purple">B8</span>Stock</span>
+        <span class="tag tag-teal">Stock</span><span class="tag tag-green">Complexité D</span><span class="tag tag-dim">~2h</span>
+        <span class="badge badge-gray">NON DÉMARRÉ</span>
+      </div>
+      <div class="module-stats">
+        <span>3 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 0%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 0%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 0%"></div>
+        </div>
+        <span class="module-pct">0% vérifié</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">0 vérifiés</span>
+        <span class="tag tag-blue">0 enrichis</span>
+        <span class="tag tag-yellow">0 analysés</span>
+        <span class="tag tag-gray">3 en attente</span>
+      </div>
+      <div class="module-deps">
+        <span>Débloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Dépend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="notstarted" data-rank="9" data-readiness="0" data-name="Ventes">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P9</span><span class="tag tag-purple">B9</span>Ventes</span>
+        <span class="tag tag-teal">Ventes</span><span class="tag tag-green">Complexité D</span><span class="tag tag-dim">~24.9h</span>
+        <span class="badge badge-gray">NON DÉMARRÉ</span>
+      </div>
+      <div class="module-stats">
+        <span>16 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 0%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 0%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 0%"></div>
+        </div>
+        <span class="module-pct">0% vérifié</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">0 vérifiés</span>
+        <span class="tag tag-blue">0 enrichis</span>
+        <span class="tag tag-yellow">0 analysés</span>
+        <span class="tag tag-gray">16 en attente</span>
+      </div>
+      <div class="module-deps">
+        <span>Débloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Dépend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="progress" data-rank="10" data-readiness="13" data-name="Divers">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P10</span><span class="tag tag-purple">B10</span>Divers</span>
+        <span class="tag tag-teal">misc</span><span class="tag tag-green">Complexité D</span><span class="tag tag-dim">~9.7h</span>
+        <span class="badge badge-yellow">EN COURS</span>
+      </div>
+      <div class="module-stats">
+        <span>8 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 13%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 13%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 13%"></div>
+        </div>
+        <span class="module-pct">13% vérifié</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">1 vérifiés</span>
+        <span class="tag tag-blue">1 enrichis</span>
+        <span class="tag tag-yellow">1 analysés</span>
+        <span class="tag tag-gray">7 en attente</span>
+      </div>
+      <div class="module-deps">
+        <span>Débloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Dépend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="notstarted" data-rank="11" data-readiness="0" data-name="Comptes de depôt">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P11</span><span class="tag tag-purple">B11</span>Comptes de depôt</span>
+        <span class="tag tag-green">Complexité D</span><span class="tag tag-dim">~9h</span>
+        <span class="badge badge-gray">NON DÉMARRÉ</span>
+      </div>
+      <div class="module-stats">
+        <span>6 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 0%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 0%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 0%"></div>
+        </div>
+        <span class="module-pct">0% vérifié</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">0 vérifiés</span>
+        <span class="tag tag-blue">0 enrichis</span>
+        <span class="tag tag-yellow">0 analysés</span>
+        <span class="tag tag-gray">6 en attente</span>
+      </div>
+      <div class="module-deps">
+        <span>Débloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Dépend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="notstarted" data-rank="12" data-readiness="0" data-name="Club Med Pass menu">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P12</span><span class="tag tag-purple">B12</span>Club Med Pass menu</span>
+        <span class="tag tag-green">Complexité D</span><span class="tag tag-dim">~11.2h</span>
+        <span class="badge badge-gray">NON DÉMARRÉ</span>
+      </div>
+      <div class="module-stats">
+        <span>10 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 0%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 0%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 0%"></div>
+        </div>
+        <span class="module-pct">0% vérifié</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">0 vérifiés</span>
+        <span class="tag tag-blue">0 enrichis</span>
+        <span class="tag tag-yellow">0 analysés</span>
+        <span class="tag tag-gray">10 en attente</span>
+      </div>
+      <div class="module-deps">
+        <span>Débloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Dépend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="notstarted" data-rank="13" data-readiness="0" data-name="Garantie sur compte">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P13</span><span class="tag tag-purple">B13</span>Garantie sur compte</span>
+        <span class="tag tag-green">Complexité D</span><span class="tag tag-dim">~10.3h</span>
+        <span class="badge badge-gray">NON DÉMARRÉ</span>
+      </div>
+      <div class="module-stats">
+        <span>8 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 0%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 0%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 0%"></div>
+        </div>
+        <span class="module-pct">0% vérifié</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">0 vérifiés</span>
+        <span class="tag tag-blue">0 enrichis</span>
+        <span class="tag tag-yellow">0 analysés</span>
+        <span class="tag tag-gray">8 en attente</span>
+      </div>
+      <div class="module-deps">
+        <span>Débloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Dépend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="notstarted" data-rank="14" data-readiness="0" data-name="Fusion">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P14</span><span class="tag tag-purple">B14</span>Fusion</span>
+        <span class="tag tag-green">Complexité D</span><span class="tag tag-dim">~3.4h</span>
+        <span class="badge badge-gray">NON DÉMARRÉ</span>
+      </div>
+      <div class="module-stats">
+        <span>3 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 0%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 0%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 0%"></div>
+        </div>
+        <span class="module-pct">0% vérifié</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">0 vérifiés</span>
+        <span class="tag tag-blue">0 enrichis</span>
+        <span class="tag tag-yellow">0 analysés</span>
+        <span class="tag tag-gray">3 en attente</span>
+      </div>
+      <div class="module-deps">
+        <span>Débloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Dépend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="notstarted" data-rank="15" data-readiness="0" data-name="Solde Easy Check Out">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P15</span><span class="tag tag-purple">B15</span>Solde Easy Check Out</span>
+        <span class="tag tag-green">Complexité D</span><span class="tag tag-dim">~9.6h</span>
+        <span class="badge badge-gray">NON DÉMARRÉ</span>
+      </div>
+      <div class="module-stats">
+        <span>15 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 0%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 0%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 0%"></div>
+        </div>
+        <span class="module-pct">0% vérifié</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">0 vérifiés</span>
+        <span class="tag tag-blue">0 enrichis</span>
+        <span class="tag tag-yellow">0 analysés</span>
+        <span class="tag tag-gray">15 en attente</span>
+      </div>
+      <div class="module-deps">
+        <span>Débloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Dépend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="notstarted" data-rank="16" data-readiness="0" data-name="Factures (Tble Compta&amp;Vent) V3">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P16</span><span class="tag tag-purple">B16</span>Factures (Tble Compta&amp;Vent) V3</span>
+        <span class="tag tag-green">Complexité D</span><span class="tag tag-dim">~4.4h</span>
+        <span class="badge badge-gray">NON DÉMARRÉ</span>
+      </div>
+      <div class="module-stats">
+        <span>6 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 0%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 0%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 0%"></div>
+        </div>
+        <span class="module-pct">0% vérifié</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">0 vérifiés</span>
+        <span class="tag tag-blue">0 enrichis</span>
+        <span class="tag tag-yellow">0 analysés</span>
+        <span class="tag tag-gray">6 en attente</span>
+      </div>
+      <div class="module-deps">
+        <span>Débloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Dépend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="notstarted" data-rank="17" data-readiness="0" data-name="Start">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P17</span><span class="tag tag-purple">B17</span>Start</span>
+        <span class="tag tag-green">Complexité D</span><span class="tag tag-dim">~3.2h</span>
+        <span class="badge badge-gray">NON DÉMARRÉ</span>
+      </div>
+      <div class="module-stats">
+        <span>6 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 0%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 0%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 0%"></div>
+        </div>
+        <span class="module-pct">0% vérifié</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">0 vérifiés</span>
+        <span class="tag tag-blue">0 enrichis</span>
+        <span class="tag tag-yellow">0 analysés</span>
+        <span class="tag tag-gray">6 en attente</span>
+      </div>
+      <div class="module-deps">
+        <span>Débloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Dépend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="notstarted" data-rank="18" data-readiness="0" data-name="Miscellaneous">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P18</span><span class="tag tag-purple">B18</span>Miscellaneous</span>
+        <span class="tag tag-teal">misc</span><span class="tag tag-green">Complexité D</span><span class="tag tag-dim">~15.3h</span>
+        <span class="badge badge-gray">NON DÉMARRÉ</span>
+      </div>
+      <div class="module-stats">
+        <span>18 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 0%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 0%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 0%"></div>
+        </div>
+        <span class="module-pct">0% vérifié</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">0 vérifiés</span>
+        <span class="tag tag-blue">0 enrichis</span>
+        <span class="tag tag-yellow">0 analysés</span>
+        <span class="tag tag-gray">18 en attente</span>
+      </div>
+      <div class="module-deps">
+        <span>Débloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Dépend de: (aucun)</span>
+      </div>
+      
+    </div>
+  </div>
+</section>
+  
+<section class="card">
+  <h2>Séquence de migration</h2>
+  <div class="wave-sequence">
+    
+      <div class="wave-block">
+        <div class="wave-header">
+          <span class="wave-number">Wave 1</span>
+          <span class="badge complexity-high">HIGH</span>
+        </div>
+        <div class="wave-modules"><span class="wave-chip">281 Caisse</span><span class="wave-chip">1 1</span><span class="wave-chip">53 53</span><span class="wave-chip">64 Solde Easy Check Out</span><span class="wave-chip">192 192</span><span class="wave-chip">210 210</span><span class="wave-chip">229 229</span></div>
+      </div>
+      
+  </div>
+</section>
+  
+<section class="card">
+  <h2>Decommissionnement Legacy</h2>
+  <div class="decommission-grid">
+    <div class="decom-stat">
+      <div class="decom-value decom-ok">0</div>
+      <div class="decom-label">Décommissionnables</div>
+    </div>
+    <div class="decom-stat">
+      <div class="decom-value decom-blocked">193</div>
+      <div class="decom-label">Bloqués (non migrés)</div>
+    </div>
+    <div class="decom-stat">
+      <div class="decom-value decom-wait">19</div>
+      <div class="decom-label">Migrés mais callers actifs</div>
+    </div>
+    <div class="decom-stat">
+      <div class="decom-value decom-shared">1</div>
+      <div class="decom-label">Partagés bloqués</div>
+    </div>
+  </div>
+  <div class="decom-bar-container">
+    <div class="bar-track bar-large">
+      <div class="bar-fill" style="width: 0%; background: var(--green)"></div>
+    </div>
+    <div class="decom-bar-label">0% du legacy décommissionnable (0/212)</div>
+  </div>
+</section>
+  
+<section class="card">
+  <h2>Programmes (212)</h2>
+  <div class="table-controls">
+    <input type="text" id="prog-search" placeholder="Rechercher par nom ou ID..." class="search-input">
+    <select id="status-filter" class="filter-select">
+      <option value="">Tous les statuts</option>
+      <option value="verified">Vérifié</option>
+      <option value="enriched">Enrichi</option>
+      <option value="contracted">Analysé</option>
+      <option value="pending">En attente</option>
+    </select>
+    <label class="checkbox-label"><input type="checkbox" id="decom-only"> Décommissionnables uniquement</label>
+  </div>
+  <div class="table-scroll">
+    <table id="program-table">
+      <thead>
+        <tr>
+          <th data-sort="id">ID</th>
+          <th data-sort="name">Nom</th>
+          <th data-sort="level" class="center">Niveau</th>
+          <th data-sort="status">Statut</th>
+          <th data-sort="grade" class="center">Grade</th>
+          <th data-sort="score" class="center">Score</th>
+          <th data-sort="est" class="center">Est.</th>
+          <th class="center">Tags</th>
+          <th data-sort="domain">Domaine</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="status-pending">
+      <td>1</td>
+      <td>Main Program</td>
+      <td class="center">8</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">17</td>
+      <td class="center">2.6h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>163</td>
+      <td>Menu caisse GM - scroll</td>
+      <td class="center">7</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">30</td>
+      <td class="center">4.5h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>281</td>
+      <td>Fermeture Sessions</td>
+      <td class="center">7</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">11</td>
+      <td class="center">1.7h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>121</td>
+      <td>Gestion caisse</td>
+      <td class="center">6</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">29</td>
+      <td class="center">4.4h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>122</td>
+      <td>Ouverture caisse</td>
+      <td class="center">6</td>
+      <td><span class="status-pill status-verified">vérifié</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">27</td>
+      <td class="center">4.1h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>131</td>
+      <td>Fermeture caisse</td>
+      <td class="center">6</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">29</td>
+      <td class="center">4.4h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>155</td>
+      <td>Controle fermeture caisse WS</td>
+      <td class="center">6</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">15</td>
+      <td class="center">2.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>156</td>
+      <td>Verif session caisse ouverte2</td>
+      <td class="center">6</td>
+      <td><span class="status-pill status-verified">vérifié</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">11</td>
+      <td class="center">1.7h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>37</td>
+      <td>Menu changement compte</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">12</td>
+      <td class="center">1.8h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>40</td>
+      <td>Comptes de depôt</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">20</td>
+      <td class="center">3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>77</td>
+      <td>Club Med Pass menu</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">21</td>
+      <td class="center">3.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>78</td>
+      <td>Print Ventes Club Med Pass</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">10</td>
+      <td class="center">1.5h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>111</td>
+      <td>Garantie sur compte</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">25</td>
+      <td class="center">3.8h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>112</td>
+      <td>Garantie sur compte PMS-584</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">25</td>
+      <td class="center">3.8h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>119</td>
+      <td>Affichage sessions</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">12</td>
+      <td class="center">1.8h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>151</td>
+      <td>Reimpression tickets fermeture</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">12</td>
+      <td class="center">1.8h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>154</td>
+      <td>Tableau recap fermeture</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">16</td>
+      <td class="center">2.4h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>168</td>
+      <td>Gratuités</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">11</td>
+      <td class="center">1.7h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>169</td>
+      <td>Messages</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">10</td>
+      <td class="center">1.5h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>28</td>
+      <td>Fusion</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">20</td>
+      <td class="center">3h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>39</td>
+      <td>Print extrait ObjDevSce</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">8</td>
+      <td class="center">1.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>53</td>
+      <td>Extrait Easy Check Out à J+1</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">10</td>
+      <td class="center">1.5h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>64</td>
+      <td>Solde Easy Check Out</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">13</td>
+      <td class="center">2h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>79</td>
+      <td>Balance Credit de conso</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">12</td>
+      <td class="center">1.8h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>82</td>
+      <td>Select affilies</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">8</td>
+      <td class="center">1.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>86</td>
+      <td>Bar Limit</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">13</td>
+      <td class="center">2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>97</td>
+      <td>Factures (Tble Compta&amp;Vent) V3</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">22</td>
+      <td class="center">3.3h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>109</td>
+      <td>Print creation garantie TIK V1</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">9</td>
+      <td class="center">1.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>110</td>
+      <td>Print creation garanti PMS-584</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">9</td>
+      <td class="center">1.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>117</td>
+      <td>Historique session</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">8</td>
+      <td class="center">1.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>120</td>
+      <td>Saisie contenu caisse</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-verified">vérifié</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">13</td>
+      <td class="center">2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>123</td>
+      <td>Apport coffre</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-verified">vérifié</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">11</td>
+      <td class="center">1.7h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>124</td>
+      <td>Apport articles</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-verified">vérifié</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">11</td>
+      <td class="center">1.7h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>125</td>
+      <td>Remise en caisse</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">12</td>
+      <td class="center">1.8h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>129</td>
+      <td>Ecart ouverture caisse</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-verified">vérifié</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">10</td>
+      <td class="center">1.5h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>130</td>
+      <td>Ecart fermeture caisse</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">10</td>
+      <td class="center">1.5h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>132</td>
+      <td>Historique session</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">9</td>
+      <td class="center">1.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>137</td>
+      <td>Ticket ouverture session</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-verified">vérifié</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">12</td>
+      <td class="center">1.8h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>138</td>
+      <td>Ticket fermeture session</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">12</td>
+      <td class="center">1.8h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>139</td>
+      <td>Ticket appro remise</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-verified">vérifié</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">14</td>
+      <td class="center">2.1h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>158</td>
+      <td>Menu Great Member</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">8</td>
+      <td class="center">1.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>165</td>
+      <td>Saisies cautions</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">8</td>
+      <td class="center">1.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>167</td>
+      <td>Liste des affiliés</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">8</td>
+      <td class="center">1.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>170</td>
+      <td>Messagerie</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">8</td>
+      <td class="center">1.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>172</td>
+      <td>Print Depot Obj/Dev/Sce</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">8</td>
+      <td class="center">1.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>256</td>
+      <td>Zoom sur table des gratuites</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">8</td>
+      <td class="center">1.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>262</td>
+      <td>Zoom  des types d'objets</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">8</td>
+      <td class="center">1.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>263</td>
+      <td>Zoom modes de paiement</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">8</td>
+      <td class="center">1.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>266</td>
+      <td>Zoom des all devises</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">8</td>
+      <td class="center">1.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>267</td>
+      <td>Zoom devises</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">8</td>
+      <td class="center">1.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>268</td>
+      <td>Zoom type depot garantie</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">8</td>
+      <td class="center">1.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>22</td>
+      <td>Calcul equivalent</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">11</td>
+      <td class="center">1.7h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>23</td>
+      <td>Print reçu change achat</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">8</td>
+      <td class="center">1.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>24</td>
+      <td>Print reçu change vente</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">10</td>
+      <td class="center">1.5h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>25</td>
+      <td>Change GM</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">21</td>
+      <td class="center">3.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>27</td>
+      <td>Separation</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">17</td>
+      <td class="center">2.6h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>36</td>
+      <td>Print Separation ou fusion</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">9</td>
+      <td class="center">1.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>43</td>
+      <td>Recuperation du titre</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-verified">vérifié</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">15</td>
+      <td class="center">2.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>44</td>
+      <td>Appel programme</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">16</td>
+      <td class="center">2.4h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>68</td>
+      <td>Saisie date</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">7</td>
+      <td class="center">1.1h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>69</td>
+      <td>Extrait de compte</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">22</td>
+      <td class="center">3.3h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>70</td>
+      <td>Print extrait compte /Nom</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">11</td>
+      <td class="center">1.7h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>71</td>
+      <td>Print extrait compte /Date</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">12</td>
+      <td class="center">1.8h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>72</td>
+      <td>Print extrait compte /Cum</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">12</td>
+      <td class="center">1.8h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>73</td>
+      <td>Print extrait compte /Imp</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">11</td>
+      <td class="center">1.7h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>74</td>
+      <td>Print extrait DateImp /O</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">10</td>
+      <td class="center">1.5h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>76</td>
+      <td>Print extrait compte /Service</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">11</td>
+      <td class="center">1.7h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>107</td>
+      <td>Print creation garantie</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">8</td>
+      <td class="center">1.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>108</td>
+      <td>Print annulation garantie</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">8</td>
+      <td class="center">1.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>150</td>
+      <td>Print comptage WS</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">10</td>
+      <td class="center">1.5h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>152</td>
+      <td>Recup Classe et Lib du MOP</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">15</td>
+      <td class="center">2.3h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>171</td>
+      <td>Print versement retrait</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">9</td>
+      <td class="center">1.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>173</td>
+      <td>Facturation appel</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">14</td>
+      <td class="center">2.1h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>174</td>
+      <td>Facturation appel</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">16</td>
+      <td class="center">2.4h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>175</td>
+      <td>Facturation appel</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">12</td>
+      <td class="center">1.8h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>176</td>
+      <td>Facturation appel</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">11</td>
+      <td class="center">1.7h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>179</td>
+      <td>Set Village Address</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">6</td>
+      <td class="center">0.9h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>180</td>
+      <td>Printer choice</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">16</td>
+      <td class="center">2.4h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>181</td>
+      <td>Set Listing Number</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-verified">vérifié</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">7</td>
+      <td class="center">1.1h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>182</td>
+      <td>Raz Current Printer</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">13</td>
+      <td class="center">2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>183</td>
+      <td>Raz Current Printer</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">8</td>
+      <td class="center">1.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>185</td>
+      <td>Chained Listing Printer Choice</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">11</td>
+      <td class="center">1.7h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>208</td>
+      <td>Print Reçu code autocom</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">8</td>
+      <td class="center">1.2h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>226</td>
+      <td>Recherche Adresse Mail</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">6</td>
+      <td class="center">0.9h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>234</td>
+      <td>Print ticket vente</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">6</td>
+      <td class="center">0.9h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>235</td>
+      <td>Print ticket vente LEX</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">6</td>
+      <td class="center">0.9h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>236</td>
+      <td>Print ticket vente PMS-584</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">9</td>
+      <td class="center">1.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>237</td>
+      <td>Transaction Nouv vente avec GP</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">25</td>
+      <td class="center">3.8h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>238</td>
+      <td>Transaction Nouv vente PMS-584</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">25</td>
+      <td class="center">3.8h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>239</td>
+      <td>Transaction Nouv vente PMS-721</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">10</td>
+      <td class="center">1.5h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>240</td>
+      <td>Transaction Nouv vente PMS-710</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">11</td>
+      <td class="center">1.7h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>242</td>
+      <td>Menu Choix Saisie/Annul vente</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">16</td>
+      <td class="center">2.4h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>243</td>
+      <td>Histo ventes payantes</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">13</td>
+      <td class="center">2h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>244</td>
+      <td>Histo ventes payantes /PMS-605</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">7</td>
+      <td class="center">1.1h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>245</td>
+      <td>Histo ventes payantes /PMS-623</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">7</td>
+      <td class="center">1.1h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>247</td>
+      <td>Deversement Transaction</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">14</td>
+      <td class="center">2.1h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>249</td>
+      <td>Reinit Aff PYR</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">6</td>
+      <td class="center">0.9h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>253</td>
+      <td>Histo ventes Gratuités</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">6</td>
+      <td class="center">0.9h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>257</td>
+      <td>Zoom articles</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">6</td>
+      <td class="center">0.9h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>258</td>
+      <td>Zoom mode paiement change GM</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">6</td>
+      <td class="center">0.9h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>261</td>
+      <td>Zoom des types de taux</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">7</td>
+      <td class="center">1.1h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>265</td>
+      <td>Zoom devise</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">7</td>
+      <td class="center">1.1h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>269</td>
+      <td>Zoom services village</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">6</td>
+      <td class="center">0.9h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>270</td>
+      <td>Zoom sur modes de paiement a/v</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">6</td>
+      <td class="center">0.9h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>272</td>
+      <td>Zoom modes de paiement</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">7</td>
+      <td class="center">1.1h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>275</td>
+      <td>Zoom mode de paiement TPE</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">7</td>
+      <td class="center">1.1h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>296</td>
+      <td>Print versement/retrait bi</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">7</td>
+      <td class="center">1.1h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>316</td>
+      <td>Saisie transaction Nouv vente</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--blue)">C</span></td>
+      <td class="center">25</td>
+      <td class="center">3.8h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>7</td>
+      <td>Menu Data Catching</td>
+      <td class="center">2</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">15</td>
+      <td class="center">2.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>10</td>
+      <td>Print list Checkout (shift F9)</td>
+      <td class="center">2</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">7</td>
+      <td class="center">1.1h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>17</td>
+      <td>Print C/O confirmation</td>
+      <td class="center">2</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">7</td>
+      <td class="center">1.1h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>18</td>
+      <td>Print extrait compte</td>
+      <td class="center">2</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">7</td>
+      <td class="center">1.1h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>166</td>
+      <td>Start</td>
+      <td class="center">2</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">11</td>
+      <td class="center">1.7h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>5</td>
+      <td>Alimentation Combos NATION P</td>
+      <td class="center">1</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">4</td>
+      <td class="center">0.6h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>12</td>
+      <td>Catching stats</td>
+      <td class="center">1</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">5</td>
+      <td class="center">0.8h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>54</td>
+      <td>Factures_Check_Out</td>
+      <td class="center">1</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">18</td>
+      <td class="center">2.7h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>87</td>
+      <td>Print Plafonds alloués</td>
+      <td class="center">1</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">4</td>
+      <td class="center">0.6h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>91</td>
+      <td>Verif boutique</td>
+      <td class="center">1</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">6</td>
+      <td class="center">0.9h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>126</td>
+      <td>Calcul solde initial WS</td>
+      <td class="center">1</td>
+      <td><span class="status-pill status-verified">vérifié</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">5</td>
+      <td class="center">0.8h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>127</td>
+      <td>Calcul solde ouverture WS</td>
+      <td class="center">1</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">5</td>
+      <td class="center">0.8h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>224</td>
+      <td>Alimentation Combos LIEU SEJ</td>
+      <td class="center">1</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">4</td>
+      <td class="center">0.6h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>6</td>
+      <td>Suppression Carac interdit</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>8</td>
+      <td>Set Village info</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>9</td>
+      <td>System avail (top left corner</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>11</td>
+      <td>Export - address</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>13</td>
+      <td>calculate week #</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>14</td>
+      <td>e-mail list</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>15</td>
+      <td>keyboard</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>16</td>
+      <td>Browse - Countries iso</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>19</td>
+      <td>Program_19</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>20</td>
+      <td>Definition monnaie</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>21</td>
+      <td>Recupere devise local</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">7</td>
+      <td class="center">1.1h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>29</td>
+      <td>Write histo Fus_Sep</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>30</td>
+      <td>Read histo Fus_Sep_Det</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>31</td>
+      <td>Write histo_Fus_Sep_Det</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>32</td>
+      <td>Write histo_Fus_Sep_Saisie</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>33</td>
+      <td>Delete histo_Fus_Sep_Saisie</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>34</td>
+      <td>Read histo_Fus_Sep_Log</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>35</td>
+      <td>Write histo_Fus_Sep_Log</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>42</td>
+      <td>Controle Login Informaticien</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>45</td>
+      <td>Recuperation langue</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>47</td>
+      <td>Date/Heure session user</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">3</td>
+      <td class="center">0.5h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>48</td>
+      <td>Contrôles - Integrite dates</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>50</td>
+      <td>Initialistaion Easy Arrival</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>51</td>
+      <td>Recherche Droit Solde Free Ext</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>52</td>
+      <td>Creation adresse_village</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>57</td>
+      <td>Factures_Sejour</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">3</td>
+      <td class="center">0.5h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>58</td>
+      <td>Incremente N° de Facture</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>59</td>
+      <td>Facture - chargement boutique</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>60</td>
+      <td>Creation entete facture</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>61</td>
+      <td>Maj des lignes saisies</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>62</td>
+      <td>Maj Hebergement Tempo</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>65</td>
+      <td>Edition &amp; Mail Easy Check Out</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">3</td>
+      <td class="center">0.5h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>75</td>
+      <td>Creation Pied Facture</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">4</td>
+      <td class="center">0.6h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>80</td>
+      <td>Card scan read</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>81</td>
+      <td>Card scan create</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>83</td>
+      <td>Deactivate all cards</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">3</td>
+      <td class="center">0.5h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>84</td>
+      <td>SP Caractères Interdits</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">4</td>
+      <td class="center">0.6h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>90</td>
+      <td>Edition Facture Tva(Compta&amp;Ve)</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>92</td>
+      <td>flag ligne boutique</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>93</td>
+      <td>Creation Pied Facture</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>95</td>
+      <td>Facture - Sejour archive</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>98</td>
+      <td>EditFactureTva(Compta&amp;Ve) V3</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>101</td>
+      <td>Creation Pied Facture V3</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>104</td>
+      <td>Maj Hebergement Tempo V3</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>105</td>
+      <td>Maj des lignes saisies V3</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>106</td>
+      <td>Maj lignes saisies archive V3</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>113</td>
+      <td>Test Activation ECO</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">3</td>
+      <td class="center">0.5h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>114</td>
+      <td>Club Med Pass Filiations</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">3</td>
+      <td class="center">0.5h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>116</td>
+      <td>Calcul concurrence sessions</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>118</td>
+      <td>Sessions ouvertes WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>128</td>
+      <td>Controle ouverture caisse WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-verified">vérifié</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>133</td>
+      <td>Mise a jour comptage caisse WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-verified">vérifié</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">3</td>
+      <td class="center">0.5h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>134</td>
+      <td>Mise à jour detail session WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-verified">vérifié</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">4</td>
+      <td class="center">0.6h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>135</td>
+      <td>Generation tableau recap WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>136</td>
+      <td>Generation ticket WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-verified">vérifié</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">3</td>
+      <td class="center">0.5h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>140</td>
+      <td>Init apport article session WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>141</td>
+      <td>Init devise session WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>142</td>
+      <td>Devise update session WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-verified">vérifié</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">6</td>
+      <td class="center">0.9h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>143</td>
+      <td>Devises calcul ecart WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-verified">vérifié</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">3</td>
+      <td class="center">0.5h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>144</td>
+      <td>Devises finales F/F Nbre WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>145</td>
+      <td>Devises finales F/F Qte WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">4</td>
+      <td class="center">0.6h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>146</td>
+      <td>Devises tableau recap WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>147</td>
+      <td>Devises des tickets WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-verified">vérifié</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">5</td>
+      <td class="center">0.8h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>148</td>
+      <td>Devises RAZ WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-verified">vérifié</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">3</td>
+      <td class="center">0.5h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>149</td>
+      <td>Calcul stock produit WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">5</td>
+      <td class="center">0.8h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>153</td>
+      <td>Calcul du stock devise</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">2</td>
+      <td class="center">0.3h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>162</td>
+      <td>Selection filiations</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>164</td>
+      <td>Operation durant Cloture</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>178</td>
+      <td>Set Village Address</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>184</td>
+      <td>Get Printer for chained list</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>186</td>
+      <td>Get Printer for chained list</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>192</td>
+      <td>Calcul si depôt existe</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>200</td>
+      <td>Verification si client/serveur</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>210</td>
+      <td>Changement de chambre</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>221</td>
+      <td>Verif automatic pooling Tic</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>223</td>
+      <td>Suppression Carac interdit</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>225</td>
+      <td>Get Fidelisation et Remise</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>227</td>
+      <td>Get Matricule</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>228</td>
+      <td>Gestion Chèque</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>229</td>
+      <td>Ventilation Lignes Ventes</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>231</td>
+      <td>Raisons utilisation ADH</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>232</td>
+      <td>Verif session caisse ouverte</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>233</td>
+      <td>Appel Print ticket vente PMS28</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>241</td>
+      <td>Solde Gift Pass</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>248</td>
+      <td>Choix PYR (plusieurs chambres)</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>251</td>
+      <td>Creation pied Ticket</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>252</td>
+      <td>Histo ventes IGR</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-enriched">
+      <td>254</td>
+      <td>Solde Resort Credit</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-enriched">enrichi</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>274</td>
+      <td>Zoom Logements</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>277</td>
+      <td>Selection Vols /t Ville à côté</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>278</td>
+      <td>Zoom Pays Vente</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">en attente</span></td>
+      <td class="center"><span class="grade-badge" style="background:var(--green)">D</span></td>
+      <td class="center">1</td>
+      <td class="center">0.2h</td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+</div>
 
 
 <section class="card" id="documentation-section">
@@ -1664,7 +4980,7 @@ pnpm --filter @magic-migration/dashboard dev</code></pre>
 
 
 <footer>
-  <p>Généré le 24 février 2026 à 01:54 par Migration Factory</p>
+  <p>Généré le 24 février 2026 à 02:35 par Migration Factory</p>
 </footer>
 
 </div>
@@ -2128,16 +5444,6 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       panelContent.textContent = lines.join('\n');
     };
   });
-
-  // ─── Help button ─────────────────────────────────────────────
-  var btnHelp = document.getElementById('btn-help');
-  var helpOverlay = document.getElementById('help-overlay');
-  var helpClose = document.getElementById('help-close');
-  if (btnHelp && helpOverlay) {
-    btnHelp.addEventListener('click', function() { helpOverlay.classList.add('visible'); });
-    helpClose.addEventListener('click', function() { helpOverlay.classList.remove('visible'); });
-    helpOverlay.addEventListener('click', function(e) { if (e.target === helpOverlay) helpOverlay.classList.remove('visible'); });
-  }
 
   // ─── Shared helpers ────────────────────────────────────────────
   var migrateOverlay = document.getElementById('migrate-overlay');
@@ -2891,6 +6197,19 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       });
     }, 3000);
   }).catch(function() { /* server may not support this endpoint yet */ });
+})();
+
+// ─── Help button (outside server-dependent code) ──────────────────
+(function() {
+  var btnHelp = document.getElementById('btn-help');
+  if (btnHelp) {
+    btnHelp.addEventListener('click', function() {
+      var docSection = document.getElementById('documentation-section');
+      if (docSection) {
+        docSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  }
 })();
 
 // Documentation tabs management

@@ -2052,16 +2052,6 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     };
   });
 
-  // ─── Help button ─────────────────────────────────────────────
-  var btnHelp = document.getElementById('btn-help');
-  var helpOverlay = document.getElementById('help-overlay');
-  var helpClose = document.getElementById('help-close');
-  if (btnHelp && helpOverlay) {
-    btnHelp.addEventListener('click', function() { helpOverlay.classList.add('visible'); });
-    helpClose.addEventListener('click', function() { helpOverlay.classList.remove('visible'); });
-    helpOverlay.addEventListener('click', function(e) { if (e.target === helpOverlay) helpOverlay.classList.remove('visible'); });
-  }
-
   // ─── Shared helpers ────────────────────────────────────────────
   var migrateOverlay = document.getElementById('migrate-overlay');
   var migrateOverlayTitle = document.getElementById('migrate-overlay-title');
@@ -2814,5 +2804,18 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       });
     }, 3000);
   }).catch(function() { /* server may not support this endpoint yet */ });
+})();
+
+// ─── Help button (outside server-dependent code) ──────────────────
+(function() {
+  var btnHelp = document.getElementById('btn-help');
+  if (btnHelp) {
+    btnHelp.addEventListener('click', function() {
+      var docSection = document.getElementById('documentation-section');
+      if (docSection) {
+        docSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  }
 })();
 ` + DOC_JS;
