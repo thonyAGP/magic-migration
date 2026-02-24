@@ -21,6 +21,8 @@ Given a legacy application's program graph (call tree), the factory:
 
 | Guide | Description |
 |-------|-------------|
+| [SWARM Migration System](./docs/swarm-migration-system.md) | Multi-agent collaborative migration for complex programs |
+| [SWARM Agent Prompts](./docs/swarm-agent-prompts.md) | Specialized agent system prompts and voting guidelines |
 | [Model Optimization](./docs/MODEL_OPTIMIZATION.md) | Optimiser coûts & performances (timeouts, retry, logs) |
 | [CI/CD Integration](./docs/ci-cd-integration.md) | Automatiser expression coverage |
 | [Coverage Metrics](./docs/coverage-metrics.md) | Métriques de couverture |
@@ -50,6 +52,33 @@ npx tsx src/cli.ts dashboard --project /path/to/project
 # Generate HTML visual report
 npx tsx src/cli.ts report --project /path/to/project --output report.html
 ```
+
+## SWARM Migration System
+
+For complex programs (30+ expressions, business-critical), use the SWARM system for multi-agent collaborative migration:
+
+```bash
+# Check if program should use SWARM
+npx tsx src/cli.ts swarm complexity --contract path/to/contract.yaml
+
+# Run SWARM migration (coming in Phase 3)
+# npx tsx src/cli.ts swarm migrate --contract path/to/contract.yaml
+```
+
+**SWARM Features**:
+- **6 Specialized Agents**: Architect, Analyst, Developer, Tester, Reviewer, Documentor
+- **Weighted Voting**: Confidence-adjusted consensus (70% standard, 80% critical)
+- **Double Vote**: Critical programs get two validation rounds
+- **Quality Over Speed**: Takes 2x time, delivers 3x fewer bugs
+
+**When to Use**:
+- Complex programs (30+ expressions, nested logic, multiple tables)
+- Business-critical functionality (payment, security, compliance)
+- High-risk migrations requiring extra scrutiny
+
+**Current Status**: Phase 1 (Infrastructure) complete. Agent implementation coming in Phase 3.
+
+See [SWARM Migration System](./docs/swarm-migration-system.md) for complete architecture and benchmarks.
 
 ## Quality Assurance
 
