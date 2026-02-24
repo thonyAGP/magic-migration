@@ -11,6 +11,8 @@ import { createSwarmStore } from '../../src/swarm/storage/sqlite-store.js';
 import type { SwarmSQLiteStore } from '../../src/swarm/storage/sqlite-store.js';
 import { unlinkSync, existsSync } from 'node:fs';
 
+// TODO: Tests require better-sqlite3 rebuild for Node v24
+// See: https://github.com/WiseLibs/better-sqlite3/issues/1152
 describe.skip('Report Generator', () => {
   let store: SwarmSQLiteStore;
   let calculator: MetricsCalculator;
