@@ -1177,6 +1177,57 @@ const run = async () => {
           break;
         }
 
+        case 'escalation': {
+          const escalationSubcmd = args[2];
+
+          switch (escalationSubcmd) {
+            case 'list': {
+              const { listEscalations } = await import('./cli/commands/swarm-escalation.js');
+              await listEscalations({
+                db: getArg('db'),
+                limit: getArg('limit') ? Number(getArg('limit')) : undefined,
+                format: getArg('format') as any,
+                output: getArg('output'),
+              });
+              break;
+            }
+
+            case 'review': {
+              const { reviewEscalation } = await import('./cli/commands/swarm-escalation.js');
+              await reviewEscalation({
+                db: getArg('db'),
+                sessionId: args[3]!,
+                format: getArg('format') as any,
+                output: getArg('output'),
+              });
+              break;
+            }
+
+            case 'resolve': {
+              const { resolveEscalation } = await import('./cli/commands/swarm-escalation.js');
+              await resolveEscalation({
+                db: getArg('db'),
+                sessionId: args[3]!,
+              });
+              break;
+            }
+
+            default:
+              console.log('SWARM Escalation Commands - Manage escalated sessions\n');
+              console.log('Commandes Escalation :');
+              console.log('  swarm escalation list                     Lister toutes les escalations');
+              console.log('  swarm escalation review <session-id>      Afficher rapport d\'escalation detaille');
+              console.log('  swarm escalation resolve <session-id>     Afficher workflow de resolution');
+              console.log('');
+              console.log('Options :');
+              console.log('  --db <file>        Chemin base SQLite (defaut: .swarm-sessions/swarm.db)');
+              console.log('  --format <format>  Format sortie (text|json|table, defaut: text)');
+              console.log('  --limit <N>        Limiter nombre resultats (list uniquement)');
+              console.log('  --output <file>    Ecrire sortie dans fichier');
+          }
+          break;
+        }
+
         default:
           console.log('SWARM Commands - Multi-agent migration with consensus voting\n');
           console.log('Commandes SWARM :');
@@ -1188,6 +1239,11 @@ const run = async () => {
           console.log('  swarm inspect  <session-id> [--show-votes] [--show-analyses]  Inspecter session');
           console.log('  swarm list     [--status COMPLETED|FAILED|ESCALATED]          Lister sessions');
           console.log('                 [--limit N] [--format table|json]');
+          console.log('');
+          console.log('Commandes Escalation (Phase 3) :');
+          console.log('  swarm escalation list                                          Lister escalations');
+          console.log('  swarm escalation review <session-id>                           Rapport d\'escalation');
+          console.log('  swarm escalation resolve <session-id>                          Workflow resolution');
           console.log('');
           console.log('Options SWARM :');
           console.log('  --db <file>       Chemin base SQLite (defaut: .swarm-sessions/swarm.db)');
@@ -1246,6 +1302,7 @@ const run = async () => {
       console.log('  swarm report   [--from date] [--to date]           Generer rapport analytics');
       console.log('  swarm inspect  <session-id>                        Inspecter session detaillee');
       console.log('  swarm list     [--status <statut>]                 Lister sessions SWARM');
+      console.log('  swarm escalation [list|review|resolve] [...]       Gerer les escalations (Phase 3)');
       console.log('  (Utilisez "factory swarm" pour voir toutes les options SWARM)');
       console.log('');
       console.log('Options globales :');
