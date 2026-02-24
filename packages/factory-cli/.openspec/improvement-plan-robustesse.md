@@ -27,13 +27,19 @@
 | **Phase 1** - Fondations | ✅ DONE | Pino logger, correlation IDs, token tracking, auto-escalation | Logging structuré + observabilité |
 | **Phase 2** - Traçabilité | ✅ DONE | Pilot enrichment (3 contracts, 17 expr), coverage verifier, CI/CD, badges | Expression tracking 100% |
 | **Phase 3** - Capitalisation | ✅ DONE | 3 patterns YAML, dashboard HTML, decision records, post-migration hook | Knowledge capture automatisé |
+| **Phase 3 Ext** - Failures | ✅ DONE | Failure capture module, dashboard failures, EXAMPLE complete | Historisation échecs 100% |
 
-**Score après amélioration : 65% → ACCEPTABLE** 🎉
+**Score après amélioration : 70% → BON** 🎉
+
+**Extensions complétées**:
+- ✅ **Phase 3 extension** - Failures capture automatisé (DONE)
+  - Module `failure-capture.ts` avec 14 tests
+  - Dashboard `pnpm dashboard:failures` (markdown/HTML)
+  - EXAMPLE.json complet avec résolution
 
 **Prochaines étapes**:
 - 📝 Étendre enrichment aux 51 contracts restants (Phase 2 extension)
-- 📝 Remplacer console.log → pino (Phase 1 extension)
-- 📝 Implémenter `.migration-history/failures/` capture (Phase 3 extension)
+- 📝 Remplacer console.log → pino dans pipeline (Phase 1 extension, 190 occurrences)
 
 ---
 
