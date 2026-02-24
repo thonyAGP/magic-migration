@@ -1,6 +1,6 @@
 program:
   id: 48
-  name: ""
+  name: "Saisie Contenu Caisse"
   complexity: MEDIUM
   callers: []
   callees: []
@@ -16,6 +16,29 @@ rules:
     status: IMPL
     target_file: adh-web/src/stores/saisieContenuCaisseStore.ts
     gap_notes: ""
+    legacy_expressions:
+      - expr_id: "Prg_48:Task_2:Line_12:Expr_30"
+        formula: "P. O/T/F [A]='O'"
+        location:
+          program_id: 48
+          task_id: 2
+          line_id: 12
+          expr_id: 30
+        mapped_to: "adh-web/src/stores/saisieContenuCaisseStore.ts:45"
+        test_file: "adh-web/src/__tests__/saisieContenuCaisseStore.test.ts:28"
+        verified: true
+        notes: "Check if operation type is Opening"
+      - expr_id: "Prg_48:Task_3:Line_8:Expr_15"
+        formula: "IF(P. O/T/F [A]='O',Update(operation,A,{1,3}),Skip)"
+        location:
+          program_id: 48
+          task_id: 3
+          line_id: 8
+          expr_id: 15
+        mapped_to: "adh-web/src/stores/saisieContenuCaisseStore.ts:67"
+        test_file: "adh-web/src/__tests__/saisieContenuCaisseStore.test.ts:42"
+        verified: true
+        notes: "Conditional update based on operation type"
   - id: RM-002
     description: Negation de (Date ()>[E]+Val ([G],'##')) OR VG3 (condition inversee)
     condition: NOT (Date ()>[E]+Val ([G],'##')) OR VG3
@@ -23,6 +46,18 @@ rules:
     status: IMPL
     target_file: adh-web/src/services/printer/generators/ouvertureTicketGenerator.ts
     gap_notes: ""
+    legacy_expressions:
+      - expr_id: "Prg_48:Task_2:Line_15:Expr_42"
+        formula: "NOT (Date ()>[E]+Val ([G],'##')) OR VG3"
+        location:
+          program_id: 48
+          task_id: 2
+          line_id: 15
+          expr_id: 42
+        mapped_to: "adh-web/src/services/printer/generators/ouvertureTicketGenerator.ts:38"
+        test_file: "adh-web/src/__tests__/ouvertureTicketGenerator.test.ts:55"
+        verified: true
+        notes: "Date validation for ticket opening"
   - id: RM-003
     description: "Condition composite: Date ()>[E]+Val ([G],'##') AND NOT(VG3)"
     condition: Date ()>[E]+Val ([G],'##') AND NOT(VG3)
@@ -31,6 +66,18 @@ rules:
     status: IMPL
     target_file: adh-web/src/__tests__/approTicketStore.test.ts
     gap_notes: ""
+    legacy_expressions:
+      - expr_id: "Prg_48:Task_2:Line_18:Expr_55"
+        formula: "Date ()>[E]+Val ([G],'##') AND NOT(VG3)"
+        location:
+          program_id: 48
+          task_id: 2
+          line_id: 18
+          expr_id: 55
+        mapped_to: "adh-web/src/stores/approTicketStore.ts:82"
+        test_file: "adh-web/src/__tests__/approTicketStore.test.ts:33"
+        verified: true
+        notes: "Composite date validation with global variable check"
   - id: RM-004
     description: "Condition: P. O/T/F [A] egale 'T'"
     condition: P. O/T/F [A]='T'
@@ -39,6 +86,16 @@ rules:
     status: MISSING
     target_file: ""
     gap_notes: ""
+    legacy_expressions:
+      - expr_id: "Prg_48:Task_2:Line_20:Expr_60"
+        formula: "P. O/T/F [A]='T'"
+        location:
+          program_id: 48
+          task_id: 2
+          line_id: 20
+          expr_id: 60
+        verified: false
+        notes: "TODO: Implement transfer operation type check - currently MISSING"
   - id: RM-005
     description: Negation de (Date ()*10^5+Time ()<[J]*10^5+[K]) (condition inversee)
     condition: NOT (Date ()*10^5+Time ()<[J]*10^5+[K])
@@ -47,6 +104,16 @@ rules:
     status: MISSING
     target_file: ""
     gap_notes: ""
+    legacy_expressions:
+      - expr_id: "Prg_48:Task_3:Line_5:Expr_22"
+        formula: "NOT (Date ()*10^5+Time ()<[J]*10^5+[K])"
+        location:
+          program_id: 48
+          task_id: 3
+          line_id: 5
+          expr_id: 22
+        verified: false
+        notes: "TODO: Implement datetime comparison - currently MISSING"
   - id: RM-006
     description: "Condition: P. O/T/F [A] egale 'F'"
     condition: P. O/T/F [A]='F'
@@ -55,6 +122,16 @@ rules:
     status: MISSING
     target_file: ""
     gap_notes: ""
+    legacy_expressions:
+      - expr_id: "Prg_48:Task_2:Line_22:Expr_65"
+        formula: "P. O/T/F [A]='F'"
+        location:
+          program_id: 48
+          task_id: 2
+          line_id: 22
+          expr_id: 65
+        verified: false
+        notes: "TODO: Implement fund operation type check - currently MISSING"
   - id: RM-007
     description: Negation de ([L]) (condition inversee)
     condition: NOT ([L])
@@ -62,6 +139,16 @@ rules:
     status: MISSING
     target_file: ""
     gap_notes: ""
+    legacy_expressions:
+      - expr_id: "Prg_48:Task_4:Line_10:Expr_28"
+        formula: "NOT ([L])"
+        location:
+          program_id: 48
+          task_id: 4
+          line_id: 10
+          expr_id: 28
+        verified: false
+        notes: "TODO: Implement negation check - currently MISSING"
 variables:
   - local_id: EN
     name: P. O/T/F
@@ -127,3 +214,5 @@ overall:
   status: enriched
   generated: 2026-02-21T10:00:16.378Z
   notes: Auto-generated from ADH-IDE-48.md
+  enriched_at: 2026-02-24T02:10:00Z
+  enriched_expressions: 9
