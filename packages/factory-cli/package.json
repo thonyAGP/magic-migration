@@ -11,6 +11,7 @@
     "build": "tsc",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:expression-coverage": "tsx scripts/verify-expression-coverage.ts --contract-dir .openspec/migration/ADH/contracts --output-dir ../adh-web/src",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.0",
     "vitest": "^3.0.0"
   }
