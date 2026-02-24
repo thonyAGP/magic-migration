@@ -1149,6 +1149,7 @@ const run = async () => {
             format: getArg('format') as any,
             output: getArg('output'),
             summary: hasFlag('summary'),
+            export: getArg('export'),
           });
           break;
         }
@@ -1274,7 +1275,7 @@ const run = async () => {
           console.log('                  [--max-rounds N] [--format text|json]');
           console.log('  swarm analyze   --contract <file> [--format text|json]         Analyser complexite');
           console.log('  swarm report    [--from date] [--to date] [--summary]          Generer rapport analytics');
-          console.log('                  [--format markdown|json] [--output file]');
+          console.log('                  [--format markdown|json] [--output file] [--export dir]');
           console.log('  swarm dashboard [--watch] [--interval N]                       Dashboard terminal live');
           console.log('  swarm inspect   <session-id> [--show-votes] [--show-analyses]  Inspecter session');
           console.log('  swarm list      [--status COMPLETED|FAILED|ESCALATED]          Lister sessions');
@@ -1294,6 +1295,7 @@ const run = async () => {
           console.log('  --format <fmt>    Format sortie (text|json|markdown|table)');
           console.log('  --output <file>   Fichier sortie (defaut: stdout)');
           console.log('  --summary         Afficher uniquement le resume executif (report)');
+          console.log('  --export <dir>    Exporter analytics en CSV vers dossier (report)');
           console.log('  --watch           Mode rafraichissement auto (dashboard)');
           console.log('  --interval N      Intervalle rafraichissement en secondes (defaut: 5)');
           break;

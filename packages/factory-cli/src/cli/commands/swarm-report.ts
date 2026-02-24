@@ -1,14 +1,16 @@
 /**
- * SWARM Report Command - Phase 3 J2
+ * SWARM Report Command - Phase 3 J2 + J4
  *
  * Generate enhanced analytics report with executive summary
+ * Export analytics to CSV for external analysis
  */
 
 import { MetricsCalculator } from '../../swarm/analytics/metrics-calculator.js';
 import { ReportGenerator } from '../../swarm/analytics/report-generator.js';
+import { ExportGenerator } from '../../swarm/analytics/export-generator.js';
 import { createSwarmStore } from '../../swarm/storage/sqlite-store.js';
 import { writeFileSync } from 'node:fs';
-import { existsSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 
 export interface SwarmReportOptions {
   db?: string;
@@ -17,6 +19,7 @@ export interface SwarmReportOptions {
   format?: 'markdown' | 'json';
   output?: string;
   summary?: boolean; // Show executive summary only
+  export?: string; // Export to CSV directory
 }
 
 /**
@@ -166,6 +169,31 @@ export async function generateReport(
         console.log('   factory swarm execute --contract <file>');
       }
       console.log('');
+      store.close();
+      return;
+    }
+
+    // Export to CSV if requested
+    if (options.export) {
+      const exporter = new ExportGenerator();
+      const exportDir = options.export;
+
+      console.log(`[SWARM] Exporting analytics to CSV...`);
+      console.log(`  Output directory: ${exportDir}`);
+      console.log('');
+
+      exporter.exportToCSV(report, exportDir);
+
+      // List generated files
+      const files = readdirSync(exportDir).filter((f) => f.endsWith('.csv'));
+      console.log('✅ CSV files generated:');
+      for (const file of files) {
+        console.log(`   - ${file}`);
+      }
+      console.log('');
+      console.log(`📊 Total files: ${files.length}`);
+      console.log('');
+
       store.close();
       return;
     }
