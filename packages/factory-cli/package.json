@@ -16,6 +16,7 @@
     "test:expression-coverage": "tsx scripts/verify-expression-coverage.ts --contract-dir ../../.openspec/migration/ADH --output-dir ../adh-web/src",
     "badge:expression-coverage": "tsx scripts/generate-coverage-badge.ts",
     "ci:expression-coverage": "pnpm test:expression-coverage --threshold 70 --json > coverage-report.json",
+    "dashboard": "tsx scripts/generate-migration-dashboard.ts",
     "dashboard:patterns": "tsx scripts/generate-patterns-dashboard.ts",
     "dashboard:failures": "tsx scripts/generate-failure-report.ts",
     "hook:post-migration": "tsx scripts/post-migration-hook.ts",

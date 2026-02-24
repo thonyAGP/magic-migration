@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Migration Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .stat-card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    .stat-value {
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 5px;
+    }
+    .stat-label {
+      color: #666;
+      font-size: 0.95em;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .stat-status {
+      display: inline-block;
+      margin-left: 10px;
+      font-size: 1.2em;
+    }
+    .section {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    .section h2 {
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #667eea;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th {
+      background: #f8f9fa;
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #495057;
+      border-bottom: 2px solid #dee2e6;
+    }
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    tr:hover {
+      background: #f8f9fa;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.85em;
+      font-weight: 500;
+    }
+    .badge-low { background: #d1f4e0; color: #0f5132; }
+    .badge-medium { background: #fff3cd; color: #997404; }
+    .badge-high { background: #f8d7da; color: #842029; }
+    .progress-bar {
+      height: 8px;
+      background: #e9ecef;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #3b82f6);
+      transition: width 0.3s;
+    }
+    .quick-links {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .quick-link {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    .quick-link:hover {
+      background: #5568d3;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📊 Migration Dashboard</h1>
+      <p>Last updated: 2026-02-24</p>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-value">2</div>
+        <div class="stat-label">Migrations Completed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">
+          75%
+          <span class="stat-status">⚠️</span>
+        </div>
+        <div class="stat-label">Average Coverage</div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 75%"></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">
+          3
+          <span class="stat-status">⚠️</span>
+        </div>
+        <div class="stat-label">Patterns Learned</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">
+          0
+          <span class="stat-status">✅</span>
+        </div>
+        <div class="stat-label">Unresolved Failures</div>
+      </div>
+    </div>
+
+    
+    <div class="section">
+      <h2>🔍 Top Patterns (3)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Pattern</th>
+            <th>Occurrences</th>
+            <th>Complexity</th>
+            <th>Category</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td><code>GetParam('CURRENTPRINTERNUM')=N</code></td>
+              <td><strong>4</strong></td>
+              <td><span class="badge badge-low">LOW</span></td>
+              <td>validation</td>
+            </tr>
+          
+            <tr>
+              <td><code>P. O/T/F [A]='X'</code></td>
+              <td><strong>3</strong></td>
+              <td><span class="badge badge-low">LOW</span></td>
+              <td>conditional</td>
+            </tr>
+          
+            <tr>
+              <td><code>W0 fin tache [X]='F'</code></td>
+              <td><strong>3</strong></td>
+              <td><span class="badge badge-low">LOW</span></td>
+              <td>conditional</td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+    
+
+    
+    <div class="section">
+      <h2>📦 Recent Migrations</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Program</th>
+            <th>Coverage</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td><strong>138</strong> - Unknown</td>
+              <td>
+                100% ✅
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 100%"></div>
+                </div>
+              </td>
+              <td>2026-02-24</td>
+            </tr>
+          
+            <tr>
+              <td><strong>48</strong> - Saisie Contenu Caisse</td>
+              <td>
+                50% ⚠️
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 50%"></div>
+                </div>
+              </td>
+              <td>2026-02-24</td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+    
+
+    
+
+    <div class="section">
+      <h2>🔗 Quick Links</h2>
+      <div class="quick-links">
+        <a href="./patterns-dashboard.html" class="quick-link">📋 Patterns Dashboard</a>
+        <a href="./.migration-history/" class="quick-link">📁 Migration History</a>
+        <a href="./.openspec/improvement-plan-robustesse.md" class="quick-link">📈 Improvement Plan</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
