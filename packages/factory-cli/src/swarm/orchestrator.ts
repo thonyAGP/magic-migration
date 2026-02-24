@@ -24,6 +24,10 @@ import { calculateComplexity } from './complexity-calculator.js';
 import { createVoteCollector } from './voting/vote-collector.js';
 import { calculateConsensus } from './voting/consensus-engine.js';
 import { executeDoubleVote } from './voting/double-vote.js';
+import { detectVeto, applyVeto } from './voting/veto-system.js';
+import { detectStagnation, type RoundScore } from './analytics/stagnation-detector.js';
+import { createSwarmStore, type SwarmSQLiteStore } from './storage/sqlite-store.js';
+import { loadSwarmConfig } from './config-loader.js';
 import { randomUUID } from 'node:crypto';
 
 /**
@@ -50,9 +54,14 @@ export interface SwarmResult {
  */
 export class SwarmOrchestrator {
   private readonly config: SwarmConfig;
+  private readonly store: SwarmSQLiteStore;
 
-  constructor(config: Partial<SwarmConfig> = {}) {
+  constructor(
+    config: Partial<SwarmConfig> = {},
+    store?: SwarmSQLiteStore,
+  ) {
     this.config = { ...DEFAULT_SWARM_CONFIG, ...config };
+    this.store = store ?? createSwarmStore();
   }
 
   /**
@@ -62,22 +71,45 @@ export class SwarmOrchestrator {
    * @returns SWARM result with session data and decision
    */
   async execute(contract: MigrationContract): Promise<SwarmResult> {
-    // Create session
-    const session: SwarmSession = {
-      id: randomUUID(),
+    const sessionId = randomUUID();
+    const startTime = Date.now();
+    const startedAt = new Date(startTime);
+
+    // Create session in DB
+    this.store.createSession({
+      id: sessionId,
       programId: contract.metadata.program_id,
       programName: contract.metadata.program_name,
-      complexity: calculateComplexity(contract),
+      status: 'IN_PROGRESS',
+      current_phase: 'complexity',
+      config_snapshot: this.config as unknown as Record<string, unknown>,
+      startedAt,
+      total_agents_used: 0,
+    });
+    console.log(`[SWARM] Session ${sessionId} created for program ${contract.metadata.program_id}`);
+
+    // Create session object
+    const complexity = calculateComplexity(contract);
+    const session: SwarmSession = {
+      id: sessionId,
+      programId: contract.metadata.program_id,
+      programName: contract.metadata.program_name,
+      complexity,
       analyses: [],
       votes: [],
       consensus: {} as ConsensusResult, // Will be set later
-      startedAt: new Date(),
+      startedAt,
       outputFiles: [],
       status: 'IN_PROGRESS',
     };
 
     try {
-      // Step 1: Check if SWARM should be used
+      // Step 1: Store complexity assessment
+      this.store.storeComplexity(sessionId, complexity);
+      this.store.updateSessionStatus(sessionId, 'IN_PROGRESS', 'analysis');
+      console.log(`[SWARM] Complexity stored: ${complexity.level} (${complexity.score}/100)`);
+
+      // Check if SWARM should be used
       if (!session.complexity.useSwarm) {
         throw new Error(
           `Program complexity (${session.complexity.score}) below SWARM threshold. Use standard pipeline instead.`,
@@ -111,9 +143,21 @@ export class SwarmOrchestrator {
 
       // Step 6: Finalize session
       session.completedAt = new Date();
-      session.duration = session.completedAt.getTime() - session.startedAt.getTime();
+      session.duration = Date.now() - startTime;
       session.status =
         session.consensus.recommendation === 'PROCEED' ? 'COMPLETED' : 'FAILED';
+
+      // Complete session in DB
+      const finalDecision =
+        session.consensus.recommendation === 'PROCEED' ? 'PROCEED' : 'REJECT';
+      this.store.completeSession(sessionId, {
+        status: session.status,
+        finalConsensusScore: session.consensus.score,
+        finalDecision,
+        durationMs: session.duration,
+        totalTokensCost: 0, // TODO: calculate in B1
+      });
+      console.log(`[SWARM] Session ${sessionId} completed: ${session.status} (${finalDecision})`);
 
       // Step 7: Generate reports
       const reports = this.generateReports(session);
@@ -125,9 +169,17 @@ export class SwarmOrchestrator {
         reports,
       };
     } catch (error) {
+      // Mark session as FAILED in DB
       session.status = 'FAILED';
       session.completedAt = new Date();
-      session.duration = session.completedAt.getTime() - session.startedAt.getTime();
+      session.duration = Date.now() - startTime;
+
+      this.store.completeSession(sessionId, {
+        status: 'FAILED',
+        durationMs: session.duration,
+      });
+      console.log(`[SWARM] Session ${sessionId} failed:`, error);
+
       throw error;
     }
   }
