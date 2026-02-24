@@ -118,10 +118,20 @@ export class SwarmOrchestrator {
 
       // Step 2: Run agent analyses (parallel)
       console.log(`[SWARM] Running agent analyses for program ${session.programId}...`);
+      const roundNumber = 1; // Single round for now (multi-rounds in C1)
+      const analysisStartTime = Date.now();
       session.analyses = await this.runAgentAnalyses(contract);
+
+      // Store analyses in DB
+      for (const analysis of session.analyses) {
+        this.store.storeAnalysis(sessionId, roundNumber, analysis);
+      }
+      this.store.updateSessionStatus(sessionId, 'IN_PROGRESS', 'voting');
+      console.log(`[SWARM] ${session.analyses.length} analyses stored`);
 
       // Step 3: Collect votes from agents
       console.log(`[SWARM] Collecting agent votes...`);
+      const votingStartTime = Date.now();
       session.votes = await this.collectAgentVotes(session.analyses);
 
       // Step 4: Calculate consensus
@@ -130,6 +140,22 @@ export class SwarmOrchestrator {
         : ConsensusThresholds.STANDARD;
 
       session.consensus = calculateConsensus(session.votes, threshold);
+
+      // Calculate total tokens cost (used for round and final session)
+      const totalTokensCost = this.calculateTotalTokensCost(session);
+
+      // Store voting round and votes in DB
+      const votingDuration = Date.now() - votingStartTime;
+      const roundId = this.store.storeVotingRound(sessionId, roundNumber, session.consensus, {
+        durationMs: votingDuration,
+        totalTokensCost,
+      });
+
+      for (const vote of session.votes) {
+        this.store.storeVote(roundId, vote);
+      }
+      this.store.updateSessionStatus(sessionId, 'IN_PROGRESS', 'consensus');
+      console.log(`[SWARM] Round ${roundNumber} stored: ${session.consensus.score}% consensus`);
 
       // Step 5: Execute double vote if critical
       if (
@@ -155,7 +181,7 @@ export class SwarmOrchestrator {
         finalConsensusScore: session.consensus.score,
         finalDecision,
         durationMs: session.duration,
-        totalTokensCost: 0, // TODO: calculate in B1
+        totalTokensCost,
       });
       console.log(`[SWARM] Session ${sessionId} completed: ${session.status} (${finalDecision})`);
 
@@ -384,6 +410,22 @@ export class SwarmOrchestrator {
       [AgentRoles.DOCUMENTOR]: 0.5,
     };
     return weights[agent];
+  }
+
+  /**
+   * Calculate total token cost from session analyses
+   */
+  private calculateTotalTokensCost(session: SwarmSession): number {
+    let total = 0;
+
+    // Sum costs from analyses
+    for (const analysis of session.analyses) {
+      if (analysis.tokens?.cost) {
+        total += analysis.tokens.cost;
+      }
+    }
+
+    return total;
   }
 
   /**

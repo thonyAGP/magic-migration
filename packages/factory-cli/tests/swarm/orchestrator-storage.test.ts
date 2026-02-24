@@ -15,6 +15,9 @@ function createMockStore(): SwarmSQLiteStore {
     createSession: vi.fn(),
     updateSessionStatus: vi.fn(),
     storeComplexity: vi.fn(),
+    storeAnalysis: vi.fn(), // Added in B1
+    storeVotingRound: vi.fn().mockReturnValue(1), // Added in B1, returns roundId
+    storeVote: vi.fn(), // Added in B1
     completeSession: vi.fn(),
     close: vi.fn(),
   } as unknown as SwarmSQLiteStore;
