@@ -7,6 +7,7 @@ import type {
   FullMigrationReport, ModuleSummary, ProgramSummary, MigrationWave,
   MultiProjectReport, ProjectEntry, GlobalSummary, ProgramEstimation,
 } from '../core/types.js';
+import { renderDocumentationSection, DOC_CSS, DOC_JS } from './doc-section.js';
 
 export const generateHtmlReport = (report: FullMigrationReport): string => {
   const { graph, pipeline, modules, decommission, programs } = report;
@@ -28,6 +29,7 @@ ${CSS}
 ${renderHeader(report)}
 ${renderKpiCards(report)}
 ${renderPipelineSection(pipeline, live)}
+${renderDocumentationSection()}
 ${renderEstimationSection(report)}
 ${renderModulesSection(modules)}
 ${renderMigrationSequence(report)}
@@ -749,6 +751,8 @@ migration-factory analyze --dir ADH                # Analyser les modules</pre>
 
 ${projectContents}
 
+${renderDocumentationSection()}
+
 <footer>
   <p>G\u00e9n\u00e9r\u00e9 le ${dateStr} \u00e0 ${timeStr} par Migration Factory</p>
 </footer>
@@ -1236,7 +1240,7 @@ footer {
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
   .decommission-grid { grid-template-columns: repeat(2, 1fr); }
 }
-`;
+` + DOC_CSS;
 
 // ─── JS ─────────────────────────────────────────────────────────
 
@@ -2749,7 +2753,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
 
   // ─── Reconnect on page load if migration is active ───────────
   fetch('/api/migrate/active').then(function(r) { return r.json(); }).then(function(state) {
-    if (!state.running && state.events.length === 0) return;
+    if (!state.running) return;
 
     var isDone = !state.running;
     showMigrateOverlay('Migrate: ' + state.batch + ' [' + state.mode.toUpperCase() + ']');
@@ -2811,4 +2815,4 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     }, 3000);
   }).catch(function() { /* server may not support this endpoint yet */ });
 })();
-`;
+` + DOC_JS;
