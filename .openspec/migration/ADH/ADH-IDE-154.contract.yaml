@@ -16,6 +16,17 @@ rules:
     status: IMPL
     target_file: adh-web/src/stores/saisieContenuCaisseStore.ts
     gap_notes: ""
+    legacy_expressions:
+      - expr_id: "Prg_154:Task_8:Line_12:Expr_35"
+        formula: "W0 fin tache [BH]='F'"
+        location:
+          program_id: 154
+          task_id: 8
+          line_id: 12
+          expr_id: 35
+        mapped_to: "adh-web/src/stores/saisieContenuCaisseStore.ts:145"
+        test_file: "adh-web/src/__tests__/saisieContenuCaisseStore.test.ts:92"
+        verified: true
   - id: RM-002
     description: Verification que l'imprimante courante est la n1
     condition: GetParam ('CURRENTPRINTERNUM')=1
@@ -23,6 +34,17 @@ rules:
     status: IMPL
     target_file: adh-web/src/services/printer/generators/ouvertureTicketGenerator.ts
     gap_notes: ""
+    legacy_expressions:
+      - expr_id: "Prg_154:Task_15:Line_22:Expr_58"
+        formula: "GetParam ('CURRENTPRINTERNUM')=1"
+        location:
+          program_id: 154
+          task_id: 15
+          line_id: 22
+          expr_id: 58
+        mapped_to: "adh-web/src/services/printer/generators/ouvertureTicketGenerator.ts:75"
+        test_file: "adh-web/src/__tests__/ouvertureTicketGenerator.test.ts:102"
+        verified: true
   - id: RM-003
     description: Verification que l'imprimante courante est la n9
     condition: GetParam ('CURRENTPRINTERNUM')=9
@@ -31,6 +53,17 @@ rules:
     status: IMPL
     target_file: adh-web/src/__tests__/approTicketStore.test.ts
     gap_notes: ""
+    legacy_expressions:
+      - expr_id: "Prg_154:Task_15:Line_25:Expr_62"
+        formula: "GetParam ('CURRENTPRINTERNUM')=9"
+        location:
+          program_id: 154
+          task_id: 15
+          line_id: 25
+          expr_id: 62
+        mapped_to: "adh-web/src/stores/approTicketStore.ts:138"
+        test_file: "adh-web/src/__tests__/approTicketStore.test.ts:108"
+        verified: true
   - id: RM-004
     description: Condition toujours vraie (flag actif)
     condition: P0 reimpression D/G [M]='D'
@@ -39,6 +72,16 @@ rules:
     status: MISSING
     target_file: ""
     gap_notes: ""
+    legacy_expressions:
+      - expr_id: "Prg_154:Task_20:Line_8:Expr_28"
+        formula: "P0 reimpression D/G [M]='D'"
+        location:
+          program_id: 154
+          task_id: 20
+          line_id: 8
+          expr_id: 28
+        verified: false
+        notes: "TODO: Implement reprint flag check - currently MISSING"
   - id: RM-005
     description: "Condition: P0 reimpression D/G [M] different de"
     condition: P0 reimpression D/G [M]<>''
@@ -47,6 +90,16 @@ rules:
     status: MISSING
     target_file: ""
     gap_notes: ""
+    legacy_expressions:
+      - expr_id: "Prg_154:Task_20:Line_12:Expr_32"
+        formula: "P0 reimpression D/G [M]<>''"
+        location:
+          program_id: 154
+          task_id: 20
+          line_id: 12
+          expr_id: 32
+        verified: false
+        notes: "TODO: Implement reprint flag not empty check - currently MISSING"
 variables:
   - local_id: FU
     name: W0 fin tache
@@ -262,3 +315,5 @@ overall:
   status: enriched
   generated: 2026-02-21T10:24:44.217Z
   notes: Auto-generated from ADH-IDE-154.md
+  enriched_at: 2026-02-24T02:15:00Z
+  enriched_expressions: 5

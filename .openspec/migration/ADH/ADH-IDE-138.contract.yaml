@@ -16,6 +16,18 @@ rules:
     status: IMPL
     target_file: adh-web/src/stores/saisieContenuCaisseStore.ts
     gap_notes: ""
+    legacy_expressions:
+      - expr_id: "Prg_138:Task_5:Line_8:Expr_22"
+        formula: "W0 fin tache [V]='F'"
+        location:
+          program_id: 138
+          task_id: 5
+          line_id: 8
+          expr_id: 22
+        mapped_to: "adh-web/src/stores/saisieContenuCaisseStore.ts:112"
+        test_file: "adh-web/src/__tests__/saisieContenuCaisseStore.test.ts:78"
+        verified: true
+        notes: "Check if task end flag is 'F'"
   - id: RM-002
     description: Verification que l'imprimante courante est la n1
     condition: GetParam ('CURRENTPRINTERNUM')=1
@@ -23,6 +35,18 @@ rules:
     status: IMPL
     target_file: adh-web/src/services/printer/generators/ouvertureTicketGenerator.ts
     gap_notes: ""
+    legacy_expressions:
+      - expr_id: "Prg_138:Task_12:Line_15:Expr_45"
+        formula: "GetParam ('CURRENTPRINTERNUM')=1"
+        location:
+          program_id: 138
+          task_id: 12
+          line_id: 15
+          expr_id: 45
+        mapped_to: "adh-web/src/services/printer/generators/ouvertureTicketGenerator.ts:62"
+        test_file: "adh-web/src/__tests__/ouvertureTicketGenerator.test.ts:88"
+        verified: true
+        notes: "Verify current printer is number 1"
   - id: RM-003
     description: Verification que l'imprimante courante est la n9
     condition: GetParam ('CURRENTPRINTERNUM')=9
@@ -30,6 +54,18 @@ rules:
     status: IMPL
     target_file: adh-web/src/__tests__/approTicketStore.test.ts
     gap_notes: ""
+    legacy_expressions:
+      - expr_id: "Prg_138:Task_12:Line_18:Expr_48"
+        formula: "GetParam ('CURRENTPRINTERNUM')=9"
+        location:
+          program_id: 138
+          task_id: 12
+          line_id: 18
+          expr_id: 48
+        mapped_to: "adh-web/src/stores/approTicketStore.ts:125"
+        test_file: "adh-web/src/__tests__/approTicketStore.test.ts:95"
+        verified: true
+        notes: "Verify current printer is number 9"
 variables:
   - local_id: FI
     name: W0 fin tache
@@ -129,3 +165,5 @@ overall:
   status: enriched
   generated: 2026-02-21T00:04:17.018Z
   notes: Auto-generated from ADH-IDE-138.md
+  enriched_at: 2026-02-24T02:12:00Z
+  enriched_expressions: 3
