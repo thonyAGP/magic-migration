@@ -370,8 +370,16 @@ if (report.gaps.length > 0) process.exit(1);
   - [x] docs/console-vs-logger.md: Guide de décision
   - [x] Stratégie: console.log (UX) + logger (tracing interne)
 
-**Tests**: 557 passed, tous passants ✅
+- [x] Phase 1.3: Expression coverage script - TERMINÉ (commit `9e630ec3`)
+  - [x] Types ExpressionTrace et CoverageReport
+  - [x] Extracteur d'expressions depuis contrats YAML
+  - [x] Vérificateur de couverture (files exist, tests pass)
+  - [x] Script CLI verify-expression-coverage.ts
+  - [x] tests/expression-verifier.test.ts (5 tests)
+  - [x] docs/expression-traceability.md (guide complet)
+  - [x] pnpm test:expression-coverage dans package.json
+
+**Tests**: 562 passed (+5 nouveaux), tous passants ✅
 
 ### À venir (Phase 1 restante)
-- [ ] Phase 1.3: Expression coverage script (6h)
 - [ ] Phase 1.4: Coverage metrics vitest (1h)
