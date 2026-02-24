@@ -10,25 +10,33 @@
  * 6. Generate reports
  */
 
-import type { MigrationContract } from '../core/contract.js';
+import type { ExtendedMigrationContract as MigrationContract } from '../core/contract.js';
 import type {
   SwarmSession,
   SwarmConfig,
   AgentRole,
   AgentAnalysis,
+  AgentVote,
   ComplexityScore,
   ConsensusResult,
+  AgentConcern,
 } from './types.js';
-import { DEFAULT_SWARM_CONFIG, AgentRoles, ConsensusThresholds } from './types.js';
+import { DEFAULT_SWARM_CONFIG, AgentRoles, ConsensusThresholds, VoteValues, ConcernSeverity } from './types.js';
 import { calculateComplexity } from './complexity-calculator.js';
 import { createVoteCollector } from './voting/vote-collector.js';
 import { calculateConsensus } from './voting/consensus-engine.js';
 import { executeDoubleVote } from './voting/double-vote.js';
-import { detectVeto, applyVeto } from './voting/veto-system.js';
-import { detectStagnation, type RoundScore } from './analytics/stagnation-detector.js';
+import { detectVeto, applyVeto, type VetoResult } from './voting/veto-system.js';
+import { detectStagnation, type RoundScore, type StagnationResult } from './analytics/stagnation-detector.js';
+import { EscalationManager } from './escalation/escalation-manager.js';
+import type { EscalationContext, EscalationReport } from './types.js';
 import { createSwarmStore, type SwarmSQLiteStore } from './storage/sqlite-store.js';
 import { loadSwarmConfig } from './config-loader.js';
 import { randomUUID } from 'node:crypto';
+import type { ClaudeClient } from './llm/claude-client.js';
+import { AgentExecutor } from './agents/agent-executor.js';
+import type { Vote } from './agents/prompt-builder.js';
+import { AgentWeights } from './types.js';
 
 /**
  * SWARM orchestrator result
@@ -55,13 +63,16 @@ export interface SwarmResult {
 export class SwarmOrchestrator {
   private readonly config: SwarmConfig;
   private readonly store: SwarmSQLiteStore;
+  private readonly executor?: AgentExecutor;
 
   constructor(
     config: Partial<SwarmConfig> = {},
     store?: SwarmSQLiteStore,
+    client?: ClaudeClient,
   ) {
     this.config = { ...DEFAULT_SWARM_CONFIG, ...config };
     this.store = store ?? createSwarmStore();
+    this.executor = client ? new AgentExecutor(client) : undefined;
   }
 
   /**
@@ -78,22 +89,22 @@ export class SwarmOrchestrator {
     // Create session in DB
     this.store.createSession({
       id: sessionId,
-      programId: contract.metadata.program_id,
-      programName: contract.metadata.program_name,
+      programId: contract.metadata?.program_id ?? 0,
+      programName: contract.metadata?.program_name ?? 'UNKNOWN',
       status: 'IN_PROGRESS',
       current_phase: 'complexity',
       config_snapshot: this.config as unknown as Record<string, unknown>,
       startedAt,
       total_agents_used: 0,
     });
-    console.log(`[SWARM] Session ${sessionId} created for program ${contract.metadata.program_id}`);
+    console.log(`[SWARM] Session ${sessionId} created for program ${contract.metadata?.program_id ?? 0}`);
 
     // Create session object
     const complexity = calculateComplexity(contract);
     const session: SwarmSession = {
       id: sessionId,
-      programId: contract.metadata.program_id,
-      programName: contract.metadata.program_name,
+      programId: contract.metadata?.program_id ?? 0,
+      programName: contract.metadata?.program_name ?? 'UNKNOWN',
       complexity,
       analyses: [],
       votes: [],
@@ -116,46 +127,157 @@ export class SwarmOrchestrator {
         );
       }
 
-      // Step 2: Run agent analyses (parallel)
-      console.log(`[SWARM] Running agent analyses for program ${session.programId}...`);
-      const roundNumber = 1; // Single round for now (multi-rounds in C1)
-      const analysisStartTime = Date.now();
-      session.analyses = await this.runAgentAnalyses(contract);
-
-      // Store analyses in DB
-      for (const analysis of session.analyses) {
-        this.store.storeAnalysis(sessionId, roundNumber, analysis);
-      }
-      this.store.updateSessionStatus(sessionId, 'IN_PROGRESS', 'voting');
-      console.log(`[SWARM] ${session.analyses.length} analyses stored`);
-
-      // Step 3: Collect votes from agents
-      console.log(`[SWARM] Collecting agent votes...`);
-      const votingStartTime = Date.now();
-      session.votes = await this.collectAgentVotes(session.analyses);
-
-      // Step 4: Calculate consensus
+      // Step 2: Multi-rounds consensus loop
       const threshold = session.complexity.requiresDoubleVote
         ? ConsensusThresholds.CRITICAL
         : ConsensusThresholds.STANDARD;
+      const maxRounds = this.config.maxRounds;
+      let roundNumber = 0;
+      let consensusReached = false;
+      const roundHistory: RoundScore[] = [];
 
-      session.consensus = calculateConsensus(session.votes, threshold);
+      // Track veto and stagnation for escalation (D1)
+      let lastVeto: VetoResult | undefined;
+      let lastStagnation: StagnationResult | undefined;
 
-      // Calculate total tokens cost (used for round and final session)
-      const totalTokensCost = this.calculateTotalTokensCost(session);
+      while (!consensusReached && roundNumber < maxRounds) {
+        roundNumber++;
+        console.log(`[SWARM] Starting round ${roundNumber}/${maxRounds}...`);
 
-      // Store voting round and votes in DB
-      const votingDuration = Date.now() - votingStartTime;
-      const roundId = this.store.storeVotingRound(sessionId, roundNumber, session.consensus, {
-        durationMs: votingDuration,
-        totalTokensCost,
-      });
+        const roundStartTime = Date.now();
 
-      for (const vote of session.votes) {
-        this.store.storeVote(roundId, vote);
+        // Run agent analyses
+        const analyses = await this.runRoundAnalyses(contract, sessionId, roundNumber);
+        session.analyses.push(...analyses);
+
+        // Collect votes
+        const votes = await this.runRoundVotes(
+          analyses,
+          contract,
+          session.complexity,
+          roundNumber,
+          session.votes,
+        );
+        session.votes.push(...votes);
+
+        // Calculate consensus
+        let consensus = calculateConsensus(votes, threshold);
+
+        // Check for veto (B2)
+        const veto = detectVeto(votes);
+        lastVeto = veto; // Store for escalation
+        if (veto.triggered) {
+          console.log(
+            `[SWARM] VETO detected by ${veto.agent}: ${veto.reason}`,
+          );
+          consensus = applyVeto(consensus, veto);
+        }
+
+        session.consensus = consensus; // Keep latest
+
+        // Track history for stagnation detection (C2)
+        roundHistory.push({
+          roundNumber,
+          consensusScore: consensus.score,
+          timestamp: new Date(),
+        });
+
+        // Check for stagnation (C2)
+        let stagnation: StagnationResult | undefined;
+        let previousRoundScore: number | undefined;
+        let scoreDelta: number | undefined;
+
+        if (!consensus.passed && roundNumber >= 2) {
+          stagnation = detectStagnation(roundHistory, { threshold: 2, scoreTolerance: 0.5 });
+          lastStagnation = stagnation; // Store for escalation
+
+          // Calculate delta from previous round
+          if (roundHistory.length >= 2) {
+            const current = roundHistory[roundHistory.length - 1];
+            const previous = roundHistory[roundHistory.length - 2];
+            previousRoundScore = previous.consensusScore;
+            scoreDelta = current.consensusScore - previous.consensusScore;
+          }
+
+          if (stagnation.detected) {
+            console.log(
+              `[SWARM] STAGNATION detected after ${stagnation.stagnantRounds} rounds at ${stagnation.stagnantScore?.toFixed(1)}%`,
+            );
+            console.log(`[SWARM] Score delta: ${scoreDelta?.toFixed(1)}% (from ${previousRoundScore?.toFixed(1)}%)`);
+            console.log(`[SWARM] ${stagnation.explanation}`);
+            console.log(`[SWARM] Escalating to review - revisions not improving consensus`);
+          }
+        }
+
+        // Store round in DB (with veto + stagnation info)
+        const roundDuration = Date.now() - roundStartTime;
+        this.storeRound(
+          sessionId,
+          roundNumber,
+          consensus,
+          votes,
+          roundDuration,
+          veto,
+          stagnation,
+          previousRoundScore,
+          scoreDelta,
+        );
+
+        // Check if consensus reached or stagnation forces exit
+        if (consensus.passed) {
+          consensusReached = true;
+          console.log(`[SWARM] Consensus reached at round ${roundNumber}: ${consensus.score}%`);
+        } else if (stagnation?.detected) {
+          // Force exit - stagnation detected
+          consensusReached = false;
+          break; // Exit while loop immediately
+        } else if (roundNumber < maxRounds) {
+          console.log(
+            `[SWARM] Round ${roundNumber} failed (${consensus.score}% < ${threshold}%), applying revisions...`,
+          );
+          await this.applyRevisions(session);
+        }
       }
-      this.store.updateSessionStatus(sessionId, 'IN_PROGRESS', 'consensus');
-      console.log(`[SWARM] Round ${roundNumber} stored: ${session.consensus.score}% consensus`);
+
+      // Check if consensus was reached
+      if (!consensusReached) {
+        console.log(
+          `[SWARM] Max rounds (${maxRounds}) reached without consensus - evaluating escalation`,
+        );
+
+        // D1: Escalation System
+        const escalationManager = new EscalationManager(this.store);
+
+        if (escalationManager.shouldEscalate(session, session.consensus)) {
+          const escalationContext = escalationManager.buildEscalationContext(
+            session,
+            roundHistory,
+            lastStagnation,
+            lastVeto,
+          );
+          const escalationReport = escalationManager.generateEscalationReport(escalationContext);
+
+          console.log(`[SWARM] ESCALATION: ${escalationContext.reason}`);
+          console.log(`[SWARM] ${escalationReport.summary}`);
+          console.log(`[SWARM] Recommendation: ${escalationReport.recommendation}`);
+
+          escalationManager.storeEscalation(escalationContext, escalationReport);
+
+          session.status = 'ESCALATED';
+          session.escalation = {
+            context: escalationContext,
+            report: escalationReport,
+            escalatedAt: new Date(),
+          };
+        } else {
+          session.status = 'TO_REVIEW';
+        }
+      } else {
+        session.status = 'COMPLETED';
+      }
+
+      // Calculate total token cost
+      const totalTokensCost = this.calculateTotalTokensCost(session);
 
       // Step 5: Execute double vote if critical
       if (
@@ -170,18 +292,28 @@ export class SwarmOrchestrator {
       // Step 6: Finalize session
       session.completedAt = new Date();
       session.duration = Date.now() - startTime;
-      session.status =
-        session.consensus.recommendation === 'PROCEED' ? 'COMPLETED' : 'FAILED';
+
+      // Determine final decision
+      let finalDecision: 'PROCEED' | 'REJECT' | 'TO_REVIEW' | 'ESCALATED';
+      if (session.status === 'ESCALATED') {
+        finalDecision = 'ESCALATED';
+      } else if (session.status === 'TO_REVIEW') {
+        finalDecision = 'TO_REVIEW';
+      } else {
+        finalDecision =
+          session.consensus.recommendation === 'PROCEED' ? 'PROCEED' : 'REJECT';
+        session.status = finalDecision === 'PROCEED' ? 'COMPLETED' : 'FAILED';
+      }
 
       // Complete session in DB
-      const finalDecision =
-        session.consensus.recommendation === 'PROCEED' ? 'PROCEED' : 'REJECT';
       this.store.completeSession(sessionId, {
         status: session.status,
         finalConsensusScore: session.consensus.score,
         finalDecision,
         durationMs: session.duration,
         totalTokensCost,
+        // Include escalation data if present (D1)
+        ...(session.escalation && { escalation: session.escalation }),
       });
       console.log(`[SWARM] Session ${sessionId} completed: ${session.status} (${finalDecision})`);
 
@@ -253,26 +385,91 @@ export class SwarmOrchestrator {
    */
   private async collectAgentVotes(
     analyses: AgentAnalysis[],
+    contract?: MigrationContract,
+    context?: {
+      roundNumber: number;
+      previousVotes?: Vote[];
+      complexity: ComplexityScore;
+    },
   ): Promise<SwarmSession['votes']> {
-    // TODO: Phase 3 - Implement actual agent voting
-    // For now, return mock votes
-
     const voteCollector = createVoteCollector('mock-session');
 
-    for (const analysis of analyses) {
-      voteCollector.submitVote({
-        agent: analysis.agent,
-        vote: 'APPROVE',
-        confidence: 90,
-        weight: this.getAgentWeight(analysis.agent),
-        justification: 'Mock vote - to be implemented in Phase 3',
-        concerns: [],
-        suggestions: [],
-        timestamp: new Date(),
-      });
+    // If executor available and context provided, use real LLM agents
+    if (this.executor && contract && context) {
+      for (const analysis of analyses) {
+        try {
+          // Execute agent with LLM
+          const vote = await this.executor.executeAgent(
+            analysis.agent,
+            contract,
+            context,
+          );
+
+          // Convert Vote to AgentVote
+          const agentVote: AgentVote = this.convertToAgentVote(vote);
+          voteCollector.submitVote(agentVote);
+        } catch (error) {
+          console.error(
+            `[SWARM] Agent ${analysis.agent} failed:`,
+            error instanceof Error ? error.message : 'Unknown error',
+          );
+          // Fallback to mock vote on error
+          voteCollector.submitVote(this.createMockVote(analysis.agent));
+        }
+      }
+    } else {
+      // Fallback: Mock votes (backward compatibility)
+      for (const analysis of analyses) {
+        voteCollector.submitVote(this.createMockVote(analysis.agent));
+      }
     }
 
     return Promise.resolve(voteCollector.getVotes());
+  }
+
+  /**
+   * Convert simplified Vote to AgentVote
+   */
+  private convertToAgentVote(vote: Vote): AgentVote {
+    // Map string vote to VoteValue
+    const voteValue =
+      vote.vote === 'APPROVE' ? VoteValues.APPROVE : VoteValues.REJECT;
+
+    // Convert blockerConcerns to AgentConcern[]
+    const concerns: AgentConcern[] = (vote.blockerConcerns || []).map(
+      (concern) => ({
+        concern,
+        severity: ConcernSeverity.BLOCKER,
+        suggestion: 'Address this blocker before migration',
+      }),
+    );
+
+    return {
+      agent: vote.agent,
+      vote: voteValue,
+      confidence: vote.confidence,
+      weight: AgentWeights[vote.agent],
+      justification: vote.reasoning || 'No reasoning provided',
+      concerns,
+      suggestions: [],
+      timestamp: new Date(),
+    };
+  }
+
+  /**
+   * Create mock vote (backward compatibility)
+   */
+  private createMockVote(agent: AgentRole): AgentVote {
+    return {
+      agent,
+      vote: VoteValues.APPROVE,
+      confidence: 90,
+      weight: AgentWeights[agent],
+      justification: 'Mock vote - LLM not configured',
+      concerns: [],
+      suggestions: [],
+      timestamp: new Date(),
+    };
   }
 
   /**
@@ -426,6 +623,127 @@ export class SwarmOrchestrator {
     }
 
     return total;
+  }
+
+  /**
+   * Run agent analyses for a single round
+   */
+  private async runRoundAnalyses(
+    contract: MigrationContract,
+    sessionId: string,
+    roundNumber: number,
+  ): Promise<AgentAnalysis[]> {
+    console.log(`[SWARM] Running agent analyses for round ${roundNumber}...`);
+    const analyses = await this.runAgentAnalyses(contract);
+
+    // Store analyses in DB
+    for (const analysis of analyses) {
+      this.store.storeAnalysis(sessionId, roundNumber, analysis);
+    }
+    this.store.updateSessionStatus(sessionId, 'IN_PROGRESS', 'voting');
+    console.log(`[SWARM] ${analyses.length} analyses stored`);
+
+    return analyses;
+  }
+
+  /**
+   * Collect votes from agents for a single round
+   */
+  private async runRoundVotes(
+    analyses: AgentAnalysis[],
+    contract?: MigrationContract,
+    complexity?: ComplexityScore,
+    roundNumber?: number,
+    previousVotes?: AgentVote[],
+  ): Promise<AgentVote[]> {
+    console.log(`[SWARM] Collecting agent votes...`);
+
+    // Build context for agents if all parameters available
+    const context =
+      contract && complexity && roundNumber
+        ? {
+            roundNumber,
+            complexity,
+            previousVotes: this.convertAgentVotesToSimpleVotes(
+              previousVotes || [],
+            ),
+          }
+        : undefined;
+
+    const votes = await this.collectAgentVotes(analyses, contract, context);
+    return votes;
+  }
+
+  /**
+   * Convert AgentVote[] to simplified Vote[] for prompt context
+   */
+  private convertAgentVotesToSimpleVotes(agentVotes: AgentVote[]): Vote[] {
+    return agentVotes.map((v) => ({
+      agent: v.agent,
+      vote: v.vote === VoteValues.APPROVE ? 'APPROVE' : 'REJECT',
+      confidence: v.confidence,
+      blockerConcerns: v.concerns
+        .filter((c) => c.severity === ConcernSeverity.BLOCKER)
+        .map((c) => c.concern),
+      veto: undefined,
+      reasoning: v.justification,
+      tokens: undefined,
+    }));
+  }
+
+  /**
+   * Store voting round and votes in DB
+   */
+  private storeRound(
+    sessionId: string,
+    roundNumber: number,
+    consensus: ConsensusResult,
+    votes: AgentVote[],
+    durationMs: number,
+    veto?: VetoResult,
+    stagnation?: StagnationResult,
+    previousRoundScore?: number,
+    scoreDelta?: number,
+  ): void {
+    // Calculate token cost for this round
+    const totalTokensCost = 0; // Stub - calculated at session level
+
+    // Store voting round
+    const roundId = this.store.storeVotingRound(sessionId, roundNumber, consensus, {
+      durationMs,
+      totalTokensCost,
+      vetoTriggered: veto?.triggered ? true : undefined,
+      vetoAgent: veto?.triggered ? veto.agent : undefined,
+      vetoReason: veto?.triggered ? veto.reason : undefined,
+      stagnationDetected: stagnation?.detected ? true : undefined,
+      previousRoundScore,
+      scoreDelta,
+    });
+
+    // Store individual votes
+    for (const vote of votes) {
+      this.store.storeVote(roundId, vote);
+    }
+
+    this.store.updateSessionStatus(sessionId, 'IN_PROGRESS', 'consensus');
+    console.log(`[SWARM] Round ${roundNumber} stored: ${consensus.score}% consensus`);
+  }
+
+  /**
+   * Apply revisions based on consensus concerns
+   *
+   * NOTE: Stub implementation for C1
+   * Real revision logic will be implemented in Phase 3
+   */
+  private async applyRevisions(session: SwarmSession): Promise<void> {
+    // Stub for C1 - simulate revision process
+    const { major, minor, blocker } = session.consensus.concernsSummary;
+    console.log(
+      `[SWARM] Revisions stub - would address ${blocker} blockers, ${major} major, ${minor} minor concerns`,
+    );
+
+    // Simulate revision time
+    await new Promise((resolve) => setTimeout(resolve, 10));
   }
 
   /**
