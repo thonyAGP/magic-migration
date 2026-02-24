@@ -81,6 +81,7 @@ export function loadSwarmConfig(configPath: string = '.swarm.config.yaml'): Swar
       model: DEFAULT_SWARM_CONFIG.model, // Will be overridden per-agent
       maxConcurrentAgents: DEFAULT_SWARM_CONFIG.maxConcurrentAgents,
       enableVisualization: DEFAULT_SWARM_CONFIG.enableVisualization,
+      maxRounds: DEFAULT_SWARM_CONFIG.maxRounds,
     };
 
     // Validate

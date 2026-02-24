@@ -16,7 +16,7 @@ import type { SwarmSQLiteStore } from '../../../../src/swarm/storage/sqlite-stor
 /**
  * In-memory mock store for testing
  */
-export class MockSwarmStore implements Pick<SwarmSQLiteStore, 'createSession' | 'storeComplexity' | 'updateSessionStatus' | 'storeVote' | 'storeConsensus' | 'recordRound' | 'getSession' | 'getSessionVotes' | 'completeSession' | 'storeAnalysis' | 'storeVotingRound' | 'close'> {
+export class MockSwarmStore implements Pick<SwarmSQLiteStore, 'createSession' | 'storeComplexity' | 'updateSessionStatus' | 'storeVote' | 'storeConsensus' | 'recordRound' | 'getSession' | 'getSessionVotes' | 'completeSession' | 'storeAnalysis' | 'storeVotingRound' | 'storeDoubleVote' | 'close'> {
   private sessions: Map<string, SessionRecord> = new Map();
   private votes: Map<string, VoteRecord[]> = new Map();
   private complexity: Map<string, ComplexityRecord> = new Map();
@@ -24,6 +24,7 @@ export class MockSwarmStore implements Pick<SwarmSQLiteStore, 'createSession' | 
   private rounds: Map<string, RoundRecord[]> = new Map();
   private analyses: Map<string, any[]> = new Map();
   private votingRounds: Map<string, any[]> = new Map();
+  private doubleVotes: Map<string, any> = new Map();
 
   createSession(session: SessionRecord): void {
     this.sessions.set(session.id, { ...session });
@@ -108,6 +109,10 @@ export class MockSwarmStore implements Pick<SwarmSQLiteStore, 'createSession' | 
     this.votingRounds.set(sessionId, sessionRounds);
   }
 
+  storeDoubleVote(sessionId: string, doubleVote: any): void {
+    this.doubleVotes.set(sessionId, doubleVote);
+  }
+
   close(): void {
     // No-op for in-memory store
   }
@@ -123,5 +128,6 @@ export class MockSwarmStore implements Pick<SwarmSQLiteStore, 'createSession' | 
     this.rounds.clear();
     this.analyses.clear();
     this.votingRounds.clear();
+    this.doubleVotes.clear();
   }
 }

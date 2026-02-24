@@ -11,7 +11,7 @@ import type {
   AgentConcern,
 } from '../types.js';
 import { AgentWeights } from '../types.js';
-import type { MigrationContract } from '../../core/contract.js';
+import type { ExtendedMigrationContract as MigrationContract } from '../../core/contract.js';
 
 /**
  * Agent configuration

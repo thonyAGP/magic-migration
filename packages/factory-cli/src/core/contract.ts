@@ -10,6 +10,51 @@ import type {
   ContractTable, ContractCallee, ContractOverall, ContractEffort, ItemStatus,
 } from './types.js';
 
+// Re-export types for external use
+export type { MigrationContract, ContractRule, ContractVariable, ContractTable, ContractCallee, ContractOverall, ContractEffort, ItemStatus };
+
+// Extended contract format for internal processing (SWARM, complexity calculation)
+// Includes additional metadata and analysis fields not in the YAML format
+// This is a more permissive type that accepts both standard contracts and extended formats
+export interface ExtendedMigrationContract {
+  // Standard contract fields (optional)
+  program?: Partial<MigrationContract['program']>;
+  rules?: MigrationContract['rules'];
+  variables?: MigrationContract['variables'];
+  callees?: MigrationContract['callees'];
+  overall?: Partial<MigrationContract['overall']>;
+
+  // Extended fields for internal processing
+  metadata?: {
+    program_id?: number;
+    program_name?: string;
+    source_language?: string;
+    target_language?: string;
+    legacy_expressions?: Array<{ id: number; formula: string; description: string }>;
+    tables?: Array<{ id: number; name: string; fields: unknown[] }>;
+    dependencies?: Array<{ type: string; [key: string]: unknown }>;
+    [key: string]: unknown;
+  };
+  business_logic?: {
+    complexity?: {
+      nesting_depth?: number;
+      calculations?: number;
+      validations?: number;
+      [key: string]: unknown;
+    };
+    [key: string]: unknown;
+  };
+  modern_implementation?: {
+    notes?: string;
+    [key: string]: unknown;
+  };
+  expressions?: unknown[];
+  tables?: unknown[];
+  tasks?: unknown[];
+  logic_lines?: unknown[];
+  [key: string]: unknown;
+}
+
 // ─── Parse contract from YAML file ──────────────────────────────
 
 export const parseContract = (filePath: string): MigrationContract => {

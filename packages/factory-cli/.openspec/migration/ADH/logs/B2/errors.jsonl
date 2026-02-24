@@ -1,0 +1,6 @@
+{"timestamp":"2026-02-24T01:44:27.109Z","program":117,"phase":"types","event":"timeout","model":"haiku","duration_ms":120000}
+{"timestamp":"2026-02-24T01:44:27.135Z","program":125,"phase":"types","event":"error","error_message":"Test error"}
+{"timestamp":"2026-02-24T01:46:31.007Z","program":117,"phase":"types","event":"timeout","model":"haiku","duration_ms":120000}
+{"timestamp":"2026-02-24T01:46:31.054Z","program":125,"phase":"types","event":"error","error_message":"Test error"}
+{"timestamp":"2026-02-24T08:49:30.446Z","program":117,"phase":"types","event":"timeout","model":"haiku","duration_ms":120000}
+{"timestamp":"2026-02-24T08:49:30.476Z","program":125,"phase":"types","event":"error","error_message":"Test error"}

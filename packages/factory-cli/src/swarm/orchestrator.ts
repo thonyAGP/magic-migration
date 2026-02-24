@@ -20,12 +20,13 @@ import type {
   ComplexityScore,
   ConsensusResult,
   AgentConcern,
+  DoubleVoteSession,
 } from './types.js';
 import { DEFAULT_SWARM_CONFIG, AgentRoles, ConsensusThresholds, VoteValues, ConcernSeverity } from './types.js';
 import { calculateComplexity } from './complexity-calculator.js';
 import { createVoteCollector } from './voting/vote-collector.js';
 import { calculateConsensus } from './voting/consensus-engine.js';
-import { executeDoubleVote } from './voting/double-vote.js';
+import { executeDoubleVote as executeDoubleVoteFunction } from './voting/double-vote.js';
 import { detectVeto, applyVeto, type VetoResult } from './voting/veto-system.js';
 import { detectStagnation, type RoundScore, type StagnationResult } from './analytics/stagnation-detector.js';
 import { EscalationManager } from './escalation/escalation-manager.js';
@@ -479,21 +480,137 @@ export class SwarmOrchestrator {
     session: SwarmSession,
     contract: MigrationContract,
   ): Promise<void> {
-    // TODO: Phase 3 - Implement actual double vote
-    // For now, mark as requiring implementation
-
     console.log(
       `[SWARM] Double vote required for critical program ${session.programId}`,
     );
-    console.log('[SWARM] Implementation pending (Phase 3)');
 
-    // Placeholder for double vote session
-    session.doubleVote = {
-      firstVote: session.consensus,
-      implementationAfterFirstVote: '// Implementation pending',
-      secondVote: session.consensus,
-      approved: session.consensus.passed,
+    // First vote = current consensus
+    const firstVote = session.consensus;
+    console.log(`[SWARM] First vote: ${firstVote.score}% (threshold: ${firstVote.threshold}%)`);
+
+    // Generate/simulate implementation code
+    // In a real scenario, this would be actual code generation or human review
+    const implementation = this.generateImplementationStub(contract, session);
+    console.log(`[SWARM] Implementation generated (${implementation.length} chars)`);
+
+    // Update session phase for DB
+    this.store.updateSessionStatus(session.id, 'IN_PROGRESS', 'double_vote');
+
+    // Collect second round of votes on implementation
+    console.log('[SWARM] Collecting second vote on implementation...');
+    const secondRoundVotes = await this.collectSecondRoundVotes(
+      session,
+      contract,
+      implementation,
+    );
+
+    // Calculate second vote consensus
+    const secondVote = calculateConsensus(
+      secondRoundVotes,
+      ConsensusThresholds.CRITICAL,
+    );
+    console.log(`[SWARM] Second vote: ${secondVote.score}% (threshold: ${secondVote.threshold}%)`);
+
+    // Execute double vote logic
+    const doubleVoteResult = executeDoubleVoteFunction(
+      session.programId,
+      session.votes, // First round votes
+      implementation,
+      secondRoundVotes, // Second round votes
+    );
+
+    console.log(`[SWARM] Double vote result: ${doubleVoteResult.recommendation}`);
+    console.log(`[SWARM] ${doubleVoteResult.reason}`);
+
+    // Create DoubleVoteSession structure
+    const doubleVoteSession: DoubleVoteSession = {
+      firstVote,
+      implementationAfterFirstVote: implementation,
+      secondVote,
+      approved: doubleVoteResult.approved,
     };
+
+    // Store double vote in session
+    session.doubleVote = doubleVoteSession;
+
+    // Store in database
+    this.store.storeDoubleVote(session.id, doubleVoteSession);
+    console.log(`[SWARM] Double vote stored in database`);
+
+    // Update final decision based on double vote
+    if (!doubleVoteResult.approved) {
+      session.status = 'TO_REVIEW';
+      console.log(`[SWARM] Double vote FAILED - session requires review`);
+    }
+  }
+
+  /**
+   * Generate implementation stub for double vote
+   * In production, this would be actual code generation or placeholder for human review
+   */
+  private generateImplementationStub(
+    contract: MigrationContract,
+    session: SwarmSession,
+  ): string {
+    const lines = [
+      '/**',
+      ` * Implementation for program ${contract.metadata?.program_id ?? 0} - ${contract.metadata?.program_name ?? 'UNKNOWN'}`,
+      ' * Generated after first vote approval',
+      ' * This is a stub - in production this would be actual generated code',
+      ' */',
+      '',
+      'export class MigratedProgram {',
+      '  // TODO: Implement based on migration contract',
+      '  // Complexity: ' + session.complexity.level,
+      '  // Score: ' + session.complexity.score,
+      '',
+      '  async execute() {',
+      '    // Implementation here',
+      '    console.log("Program migrated successfully");',
+      '  }',
+      '}',
+    ];
+
+    return lines.join('\n');
+  }
+
+  /**
+   * Collect second round of votes for double vote system
+   */
+  private async collectSecondRoundVotes(
+    session: SwarmSession,
+    contract: MigrationContract,
+    implementation: string,
+  ): Promise<AgentVote[]> {
+    // Run second round analyses
+    const analyses = await this.runAgentAnalyses(contract);
+
+    // Build context for second vote
+    const context = {
+      roundNumber: 2, // Second vote round
+      complexity: session.complexity,
+      previousVotes: this.convertAgentVotesToSimpleVotes(session.votes),
+      implementation, // Include implementation for review
+    };
+
+    // Collect votes
+    const votes = await this.collectAgentVotes(analyses, contract, context);
+
+    // Store second round in DB
+    const secondVote = calculateConsensus(votes, ConsensusThresholds.CRITICAL);
+    const roundId = this.store.storeVotingRound(
+      session.id,
+      2, // Round 2
+      secondVote,
+      { durationMs: 0, totalTokensCost: 0 },
+    );
+
+    // Store individual votes
+    for (const vote of votes) {
+      this.store.storeVote(roundId, vote);
+    }
+
+    return votes;
   }
 
   /**

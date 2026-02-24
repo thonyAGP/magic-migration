@@ -1112,6 +1112,94 @@ const run = async () => {
       break;
     }
 
+    // SWARM Commands (F1)
+    case 'swarm': {
+      const subcommand = args[1];
+
+      switch (subcommand) {
+        case 'execute': {
+          const { executeSwarm } = await import('./cli/commands/swarm-execute.js');
+          await executeSwarm({
+            contract: getArg('contract')!,
+            db: getArg('db'),
+            model: getArg('model') as any,
+            maxRounds: getArg('max-rounds') ? Number(getArg('max-rounds')) : undefined,
+            format: getArg('format') as any,
+            output: getArg('output'),
+          });
+          break;
+        }
+
+        case 'analyze': {
+          const { analyzeComplexity } = await import('./cli/commands/swarm-analyze.js');
+          await analyzeComplexity({
+            contract: getArg('contract')!,
+            format: getArg('format') as any,
+            output: getArg('output'),
+          });
+          break;
+        }
+
+        case 'report': {
+          const { generateReport } = await import('./cli/commands/swarm-report.js');
+          await generateReport({
+            db: getArg('db'),
+            from: getArg('from'),
+            to: getArg('to'),
+            format: getArg('format') as any,
+            output: getArg('output'),
+          });
+          break;
+        }
+
+        case 'inspect': {
+          const { inspectSession } = await import('./cli/commands/swarm-inspect.js');
+          await inspectSession({
+            sessionId: args[2]!,
+            db: getArg('db'),
+            format: getArg('format') as any,
+            showVotes: hasFlag('show-votes'),
+            showAnalyses: hasFlag('show-analyses'),
+            output: getArg('output'),
+          });
+          break;
+        }
+
+        case 'list': {
+          const { listSessions } = await import('./cli/commands/swarm-list.js');
+          await listSessions({
+            db: getArg('db'),
+            status: getArg('status') as any,
+            limit: getArg('limit') ? Number(getArg('limit')) : undefined,
+            format: getArg('format') as any,
+            output: getArg('output'),
+          });
+          break;
+        }
+
+        default:
+          console.log('SWARM Commands - Multi-agent migration with consensus voting\n');
+          console.log('Commandes SWARM :');
+          console.log('  swarm execute  --contract <file> [--model opus|sonnet|haiku]  Executer migration SWARM');
+          console.log('                 [--max-rounds N] [--format text|json]');
+          console.log('  swarm analyze  --contract <file> [--format text|json]         Analyser complexite');
+          console.log('  swarm report   [--from date] [--to date]                      Generer rapport analytics');
+          console.log('                 [--format markdown|json] [--output file]');
+          console.log('  swarm inspect  <session-id> [--show-votes] [--show-analyses]  Inspecter session');
+          console.log('  swarm list     [--status COMPLETED|FAILED|ESCALATED]          Lister sessions');
+          console.log('                 [--limit N] [--format table|json]');
+          console.log('');
+          console.log('Options SWARM :');
+          console.log('  --db <file>       Chemin base SQLite (defaut: .swarm-sessions/swarm.db)');
+          console.log('  --model <model>   Modele agents (opus|sonnet|haiku, defaut: sonnet)');
+          console.log('  --max-rounds N    Rounds max avant escalation (defaut: 10)');
+          console.log('  --format <fmt>    Format sortie (text|json|markdown|table)');
+          console.log('  --output <file>   Fichier sortie (defaut: stdout)');
+          break;
+      }
+      break;
+    }
+
     default:
       console.log('Migration Factory - Pipeline de migration SPECMAP generique\n');
       console.log('Commandes principales :');
@@ -1151,6 +1239,14 @@ const run = async () => {
       console.log('                                                     Preserve les batches existants, ajoute les nouveaux au tracker');
       console.log('  check-coherence --target <dir> [--fix] [--dry-run] Verifier la coherence exports/imports du code genere');
       console.log('  serve      [--port 3070]                           Lancer le dashboard interactif avec API REST');
+      console.log('');
+      console.log('Systeme SWARM (Multi-agents) :');
+      console.log('  swarm execute  --contract <file>                   Executer migration SWARM avec consensus');
+      console.log('  swarm analyze  --contract <file>                   Analyser complexite programme');
+      console.log('  swarm report   [--from date] [--to date]           Generer rapport analytics');
+      console.log('  swarm inspect  <session-id>                        Inspecter session detaillee');
+      console.log('  swarm list     [--status <statut>]                 Lister sessions SWARM');
+      console.log('  (Utilisez "factory swarm" pour voir toutes les options SWARM)');
       console.log('');
       console.log('Options globales :');
       console.log('  --project <dir>          Repertoire du projet (defaut : repertoire courant)');

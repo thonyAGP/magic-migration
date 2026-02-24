@@ -17,6 +17,11 @@ import type {
   ConsensusResult,
   DoubleVoteSession,
   ConcernSeverityLevel,
+  SessionMetrics,
+  AgentMetrics,
+  ComplexityDistribution,
+  ConsensusTrend,
+  TopEscalation,
 } from '../types.js';
 import type {
   SwarmSessionRow,
@@ -700,6 +705,218 @@ export class SwarmSQLiteStore {
       outputFiles: row.output_files ? JSON.parse(row.output_files) : [],
       status: row.status,
     };
+  }
+
+  // ============================================================================
+  // Analytics Queries (E1)
+  // ============================================================================
+
+  /**
+   * Get session metrics
+   */
+  getSessionMetrics(from?: Date, to?: Date): SessionMetrics {
+    const query = `
+      SELECT
+        COUNT(*) as totalSessions,
+        COUNT(CASE WHEN status = 'COMPLETED' THEN 1 END) as completedSessions,
+        COUNT(CASE WHEN status = 'FAILED' THEN 1 END) as failedSessions,
+        COUNT(CASE WHEN status = 'ESCALATED' THEN 1 END) as escalatedSessions,
+        COUNT(CASE WHEN status = 'TO_REVIEW' THEN 1 END) as toReviewSessions,
+        COALESCE(AVG(final_consensus_score), 0) as avgConsensusScore,
+        COALESCE(AVG(total_agents_used), 0) as avgRoundsToConsensus,
+        COALESCE(AVG(duration_ms), 0) as avgDurationMs,
+        COALESCE(SUM(total_tokens_cost), 0) as totalTokensCost
+      FROM swarm_sessions
+      WHERE (? IS NULL OR started_at >= ?)
+        AND (? IS NULL OR started_at <= ?)
+    `;
+
+    const fromStr = from ? from.toISOString() : null;
+    const toStr = to ? to.toISOString() : null;
+
+    const row = this.db
+      .prepare(query)
+      .get(fromStr, fromStr, toStr, toStr) as {
+      totalSessions: number;
+      completedSessions: number;
+      failedSessions: number;
+      escalatedSessions: number;
+      toReviewSessions: number;
+      avgConsensusScore: number;
+      avgRoundsToConsensus: number;
+      avgDurationMs: number;
+      totalTokensCost: number;
+    };
+
+    const consensusPassRate =
+      row.totalSessions > 0
+        ? (row.completedSessions / row.totalSessions) * 100
+        : 0;
+
+    return {
+      totalSessions: row.totalSessions,
+      completedSessions: row.completedSessions,
+      failedSessions: row.failedSessions,
+      escalatedSessions: row.escalatedSessions,
+      toReviewSessions: row.toReviewSessions,
+      avgConsensusScore: row.avgConsensusScore,
+      avgRoundsToConsensus: row.avgRoundsToConsensus,
+      avgDurationMs: row.avgDurationMs,
+      totalTokensCost: row.totalTokensCost,
+      consensusPassRate,
+    };
+  }
+
+  /**
+   * Get agent performance metrics
+   */
+  getAgentMetrics(from?: Date, to?: Date): AgentMetrics[] {
+    const query = `
+      SELECT
+        v.agent,
+        COUNT(*) as totalVotes,
+        COUNT(CASE WHEN v.vote = 'APPROVE' THEN 1 END) as approveVotes,
+        COUNT(CASE WHEN v.vote IN ('REJECT', 'REJECT_WITH_SUGGESTIONS') THEN 1 END) as rejectVotes,
+        COALESCE(AVG(v.confidence), 0) as avgConfidence,
+        COUNT(CASE WHEN EXISTS (
+          SELECT 1 FROM json_each(v.concerns)
+          WHERE json_extract(value, '$.severity') = 'BLOCKER'
+        ) THEN 1 END) as vetoCount,
+        COUNT(CASE WHEN EXISTS (
+          SELECT 1 FROM json_each(v.concerns)
+          WHERE json_extract(value, '$.severity') = 'BLOCKER'
+        ) THEN 1 END) as blockerConcernsRaised
+      FROM swarm_votes v
+      JOIN swarm_sessions s ON v.session_id = s.id
+      WHERE (? IS NULL OR s.started_at >= ?)
+        AND (? IS NULL OR s.started_at <= ?)
+      GROUP BY v.agent
+      ORDER BY v.agent
+    `;
+
+    const fromStr = from ? from.toISOString() : null;
+    const toStr = to ? to.toISOString() : null;
+
+    const rows = this.db
+      .prepare(query)
+      .all(fromStr, fromStr, toStr, toStr) as Array<{
+      agent: string;
+      totalVotes: number;
+      approveVotes: number;
+      rejectVotes: number;
+      avgConfidence: number;
+      vetoCount: number;
+      blockerConcernsRaised: number;
+    }>;
+
+    return rows.map((row) => ({
+      agent: row.agent as AgentMetrics['agent'],
+      totalVotes: row.totalVotes,
+      approveVotes: row.approveVotes,
+      rejectVotes: row.rejectVotes,
+      avgConfidence: row.avgConfidence,
+      vetoCount: row.vetoCount,
+      blockerConcernsRaised: row.blockerConcernsRaised,
+    }));
+  }
+
+  /**
+   * Get complexity distribution
+   */
+  getComplexityDistribution(from?: Date, to?: Date): ComplexityDistribution {
+    const query = `
+      SELECT
+        COUNT(CASE WHEN c.level = 'SIMPLE' THEN 1 END) as simple,
+        COUNT(CASE WHEN c.level = 'MEDIUM' THEN 1 END) as medium,
+        COUNT(CASE WHEN c.level = 'COMPLEX' THEN 1 END) as complex,
+        COUNT(CASE WHEN c.level = 'CRITICAL' THEN 1 END) as critical
+      FROM swarm_complexity_assessments c
+      JOIN swarm_sessions s ON c.session_id = s.id
+      WHERE (? IS NULL OR s.started_at >= ?)
+        AND (? IS NULL OR s.started_at <= ?)
+    `;
+
+    const fromStr = from ? from.toISOString() : null;
+    const toStr = to ? to.toISOString() : null;
+
+    const row = this.db
+      .prepare(query)
+      .get(fromStr, fromStr, toStr, toStr) as ComplexityDistribution;
+
+    return row;
+  }
+
+  /**
+   * Get consensus trends by round
+   */
+  getConsensusTrends(from?: Date, to?: Date): ConsensusTrend[] {
+    const query = `
+      SELECT
+        r.round_number as roundNumber,
+        AVG(r.consensus_score) as avgScore,
+        COUNT(*) as sessionsCount,
+        (COUNT(CASE WHEN r.consensus_passed = 1 THEN 1 END) * 100.0 / COUNT(*)) as passRate
+      FROM swarm_voting_rounds r
+      JOIN swarm_sessions s ON r.session_id = s.id
+      WHERE (? IS NULL OR s.started_at >= ?)
+        AND (? IS NULL OR s.started_at <= ?)
+      GROUP BY r.round_number
+      ORDER BY r.round_number
+    `;
+
+    const fromStr = from ? from.toISOString() : null;
+    const toStr = to ? to.toISOString() : null;
+
+    const rows = this.db
+      .prepare(query)
+      .all(fromStr, fromStr, toStr, toStr) as ConsensusTrend[];
+
+    return rows;
+  }
+
+  /**
+   * Get top escalations
+   */
+  getTopEscalations(
+    limit: number,
+    from?: Date,
+    to?: Date,
+  ): TopEscalation[] {
+    const query = `
+      SELECT
+        s.program_id as programId,
+        s.program_name as programName,
+        s.status as reason,
+        s.total_agents_used as roundsAttempted,
+        s.final_consensus_score as finalScore
+      FROM swarm_sessions s
+      WHERE s.status = 'ESCALATED'
+        AND (? IS NULL OR s.started_at >= ?)
+        AND (? IS NULL OR s.started_at <= ?)
+      ORDER BY s.started_at DESC
+      LIMIT ?
+    `;
+
+    const fromStr = from ? from.toISOString() : null;
+    const toStr = to ? to.toISOString() : null;
+
+    const rows = this.db
+      .prepare(query)
+      .all(fromStr, fromStr, toStr, toStr, limit) as Array<{
+      programId: number;
+      programName: string;
+      reason: string;
+      roundsAttempted: number;
+      finalScore: number;
+    }>;
+
+    return rows.map((row) => ({
+      programId: row.programId,
+      programName: row.programName,
+      reason: row.reason || 'UNKNOWN',
+      roundsAttempted: row.roundsAttempted || 0,
+      finalScore: row.finalScore || 0,
+    }));
   }
 
   /**

@@ -1,0 +1,2 @@
+{"timestamp":"2026-02-24T08:50:15.058Z","program":125,"phase":"types","event":"start"}
+{"timestamp":"2026-02-24T08:50:15.059Z","program":125,"phase":"types","event":"error","error_message":"Test error"}

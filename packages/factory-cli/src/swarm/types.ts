@@ -260,6 +260,197 @@ export interface SwarmSession {
   config_snapshot?: Record<string, unknown>;
   /** Total agents used (for DB storage) */
   total_agents_used?: number;
+  /** Escalation context (if escalated) */
+  escalation?: {
+    context: EscalationContext;
+    report: EscalationReport;
+    escalatedAt: Date;
+  };
+}
+
+// ============================================================================
+// Escalation System
+// ============================================================================
+
+/**
+ * Round score for stagnation detection
+ */
+export interface RoundScore {
+  roundNumber: number;
+  consensusScore: number;
+  timestamp: Date;
+}
+
+/**
+ * Context for escalation decision
+ */
+export interface EscalationContext {
+  /** Session ID */
+  sessionId: string;
+  /** Program ID */
+  programId: number;
+  /** Program name */
+  programName: string;
+  /** Reason for escalation */
+  reason: 'MAX_ROUNDS' | 'STAGNATION' | 'PERSISTENT_VETO' | 'CRITICAL_CONCERNS';
+  /** Number of rounds attempted */
+  roundsAttempted: number;
+  /** Final consensus score */
+  finalConsensusScore: number;
+  /** Round history */
+  roundHistory: RoundScore[];
+  /** BLOCKER concerns */
+  blockerConcerns: AgentConcern[];
+  /** Stagnation details (if applicable) */
+  stagnationDetails?: {
+    detected: boolean;
+    detectedAtRound?: number;
+    stagnantRounds?: number;
+    stagnantScore?: number;
+    explanation?: string;
+  };
+  /** Veto details (if applicable) */
+  vetoDetails?: {
+    triggered: boolean;
+    agent?: string;
+    reason?: string;
+  };
+}
+
+/**
+ * Escalation report for human review
+ */
+export interface EscalationReport {
+  /** Executive summary */
+  summary: string;
+  /** Recommended action */
+  recommendation: 'HUMAN_REVIEW' | 'SENIOR_AGENT' | 'ARCHITECTURE_CHANGE';
+  /** Key issues identified */
+  keyIssues: string[];
+  /** Divergent views between agents */
+  divergentViews: Array<{
+    agent: AgentRole;
+    view: string;
+  }>;
+  /** Suggested actions to resolve */
+  suggestedActions: string[];
+}
+
+// ============================================================================
+// Analytics & Reporting
+// ============================================================================
+
+/**
+ * Session metrics for analytics
+ */
+export interface SessionMetrics {
+  /** Total number of sessions */
+  totalSessions: number;
+  /** Completed sessions */
+  completedSessions: number;
+  /** Failed sessions */
+  failedSessions: number;
+  /** Escalated sessions */
+  escalatedSessions: number;
+  /** Sessions marked for review */
+  toReviewSessions: number;
+  /** Average consensus score */
+  avgConsensusScore: number;
+  /** Average rounds to reach consensus */
+  avgRoundsToConsensus: number;
+  /** Average duration in milliseconds */
+  avgDurationMs: number;
+  /** Total tokens cost */
+  totalTokensCost: number;
+  /** Consensus pass rate (%) */
+  consensusPassRate: number;
+}
+
+/**
+ * Agent performance metrics
+ */
+export interface AgentMetrics {
+  /** Agent role */
+  agent: AgentRole;
+  /** Total votes cast */
+  totalVotes: number;
+  /** Approve votes */
+  approveVotes: number;
+  /** Reject votes */
+  rejectVotes: number;
+  /** Average confidence level */
+  avgConfidence: number;
+  /** Number of vetos */
+  vetoCount: number;
+  /** BLOCKER concerns raised */
+  blockerConcernsRaised: number;
+}
+
+/**
+ * Program complexity distribution
+ */
+export interface ComplexityDistribution {
+  /** Simple programs count */
+  simple: number;
+  /** Medium programs count */
+  medium: number;
+  /** Complex programs count */
+  complex: number;
+  /** Critical programs count */
+  critical: number;
+}
+
+/**
+ * Consensus trend by round
+ */
+export interface ConsensusTrend {
+  /** Round number */
+  roundNumber: number;
+  /** Average consensus score */
+  avgScore: number;
+  /** Number of sessions */
+  sessionsCount: number;
+  /** Pass rate (%) */
+  passRate: number;
+}
+
+/**
+ * Top escalation entry
+ */
+export interface TopEscalation {
+  /** Program ID */
+  programId: number;
+  /** Program name */
+  programName: string;
+  /** Escalation reason */
+  reason: string;
+  /** Rounds attempted */
+  roundsAttempted: number;
+  /** Final consensus score */
+  finalScore: number;
+}
+
+/**
+ * Complete analytics report
+ */
+export interface AnalyticsReport {
+  /** Report generation timestamp */
+  generatedAt: Date;
+  /** Time range analyzed */
+  timeRange: {
+    from: Date;
+    to: Date;
+  };
+  /** Session metrics */
+  sessionMetrics: SessionMetrics;
+  /** Agent performance */
+  agentMetrics: AgentMetrics[];
+  /** Complexity distribution */
+  complexityDistribution: ComplexityDistribution;
+  /** Consensus trends */
+  consensusTrends: ConsensusTrend[];
+  /** Top escalations */
+  topEscalations: TopEscalation[];
 }
 
 // ============================================================================
@@ -286,6 +477,8 @@ export interface SwarmConfig {
   maxConcurrentAgents: number;
   /** Enable vote visualization */
   enableVisualization: boolean;
+  /** Maximum voting rounds before escalation */
+  maxRounds: number;
 }
 
 /**
@@ -300,4 +493,5 @@ export const DEFAULT_SWARM_CONFIG: SwarmConfig = {
   model: 'sonnet', // Balance of quality and cost
   maxConcurrentAgents: 6, // All agents in parallel
   enableVisualization: true,
+  maxRounds: 10, // Maximum rounds before escalation
 };

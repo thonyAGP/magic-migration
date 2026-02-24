@@ -4,7 +4,7 @@
  * Analyzes program complexity to decide if SWARM system should be used
  */
 
-import type { MigrationContract } from '../core/contract.js';
+import type { ExtendedMigrationContract as MigrationContract } from '../core/contract.js';
 import type { ComplexityIndicators, ComplexityScore } from './types.js';
 
 /**
@@ -42,10 +42,10 @@ function extractComplexityIndicators(
   const { metadata, business_logic } = contract;
 
   // Expression count
-  const expressionCount = metadata.legacy_expressions?.length ?? 0;
+  const expressionCount = metadata?.legacy_expressions?.length ?? 0;
 
   // Table count (from metadata.tables)
-  const tableCount = metadata.tables?.length ?? 0;
+  const tableCount = metadata?.tables?.length ?? 0;
 
   // Nesting depth (from business_logic.complexity)
   const nestingDepth = business_logic?.complexity?.nesting_depth ?? 0;
@@ -76,19 +76,19 @@ function hasBusinessLogicIndicators(contract: MigrationContract): boolean {
   const { business_logic, metadata } = contract;
 
   // Check for calculations
-  if (business_logic?.rules?.calculations && business_logic.rules.calculations.length > 0) {
+  if (business_logic?.complexity?.calculations && (business_logic.complexity.calculations as number) > 0) {
     return true;
   }
 
   // Check for validations
-  if (business_logic?.rules?.validations && business_logic.rules.validations.length > 0) {
+  if (business_logic?.complexity?.validations && (business_logic.complexity.validations as number) > 0) {
     return true;
   }
 
   // Check for complex expressions (formulas, conditions)
-  const expressions = metadata.legacy_expressions ?? [];
+  const expressions = metadata?.legacy_expressions ?? [];
   const hasComplexExpression = expressions.some(
-    (expr) =>
+    (expr: { formula: string }) =>
       expr.formula.includes('IF(') ||
       expr.formula.includes('Calc(') ||
       expr.formula.includes('Val(') ||
@@ -132,8 +132,8 @@ function hasExternalIntegrationIndicators(
     modern_implementation?.notes?.toLowerCase().includes('api') ?? false;
 
   // Check for external dependencies
-  const dependencies = metadata.dependencies ?? [];
-  const hasExternalDeps = dependencies.some((dep) => dep.type === 'external');
+  const dependencies = metadata?.dependencies ?? [];
+  const hasExternalDeps = dependencies.some((dep: { type: string }) => dep.type === 'external');
 
   return hasApiCalls || hasExternalDeps;
 }
@@ -161,7 +161,7 @@ function isCriticalProgram(contract: MigrationContract): boolean {
   ];
 
   // Check program name
-  const programName = metadata.program_name?.toLowerCase() ?? '';
+  const programName = metadata?.program_name?.toLowerCase() ?? '';
   if (
     criticalKeywords.some((keyword) => programName.includes(keyword.toLowerCase()))
   ) {
@@ -169,7 +169,7 @@ function isCriticalProgram(contract: MigrationContract): boolean {
   }
 
   // Check business logic description
-  const objective = business_logic?.objective?.toLowerCase() ?? '';
+  const objective = (business_logic as any)?.objective?.toLowerCase() ?? '';
   if (
     criticalKeywords.some((keyword) => objective.includes(keyword.toLowerCase()))
   ) {
@@ -177,7 +177,7 @@ function isCriticalProgram(contract: MigrationContract): boolean {
   }
 
   // Check if marked as critical in metadata
-  if (metadata.complexity === 'CRITICAL') {
+  if (metadata?.complexity === 'CRITICAL') {
     return true;
   }
 
