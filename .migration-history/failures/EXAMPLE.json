@@ -1,0 +1,111 @@
+{
+  "program_id": 237,
+  "program_name": "Vente GP",
+  "failed_at": "2026-02-24T15:30:00Z",
+  "phase": "VERIFY",
+  "error": "Expression coverage below threshold",
+  "error_code": "ERR_COVERAGE_LOW",
+  "severity": "HIGH",
+  "details": {
+    "expected_coverage": 100,
+    "actual_coverage": 85,
+    "missing_expressions": [
+      {
+        "expr_id": "Prg_237:Task_5:Line_12:Expr_30",
+        "formula": "IF({0,3}='E',Msg('Error'))",
+        "rule_id": "RM-005",
+        "reason": "Test file not found"
+      },
+      {
+        "expr_id": "Prg_237:Task_7:Line_8:Expr_15",
+        "formula": "Update(operation,A,{1,3})",
+        "rule_id": "RM-007",
+        "reason": "mapped_to file does not exist"
+      }
+    ],
+    "stack_trace": "Error: Expression coverage verification failed\n    at verifyExpression (expression-verifier.ts:45)\n    at verifyAllContracts (verify-expression-coverage.ts:120)",
+    "context": {
+      "contract_file": ".openspec/migration/ADH/ADH-IDE-237.contract.yaml",
+      "output_dir": "../adh-web/src",
+      "command": "pnpm test:expression-coverage --programs 237 --threshold 100",
+      "environment": {
+        "node_version": "22.0.0",
+        "os": "Windows 11",
+        "cwd": "D:/Projects/ClubMed/LecteurMagic/packages/factory-cli"
+      }
+    }
+  },
+  "impact": {
+    "blocks_deployment": true,
+    "affected_modules": ["vente", "caisse"],
+    "downstream_programs": [229, 236]
+  },
+  "resolution": {
+    "action": "Added missing tests for expressions and corrected file mappings",
+    "changes": [
+      {
+        "type": "test_added",
+        "file": "adh-web/src/__tests__/vente.test.ts",
+        "lines": "42-58",
+        "description": "Added test for error validation (Expr_30)"
+      },
+      {
+        "type": "file_created",
+        "file": "adh-web/src/services/vente/operations.ts",
+        "description": "Created operations service for Expr_15"
+      },
+      {
+        "type": "contract_updated",
+        "file": ".openspec/migration/ADH/ADH-IDE-237.contract.yaml",
+        "description": "Updated mapped_to and test_file references"
+      }
+    ],
+    "test_files_added": [
+      "adh-web/src/__tests__/vente.test.ts:42-58",
+      "adh-web/src/__tests__/vente.test.ts:68-82"
+    ],
+    "resolved_at": "2026-02-24T16:00:00Z",
+    "resolved_by": "John Doe",
+    "resolution_time_minutes": 30,
+    "commit": "abc123def456789",
+    "verification": {
+      "coverage_after": 100,
+      "tests_passing": true,
+      "command_run": "pnpm test:expression-coverage --programs 237"
+    }
+  },
+  "lessons_learned": [
+    "Always verify expression coverage before marking VERIFY phase complete",
+    "Add test coverage checks earlier in the pipeline (after CODEGEN)",
+    "Ensure mapped_to files are created before updating contract",
+    "Run expression-coverage with --verbose to catch issues earlier"
+  ],
+  "prevention_actions": [
+    {
+      "action": "Add pre-VERIFY check for file existence",
+      "status": "IMPLEMENTED",
+      "pr": "#789"
+    },
+    {
+      "action": "Create CI check for expression coverage on PRs",
+      "status": "PLANNED",
+      "ticket": "FACTORY-123"
+    }
+  ],
+  "related_failures": [
+    ".migration-history/failures/Prg_154-failed-2026-02-20-1415.json",
+    ".migration-history/failures/Prg_175-failed-2026-02-22-0930.json"
+  ],
+  "tags": [
+    "coverage",
+    "testing",
+    "verify-phase",
+    "missing-tests",
+    "file-mapping"
+  ],
+  "metadata": {
+    "created_by": "factory-cli",
+    "version": "1.0.0",
+    "schema_version": "1.0"
+  }
+}

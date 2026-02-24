@@ -1,0 +1,99 @@
+# Pattern Template
+# Copy this file and rename to describe your pattern (e.g., if-error-then-msg.yaml)
+
+pattern: "IF({0,X}='Y',Action1,Action2)"
+description: "Conditional action based on field value comparison"
+
+category: "conditional" # conditional | update | calculation | display | validation
+
+magic_formula:
+  generic: "IF({0,X}='Y',Action1,Action2)"
+  example: "IF({0,3}='E',Msg('Error'),Update(operation,A,{1,3}))"
+  explanation: "If field {0,3} equals 'E', show error message, else update operation"
+
+variables:
+  - name: "{0,X}"
+    type: "field reference"
+    description: "Field to check"
+  - name: "'Y'"
+    type: "literal"
+    description: "Value to compare against"
+  - name: "Action1"
+    type: "expression"
+    description: "Action if condition is true"
+  - name: "Action2"
+    type: "expression"
+    description: "Action if condition is false (optional)"
+
+modern_equivalent:
+  typescript: |
+    if (field === 'Y') {
+      // Action1
+    } else {
+      // Action2
+    }
+
+  react: |
+    {field === 'Y' ? (
+      <Action1Component />
+    ) : (
+      <Action2Component />
+    )}
+
+  notes: "Use early return pattern when Action2 is empty/skip"
+
+test_pattern:
+  unit_test: |
+    describe('pattern: conditional action', () => {
+      it('should execute Action1 when field equals Y', () => {
+        const field = 'Y';
+        const result = executeAction(field);
+        expect(result).toBe('Action1 executed');
+      });
+
+      it('should execute Action2 when field does not equal Y', () => {
+        const field = 'X';
+        const result = executeAction(field);
+        expect(result).toBe('Action2 executed');
+      });
+    });
+
+occurrences: 1
+first_seen: "2026-02-24"
+last_seen: "2026-02-24"
+
+examples:
+  - program_id: 48
+    program_name: "Saisie Contenu Caisse"
+    contract_file: ".openspec/migration/ADH/ADH-IDE-48.contract.yaml"
+    rule_id: "RM-001"
+    expr_id: "Prg_48:Task_2:Line_12:Expr_30"
+    mapped_to: "adh-web/src/stores/saisieStore.ts:45"
+    test_file: "adh-web/src/__tests__/saisieStore.test.ts:28"
+
+variations:
+  - variation: "IF({0,X}='Y',Action)"
+    description: "No else branch (Action2 omitted)"
+    modern: "if (field === 'Y') { action(); }"
+
+  - variation: "IF({0,X}='Y' AND {0,Z}='W',Action1,Action2)"
+    description: "Multiple conditions with AND"
+    modern: "if (field === 'Y' && otherField === 'W') { action1(); } else { action2(); }"
+
+related_patterns:
+  - "if-error-then-msg.yaml"
+  - "date-validation.yaml"
+
+complexity: "LOW" # LOW | MEDIUM | HIGH
+
+migration_difficulty: "LOW" # LOW | MEDIUM | HIGH
+
+notes: |
+  Additional notes about this pattern:
+  - Common pitfalls
+  - Edge cases to handle
+  - Performance considerations
+
+references:
+  - decision: ".migration-history/decisions/2026-02-24-conditional-patterns.md"
+  - documentation: "docs/migration-patterns.md#conditional"
