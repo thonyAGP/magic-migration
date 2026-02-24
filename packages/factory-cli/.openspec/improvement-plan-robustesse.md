@@ -381,5 +381,17 @@ if (report.gaps.length > 0) process.exit(1);
 
 **Tests**: 562 passed (+5 nouveaux), tous passants ✅
 
-### À venir (Phase 1 restante)
-- [ ] Phase 1.4: Coverage metrics vitest (1h)
+- [x] Phase 1.4: Coverage metrics vitest - TERMINÉ (commit `2978dd9c`)
+  - [x] @vitest/coverage-v8 v4.0.18 installé
+  - [x] vitest upgradé 3.2.4 → 4.0.18 (compatibility)
+  - [x] vitest.config.ts créé (provider v8, thresholds, reporters)
+  - [x] Scripts test:coverage et test:coverage:ui ajoutés
+  - [x] docs/coverage-metrics.md créé (480 lignes - guide complet)
+  - [x] Baseline établi: 72% lines, 64% functions, 60% branches, 73% statements
+  - [x] Tous les tests passent (562 tests)
+
+**✅ PHASE 1 (FOUNDATIONS) - 100% TERMINÉE** (4 sessions, 2026-02-24)
+
+Score robustesse après Phase 1: ~45% (+22% vs baseline 23%)
+
+### À venir (Phase 2 - Semaine 2)
