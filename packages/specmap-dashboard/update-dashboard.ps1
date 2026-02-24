@@ -6,7 +6,7 @@ $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RootDir = Split-Path -Parent $ScriptDir
 
 Write-Host "Regenerating migration report..." -ForegroundColor Cyan
-Push-Location "$RootDir\tools\migration-factory"
+Push-Location "$RootDir\factory-cli"
 npx tsx src/cli.ts report --project $RootDir --multi
 Pop-Location
 
