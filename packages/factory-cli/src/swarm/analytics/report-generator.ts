@@ -1,17 +1,14 @@
 /**
- * Report Generator - Generate analytics reports in various formats
+ * Report Generator - Phase 3 J1
  *
- * Formats analytics data as Markdown, JSON, or other formats
+ * Generates analytics reports from metrics
  */
 
-import type { AnalyticsReport } from '../types.js';
-import { MetricsCalculator } from './metrics-calculator.js';
+import type { MetricsCalculator } from './metrics-calculator.js';
+import type { AnalyticsReport, EscalationRecord } from './types.js';
 
-/**
- * Report Generator
- */
 export class ReportGenerator {
-  private readonly calculator: MetricsCalculator;
+  private calculator: MetricsCalculator;
 
   constructor(calculator: MetricsCalculator) {
     this.calculator = calculator;
@@ -19,126 +16,144 @@ export class ReportGenerator {
 
   /**
    * Generate complete analytics report
-   *
-   * @param from - Start date (optional)
-   * @param to - End date (optional)
-   * @returns Analytics report
    */
   async generateReport(from?: Date, to?: Date): Promise<AnalyticsReport> {
+    const now = new Date();
+    const timeRange = {
+      from: from || new Date(0), // Beginning of time if not specified
+      to: to || now,
+    };
+
+    // Calculate all metrics
     const sessionMetrics = this.calculator.calculateSessionMetrics(from, to);
-    const agentMetrics = this.calculator.calculateAgentMetrics(from, to);
-    const complexityDistribution =
-      this.calculator.getComplexityDistribution(from, to);
-    const consensusTrends = this.calculator.analyzeConsensusTrends(from, to);
-    const topEscalations = this.calculator.getTopEscalations(10, from, to);
+    const agentMetrics = this.calculator.calculateAgentMetrics();
+    const complexityDistribution = this.calculator.getComplexityDistribution();
+    const consensusTrends = this.calculator.analyzeConsensusTrends();
+    const patterns = this.calculator.identifyPatterns(agentMetrics);
+
+    // Get top escalations
+    const topEscalations = this.getTopEscalations();
 
     return {
-      generatedAt: new Date(),
-      timeRange: {
-        from: from || new Date(0),
-        to: to || new Date(),
-      },
+      generatedAt: now,
+      timeRange,
       sessionMetrics,
       agentMetrics,
       complexityDistribution,
       consensusTrends,
       topEscalations,
+      patterns,
     };
   }
 
   /**
+   * Get top 10 escalations
+   */
+  private getTopEscalations(): EscalationRecord[] {
+    const store = (this.calculator as any).store;
+    const db = (store as any).db;
+
+    const query = `
+      SELECT
+        id as sessionId,
+        program_id as programId,
+        program_name as programName,
+        final_consensus_score as score,
+        metadata,
+        started_at as startedAt
+      FROM swarm_sessions
+      WHERE status = 'ESCALATED'
+      ORDER BY started_at DESC
+      LIMIT 10
+    `;
+
+    const results = db.prepare(query).all();
+
+    return results.map((row: any) => {
+      const metadata = row.metadata ? JSON.parse(row.metadata) : {};
+      const reason = metadata.escalationReason || 'UNKNOWN';
+
+      return {
+        sessionId: row.sessionId,
+        programId: row.programId,
+        programName: row.programName,
+        score: row.score || 0,
+        reason,
+        startedAt: new Date(row.startedAt),
+      };
+    });
+  }
+
+  /**
    * Format report as Markdown
-   *
-   * @param report - Analytics report
-   * @returns Markdown string
    */
   formatMarkdown(report: AnalyticsReport): string {
     const lines: string[] = [];
 
     // Header
     lines.push('# SWARM Analytics Report');
-    lines.push(`Generated: ${report.generatedAt.toISOString()}`);
-    lines.push(
-      `Time Range: ${report.timeRange.from.toISOString()} to ${report.timeRange.to.toISOString()}`,
-    );
+    lines.push('');
+    lines.push(`**Generated**: ${report.generatedAt.toISOString()}`);
+    lines.push(`**Time Range**: ${report.timeRange.from.toISOString()} → ${report.timeRange.to.toISOString()}`);
     lines.push('');
 
     // Session Metrics
     lines.push('## Session Metrics');
     lines.push('');
     lines.push(`- **Total Sessions**: ${report.sessionMetrics.totalSessions}`);
-    lines.push(
-      `- **Completed**: ${report.sessionMetrics.completedSessions} (${this.percentage(report.sessionMetrics.completedSessions, report.sessionMetrics.totalSessions)})`,
-    );
-    lines.push(
-      `- **Failed**: ${report.sessionMetrics.failedSessions} (${this.percentage(report.sessionMetrics.failedSessions, report.sessionMetrics.totalSessions)})`,
-    );
-    lines.push(
-      `- **Escalated**: ${report.sessionMetrics.escalatedSessions} (${this.percentage(report.sessionMetrics.escalatedSessions, report.sessionMetrics.totalSessions)})`,
-    );
-    lines.push(
-      `- **To Review**: ${report.sessionMetrics.toReviewSessions} (${this.percentage(report.sessionMetrics.toReviewSessions, report.sessionMetrics.totalSessions)})`,
-    );
-    lines.push('');
-    lines.push(
-      `- **Avg Consensus Score**: ${report.sessionMetrics.avgConsensusScore.toFixed(1)}%`,
-    );
-    lines.push(
-      `- **Avg Rounds to Consensus**: ${report.sessionMetrics.avgRoundsToConsensus.toFixed(1)}`,
-    );
-    lines.push(
-      `- **Avg Duration**: ${report.sessionMetrics.avgDurationMs.toFixed(0)}ms`,
-    );
-    lines.push(
-      `- **Total Tokens Cost**: $${report.sessionMetrics.totalTokensCost.toFixed(2)}`,
-    );
-    lines.push(
-      `- **Consensus Pass Rate**: ${report.sessionMetrics.consensusPassRate.toFixed(1)}%`,
-    );
+    lines.push(`- **Completed**: ${report.sessionMetrics.completedSessions} (${report.sessionMetrics.consensusPassRate.toFixed(1)}%)`);
+    lines.push(`- **Failed**: ${report.sessionMetrics.failedSessions}`);
+    lines.push(`- **Escalated**: ${report.sessionMetrics.escalatedSessions}`);
+    lines.push(`- **Avg Consensus Score**: ${report.sessionMetrics.avgConsensusScore.toFixed(1)}%`);
+    lines.push(`- **Avg Duration**: ${(report.sessionMetrics.avgDurationMs / 1000).toFixed(1)}s`);
+    lines.push(`- **Total Cost**: $${report.sessionMetrics.totalTokensCost.toFixed(2)}`);
     lines.push('');
 
     // Complexity Distribution
     lines.push('## Complexity Distribution');
     lines.push('');
-    lines.push(
-      `- **Simple**: ${report.complexityDistribution.simple} programs`,
-    );
-    lines.push(
-      `- **Medium**: ${report.complexityDistribution.medium} programs`,
-    );
-    lines.push(
-      `- **Complex**: ${report.complexityDistribution.complex} programs`,
-    );
-    lines.push(
-      `- **Critical**: ${report.complexityDistribution.critical} programs`,
-    );
+    lines.push('| Level | Count |');
+    lines.push('|-------|-------|');
+    lines.push(`| Simple | ${report.complexityDistribution.simple} |`);
+    lines.push(`| Medium | ${report.complexityDistribution.medium} |`);
+    lines.push(`| Complex | ${report.complexityDistribution.complex} |`);
+    lines.push(`| Critical | ${report.complexityDistribution.critical} |`);
     lines.push('');
 
     // Agent Performance
     lines.push('## Agent Performance');
     lines.push('');
-    lines.push(
-      '| Agent | Votes | Approve | Reject | Confidence | Vetos | Blockers |',
-    );
-    lines.push(
-      '|-------|-------|---------|--------|------------|-------|----------|',
-    );
+    lines.push('| Agent | Votes | Approve | Reject | Confidence | Vetos |');
+    lines.push('|-------|-------|---------|--------|------------|-------|');
     for (const agent of report.agentMetrics) {
       lines.push(
-        `| ${agent.agent} | ${agent.totalVotes} | ${agent.approveVotes} | ${agent.rejectVotes} | ${agent.avgConfidence.toFixed(1)}% | ${agent.vetoCount} | ${agent.blockerConcernsRaised} |`,
+        `| ${agent.agent} | ${agent.totalVotes} | ${agent.approveVotes} | ${agent.rejectVotes} | ${agent.avgConfidence.toFixed(1)}% | ${agent.vetoCount} |`,
       );
     }
     lines.push('');
 
-    // Consensus Trends
+    // Patterns (if any)
+    if (report.patterns && (report.patterns.vetoAgents.length > 0 || report.patterns.lowConfidenceAgents.length > 0)) {
+      lines.push('## Patterns Detected');
+      lines.push('');
+      if (report.patterns.vetoAgents.length > 0) {
+        lines.push(`- **Frequent Veto Agents**: ${report.patterns.vetoAgents.join(', ')}`);
+      }
+      if (report.patterns.lowConfidenceAgents.length > 0) {
+        lines.push(`- **Low Confidence Agents**: ${report.patterns.lowConfidenceAgents.join(', ')}`);
+      }
+      lines.push('');
+    }
+
+    // Consensus Trends by Round
     if (report.consensusTrends.length > 0) {
       lines.push('## Consensus Trends by Round');
       lines.push('');
+      lines.push('| Round | Avg Score | Pass Rate |');
+      lines.push('|-------|-----------|-----------|');
       for (const trend of report.consensusTrends) {
-        const barLength = Math.round(trend.avgScore / 10);
-        const bar = '█'.repeat(barLength);
         lines.push(
-          `Round ${trend.roundNumber}: ${bar} ${trend.avgScore.toFixed(1)}% (${trend.sessionsCount} sessions, ${trend.passRate.toFixed(1)}% pass)`,
+          `| ${trend.roundNumber} | ${trend.avgScore.toFixed(1)}% | ${trend.passRate.toFixed(1)}% |`,
         );
       }
       lines.push('');
@@ -148,9 +163,11 @@ export class ReportGenerator {
     if (report.topEscalations.length > 0) {
       lines.push('## Top Escalations');
       lines.push('');
-      for (const esc of report.topEscalations) {
+      lines.push('| Program | Score | Reason | Started At |');
+      lines.push('|---------|-------|--------|------------|');
+      for (const escalation of report.topEscalations) {
         lines.push(
-          `- **${esc.programName}** (${esc.programId}): ${esc.reason} after ${esc.roundsAttempted} rounds (score: ${esc.finalScore.toFixed(1)}%)`,
+          `| ${escalation.programName} | ${escalation.score.toFixed(1)}% | ${escalation.reason} | ${escalation.startedAt.toISOString().substring(0, 16)} |`,
         );
       }
       lines.push('');
@@ -161,19 +178,8 @@ export class ReportGenerator {
 
   /**
    * Format report as JSON
-   *
-   * @param report - Analytics report
-   * @returns JSON string
    */
   formatJSON(report: AnalyticsReport): string {
     return JSON.stringify(report, null, 2);
-  }
-
-  /**
-   * Calculate percentage
-   */
-  private percentage(value: number, total: number): string {
-    if (total === 0) return '0%';
-    return `${((value / total) * 100).toFixed(1)}%`;
   }
 }
