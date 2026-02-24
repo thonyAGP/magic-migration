@@ -1,8 +1,9 @@
 /**
  * Claude wrapper for the migration pipeline.
- * Supports two modes:
+ * Supports three modes:
  *   - CLI mode: uses `claude --print` via temp file + pipe (default)
  *   - API mode: uses Anthropic SDK directly (faster, no process spawn)
+ *   - Bedrock mode: uses AWS Bedrock API with Club Med credentials
  *
  * Mode is set via configureClaudeMode() before running migration.
  */
@@ -13,11 +14,12 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { promisify } from 'node:util';
 import Anthropic from '@anthropic-ai/sdk';
+import { callClaudeBedrock } from './claude-bedrock.js';
 
 const execAsync = promisify(exec);
 
 // ─── Module-level mode configuration ─────────────────────────────
-let _mode: 'api' | 'cli' = 'cli';
+let _mode: 'api' | 'cli' | 'bedrock' = 'cli';
 let _apiKey: string | undefined;
 let _globalLogDir: string | undefined;
 
@@ -36,7 +38,7 @@ export const flushTokenAccumulator = (): { input: number; output: number } | nul
 };
 
 /** Configure Claude invocation mode before starting migration. */
-export const configureClaudeMode = (mode: 'api' | 'cli', apiKey?: string): void => {
+export const configureClaudeMode = (mode: 'api' | 'cli' | 'bedrock', apiKey?: string): void => {
   _mode = mode;
   _apiKey = apiKey;
 };
@@ -47,7 +49,7 @@ export const setClaudeLogDir = (dir: string | undefined): void => {
 };
 
 /** Get current mode (for logging/display). */
-export const getClaudeMode = (): 'api' | 'cli' => _mode;
+export const getClaudeMode = (): 'api' | 'cli' | 'bedrock' => _mode;
 
 // ─── Model name resolution ───────────────────────────────────────
 const MODEL_MAP: Record<string, string> = {
@@ -79,9 +81,15 @@ export interface ClaudeCallResult {
 // ─── Main entry point (transparent switch) ───────────────────────
 
 export const callClaude = async (options: ClaudeCallOptions): Promise<ClaudeCallResult> => {
-  const result = _mode === 'api'
-    ? await callClaudeApi(options)
-    : await callClaudeCli(options);
+  let result: ClaudeCallResult;
+
+  if (_mode === 'api') {
+    result = await callClaudeApi(options);
+  } else if (_mode === 'bedrock') {
+    result = await callClaudeBedrock(options.prompt, options.model);
+  } else {
+    result = await callClaudeCli(options);
+  }
 
   // Accumulate tokens if tracker is active
   if (_tokenAccumulator && result.tokens) {

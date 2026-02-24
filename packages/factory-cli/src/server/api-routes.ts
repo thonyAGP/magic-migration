@@ -295,15 +295,24 @@ export const handleMigrateStream = async (
   const parallel = Number(query.get('parallel') ?? '0');
   const maxPasses = Number(query.get('maxPasses') ?? '5');
   const model = query.get('model') ?? 'sonnet';
-  const claudeMode = (query.get('mode') ?? 'cli') as 'api' | 'cli';
+  const claudeMode = (query.get('mode') ?? 'cli') as 'api' | 'cli' | 'bedrock';
 
   if (!rawTargetDir) {
     json(res, { error: 'Missing targetDir parameter' }, 400);
     return;
   }
 
-  // Configure Claude invocation mode (API key or CLI)
-  configureClaudeMode(claudeMode, claudeMode === 'api' ? process.env.ANTHROPIC_API_KEY : undefined);
+  // Configure Claude invocation mode (API key, CLI, or Bedrock)
+  if (claudeMode === 'bedrock') {
+    // Bedrock mode uses AWS credentials from environment
+    configureClaudeMode('bedrock');
+  } else if (claudeMode === 'api') {
+    // API mode uses personal Anthropic API key
+    configureClaudeMode('api', process.env.ANTHROPIC_API_KEY);
+  } else {
+    // CLI mode uses local claude command
+    configureClaudeMode('cli');
+  }
 
   // Resolve relative paths against project dir
   const targetDir = path.isAbsolute(rawTargetDir) ? rawTargetDir : path.resolve(ctx.projectDir, rawTargetDir);

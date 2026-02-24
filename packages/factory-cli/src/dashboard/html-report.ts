@@ -531,7 +531,8 @@ ${MULTI_CSS}
   <select id="sel-enrich" disabled title="Enrichment mode" style="padding:4px 8px;border-radius:4px;border:1px solid var(--border);background:var(--card-bg);color:var(--text-main);font-size:12px">
     <option value="none">Sans enrichissement</option>
     <option value="heuristic">Heuristique</option>
-    <option value="claude">Claude API</option>
+    <option value="claude">Claude API (Perso)</option>
+    <option value="claude-bedrock">Claude API (Bedrock)</option>
     <option value="claude-cli">Claude CLI</option>
   </select>
   <label style="margin-left:auto;font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:4px"><input type="checkbox" id="chk-dry" disabled> Simulation</label>
@@ -698,7 +699,8 @@ ${MULTI_CSS}
       <table class="help-table">
         <tr><td><strong>Sans enrichissement</strong></td><td>G\u00e9n\u00e8re uniquement le squelette (types, composants vides)</td></tr>
         <tr><td><strong>Heuristique</strong></td><td>Remplit automatiquement types et valeurs par d\u00e9faut depuis le contrat</td></tr>
-        <tr><td><strong>Claude API</strong></td><td>Utilise l'API Anthropic (n\u00e9cessite ANTHROPIC_API_KEY) pour enrichir le code via IA</td></tr>
+        <tr><td><strong>Claude API (Perso)</strong></td><td>Utilise l'API Anthropic avec votre cl\u00e9 personnelle (n\u00e9cessite ANTHROPIC_API_KEY)</td></tr>
+        <tr><td><strong>Claude API (Bedrock)</strong></td><td>Utilise AWS Bedrock avec les credentials Club Med (n\u00e9cessite AWS_BEARER_TOKEN_BEDROCK)</td></tr>
         <tr><td><strong>Claude CLI</strong></td><td>Utilise la commande locale <code>claude --print</code> pour enrichir via IA</td></tr>
       </table>
     </div>
@@ -3239,7 +3241,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     if (!batch) { showPanel('Erreur', 'S\\u00e9lectionnez un batch d\\'abord'); return; }
 
     var enrichSel = document.getElementById('sel-enrich').value || 'none';
-    var claudeMode = enrichSel === 'claude' ? 'api' : 'cli';
+    var claudeMode = enrichSel === 'claude' ? 'api' : enrichSel === 'claude-bedrock' ? 'bedrock' : 'cli';
     var dryRun = chkDry.checked;
 
     // Populate modal
@@ -3266,7 +3268,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     var batch = batchSelect.value;
     if (!batch) { showPanel('Erreur', 'S\\u00e9lectionnez un batch d\\'abord'); return; }
     var enrichSel = document.getElementById('sel-enrich').value || 'none';
-    var claudeMode = enrichSel === 'claude' ? 'api' : 'cli';
+    var claudeMode = enrichSel === 'claude' ? 'api' : enrichSel === 'claude-bedrock' ? 'bedrock' : 'cli';
     var dryRun = chkDry.checked;
     launchMigration(batch, 'adh-web', '0', claudeMode, dryRun, btnMigrateAuto, true);
   });

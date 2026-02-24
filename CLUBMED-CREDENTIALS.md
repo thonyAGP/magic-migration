@@ -12,7 +12,11 @@ Ce projet utilise Claude Code via AWS Bedrock avec les credentials du compte Clu
 
 ## 🚀 Utilisation
 
-### PowerShell (Windows)
+Les credentials AWS Bedrock peuvent être utilisés de deux manières :
+
+### 1. Pour Claude Code CLI (usage interactif)
+
+**PowerShell (Windows)** :
 
 ```powershell
 # Charger les credentials dans la session courante
@@ -45,6 +49,32 @@ set +a
 # Lancer Claude Code
 claude --dangerously-skip-permissions
 ```
+
+### 2. Pour le Dashboard Migration (backend API)
+
+Les credentials AWS Bedrock sont **automatiquement utilisés** par le backend du dashboard quand vous sélectionnez **"Claude API (Bedrock)"** dans le dropdown d'enrichissement.
+
+**Configuration requise** :
+
+Le fichier `.env.clubmed.local` doit exister à la racine du projet. Le backend charge automatiquement ces variables d'environnement.
+
+**Utilisation** :
+
+1. Lancez le serveur dashboard :
+   ```bash
+   cd packages/factory-cli
+   pnpm cli serve --port 3070
+   ```
+
+2. Ouvrez le dashboard : `http://localhost:3070`
+
+3. Dans le dropdown "Mode d'enrichissement", sélectionnez **"Claude API (Bedrock)"**
+
+4. Lancez la migration → Le backend utilisera AWS Bedrock avec les credentials Club Med
+
+**Différence avec "Claude API (Perso)"** :
+- **Claude API (Perso)** : Utilise votre clé Anthropic personnelle (`ANTHROPIC_API_KEY`)
+- **Claude API (Bedrock)** : Utilise le compte AWS Club Med (facturé sur leur compte)
 
 ## 🔑 Variables d'environnement
 
