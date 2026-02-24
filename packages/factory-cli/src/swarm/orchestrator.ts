@@ -256,7 +256,10 @@ export class SwarmOrchestrator {
             lastStagnation,
             lastVeto,
           );
-          const escalationReport = escalationManager.generateEscalationReport(escalationContext);
+          const escalationReport = escalationManager.generateEscalationReport(
+            escalationContext,
+            session, // Pass session for voting pattern analysis
+          );
 
           console.log(`[SWARM] ESCALATION: ${escalationContext.reason}`);
           console.log(`[SWARM] ${escalationReport.summary}`);

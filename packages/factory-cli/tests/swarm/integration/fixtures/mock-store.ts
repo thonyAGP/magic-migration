@@ -16,7 +16,7 @@ import type { SwarmSQLiteStore } from '../../../../src/swarm/storage/sqlite-stor
 /**
  * In-memory mock store for testing
  */
-export class MockSwarmStore implements Pick<SwarmSQLiteStore, 'createSession' | 'storeComplexity' | 'updateSessionStatus' | 'storeVote' | 'storeConsensus' | 'recordRound' | 'getSession' | 'getSessionVotes' | 'completeSession' | 'storeAnalysis' | 'storeVotingRound' | 'storeDoubleVote' | 'close'> {
+export class MockSwarmStore implements Pick<SwarmSQLiteStore, 'createSession' | 'storeComplexity' | 'updateSessionStatus' | 'storeVote' | 'storeConsensus' | 'recordRound' | 'getSession' | 'completeSession' | 'storeAnalysis' | 'storeVotingRound' | 'storeDoubleVote' | 'close'> {
   private sessions: Map<string, SessionRecord> = new Map();
   private votes: Map<string, VoteRecord[]> = new Map();
   private complexity: Map<string, ComplexityRecord> = new Map();
@@ -71,12 +71,23 @@ export class MockSwarmStore implements Pick<SwarmSQLiteStore, 'createSession' | 
     this.rounds.set(round.session_id, sessionRounds);
   }
 
-  getSession(sessionId: string): SessionRecord | undefined {
-    return this.sessions.get(sessionId);
-  }
+  getSession(sessionId: string): any {
+    const sessionRecord = this.sessions.get(sessionId);
+    if (!sessionRecord) return null;
 
-  getSessionVotes(sessionId: string): VoteRecord[] {
-    return this.votes.get(sessionId) || [];
+    // Build a SwarmSession-like object with votes
+    const allVotes: any[] = [];
+    for (const [roundId, votes] of this.votes) {
+      allVotes.push(...votes);
+    }
+
+    return {
+      ...sessionRecord,
+      votes: allVotes,
+      analyses: this.analyses.get(sessionId) || [],
+      consensus: this.consensus.get(sessionId) || ({} as any),
+      doubleVote: this.doubleVotes.get(sessionId),
+    };
   }
 
   completeSession(
