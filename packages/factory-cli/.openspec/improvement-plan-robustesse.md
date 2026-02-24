@@ -20,6 +20,23 @@
 
 ---
 
+## 🎯 Progrès (2026-02-24)
+
+| Phase | Status | Livrables | Impact |
+|-------|--------|-----------|--------|
+| **Phase 1** - Fondations | ✅ DONE | Pino logger, correlation IDs, token tracking, auto-escalation | Logging structuré + observabilité |
+| **Phase 2** - Traçabilité | ✅ DONE | Pilot enrichment (3 contracts, 17 expr), coverage verifier, CI/CD, badges | Expression tracking 100% |
+| **Phase 3** - Capitalisation | ✅ DONE | 3 patterns YAML, dashboard HTML, decision records, post-migration hook | Knowledge capture automatisé |
+
+**Score après amélioration : 65% → ACCEPTABLE** 🎉
+
+**Prochaines étapes**:
+- 📝 Étendre enrichment aux 51 contracts restants (Phase 2 extension)
+- 📝 Remplacer console.log → pino (Phase 1 extension)
+- 📝 Implémenter `.migration-history/failures/` capture (Phase 3 extension)
+
+---
+
 ## 🔴 Gaps Critiques Identifiés
 
 ### 1. Logging Non-Structuré (Priorité 1)
@@ -210,14 +227,14 @@ describe('Expression Coverage', () => {
 - `.husky/pre-commit-expression-coverage` - local validation
 - `scripts/generate-coverage-badge.ts` - badge auto-update
 
-### Phase 3: Capitalisation (Semaine 3)
+### Phase 3: Capitalisation (Semaine 3) - ✅ 100% COMPLETE
 
 | Tâche | Effort | Impact | Status |
 |-------|--------|--------|--------|
 | Documenter patterns pilote (3 patterns YAML) | 3h | Haut | ✅ DONE |
 | Dashboard "Patterns Learned" HTML generator | 3h | Moyen | ✅ DONE |
-| Créer `decisions/` template | 2h | Moyen | 📝 TODO |
-| Hook post-migration → capture learnings | 4h | Moyen | 📝 TODO |
+| Créer exemple decision record concret | 2h | Moyen | ✅ DONE |
+| Hook post-migration → capture learnings | 4h | Moyen | ✅ DONE |
 
 **Patterns documentés** (Phase 3.1):
 - `operation-type-check.yaml` - P. O/T/F [A]='X' (3 occurrences, prog 48)
@@ -228,6 +245,20 @@ describe('Expression Coverage', () => {
 - `scripts/generate-patterns-dashboard.ts` - générateur HTML
 - `pnpm dashboard:patterns` - commande pour régénérer
 - Vue d'ensemble: 3 patterns, 10 occurrences totales
+
+**Decision records** (Phase 3.3):
+- `2026-02-24-operation-type-representation.md` - exemple concret complet
+- Documents le choix enum vs union type vs string literal
+- Section Options/Trade-offs/Why This Way documentées
+- Template TEMPLATE.md existant + README.md avec workflow
+
+**Post-migration hook** (Phase 3.3):
+- `scripts/post-migration-hook.ts` - analyse automatique post-migration
+- Détecte patterns récurrents (min 2 occurrences)
+- Suggère decision records si patterns complexes
+- Logs: `migration-stats.jsonl` (stats par migration)
+- Stats cumulatives: `patterns/stats.json` (tracking patterns)
+- Command: `pnpm hook:post-migration --contract <path> --output <dir>`
 
 ---
 
