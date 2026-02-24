@@ -253,7 +253,13 @@ export interface SwarmSession {
   /** Output files generated */
   outputFiles: string[];
   /** Final status */
-  status: 'IN_PROGRESS' | 'CONSENSUS_REACHED' | 'FAILED' | 'COMPLETED';
+  status: 'IN_PROGRESS' | 'COMPLETED' | 'FAILED' | 'TO_REVIEW' | 'ESCALATED';
+  /** Current phase (for DB storage) */
+  current_phase?: 'complexity' | 'analysis' | 'voting' | 'consensus' | 'double_vote' | 'completed';
+  /** Config snapshot (for DB storage) */
+  config_snapshot?: Record<string, unknown>;
+  /** Total agents used (for DB storage) */
+  total_agents_used?: number;
 }
 
 // ============================================================================

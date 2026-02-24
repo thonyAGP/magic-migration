@@ -16,7 +16,22 @@ import type {
   AgentVote,
   ConsensusResult,
   DoubleVoteSession,
+  ConcernSeverityLevel,
 } from '../types.js';
+import type {
+  SwarmSessionRow,
+  ComplexityAssessmentRow,
+  AgentAnalysisRow,
+  VotingRoundRow,
+  AgentVoteRow,
+  AgentVoteWithDetailsRow,
+  VotingRoundIdRow,
+  SessionSummaryRow,
+  AgentPerformanceRow,
+  StagnationPatternRow,
+  CostBreakdownRow,
+} from './db-types.js';
+import { sqlBool, toSqlBool } from './db-types.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -172,7 +187,7 @@ export class SwarmSQLiteStore {
       SELECT * FROM swarm_sessions WHERE id = ?
     `);
 
-    const row = stmt.get(sessionId) as any;
+    const row = stmt.get(sessionId) as SwarmSessionRow | undefined;
     if (!row) return null;
 
     return this.mapRowToSession(row);
@@ -232,7 +247,7 @@ export class SwarmSQLiteStore {
       SELECT * FROM complexity_assessments WHERE session_id = ?
     `);
 
-    const row = stmt.get(sessionId) as any;
+    const row = stmt.get(sessionId) as ComplexityAssessmentRow | undefined;
     if (!row) return null;
 
     return {
@@ -249,7 +264,7 @@ export class SwarmSQLiteStore {
         hasExternalIntegrations: Boolean(row.has_external_integrations),
         isCritical: Boolean(row.is_critical),
       },
-      explanation: row.explanation,
+      explanation: row.explanation || '',
     };
   }
 
@@ -295,7 +310,7 @@ export class SwarmSQLiteStore {
       ? stmt.all(sessionId, roundNumber)
       : stmt.all(sessionId);
 
-    return (rows as any[]).map((row) => ({
+    return (rows as AgentAnalysisRow[]).map((row) => ({
       agent: row.agent,
       analysis: JSON.parse(row.analysis_data),
       proposal: JSON.parse(row.proposal_data),
@@ -303,8 +318,8 @@ export class SwarmSQLiteStore {
       tokens: row.tokens_input
         ? {
             input: row.tokens_input,
-            output: row.tokens_output,
-            cost: row.tokens_cost_usd,
+            output: row.tokens_output || 0,
+            cost: row.tokens_cost_usd || 0,
           }
         : undefined,
     }));
@@ -424,14 +439,14 @@ export class SwarmSQLiteStore {
    * Get voting round
    */
   getVotingRound(sessionId: string, roundNumber: number): {
-    round: any;
+    round: VotingRoundRow;
     votes: AgentVote[];
   } | null {
     const roundStmt = this.db.prepare(`
       SELECT * FROM voting_rounds WHERE session_id = ? AND round_number = ?
     `);
 
-    const round = roundStmt.get(sessionId, roundNumber) as any;
+    const round = roundStmt.get(sessionId, roundNumber) as VotingRoundRow | undefined;
     if (!round) return null;
 
     // Get votes for this round
@@ -446,7 +461,7 @@ export class SwarmSQLiteStore {
       GROUP BY v.id
     `);
 
-    const voteRows = votesStmt.all(round.id) as any[];
+    const voteRows = votesStmt.all(round.id) as AgentVoteWithDetailsRow[];
 
     const votes: AgentVote[] = voteRows.map((row) => ({
       agent: row.agent,
@@ -457,7 +472,11 @@ export class SwarmSQLiteStore {
       concerns: row.concerns
         ? row.concerns.split('|||').map((c: string) => {
             const [, concern, severity, suggestion] = c.split(':');
-            return { concern, severity, suggestion };
+            return {
+              concern,
+              severity: severity as ConcernSeverityLevel,
+              suggestion,
+            };
           })
         : [],
       suggestions: row.suggestions ? row.suggestions.split('|||') : [],
@@ -470,12 +489,12 @@ export class SwarmSQLiteStore {
   /**
    * Get all voting rounds for session
    */
-  getAllVotingRounds(sessionId: string): any[] {
+  getAllVotingRounds(sessionId: string): VotingRoundRow[] {
     const stmt = this.db.prepare(`
       SELECT * FROM voting_rounds WHERE session_id = ? ORDER BY round_number
     `);
 
-    return stmt.all(sessionId) as any[];
+    return stmt.all(sessionId) as VotingRoundRow[];
   }
 
   // ============================================================================
@@ -537,8 +556,8 @@ export class SwarmSQLiteStore {
       LIMIT 1
     `);
 
-    const firstRound = firstRoundStmt.get(sessionId) as any;
-    const secondRound = secondRoundStmt.get(sessionId) as any;
+    const firstRound = firstRoundStmt.get(sessionId) as VotingRoundIdRow | undefined;
+    const secondRound = secondRoundStmt.get(sessionId) as VotingRoundIdRow | undefined;
 
     if (!firstRound || !secondRound) {
       throw new Error('Voting rounds not found for double vote session');
@@ -576,73 +595,73 @@ export class SwarmSQLiteStore {
   /**
    * Get session summary
    */
-  getSessionSummary(sessionId: string): any {
+  getSessionSummary(sessionId: string): SessionSummaryRow | undefined {
     const stmt = this.db.prepare(`
       SELECT * FROM v_session_summary WHERE id = ?
     `);
 
-    return stmt.get(sessionId);
+    return stmt.get(sessionId) as SessionSummaryRow | undefined;
   }
 
   /**
    * Get agent performance for session
    */
-  getAgentPerformance(sessionId: string): any[] {
+  getAgentPerformance(sessionId: string): AgentPerformanceRow[] {
     const stmt = this.db.prepare(`
       SELECT * FROM v_agent_performance WHERE session_id = ?
     `);
 
-    return stmt.all(sessionId) as any[];
+    return stmt.all(sessionId) as AgentPerformanceRow[];
   }
 
   /**
    * Get stagnation patterns
    */
-  getStagnationPatterns(sessionId?: string): any[] {
+  getStagnationPatterns(sessionId?: string): StagnationPatternRow[] {
     if (sessionId) {
       const stmt = this.db.prepare(`
         SELECT * FROM v_stagnation_patterns WHERE session_id = ?
       `);
-      return stmt.all(sessionId) as any[];
+      return stmt.all(sessionId) as StagnationPatternRow[];
     } else {
       const stmt = this.db.prepare(`SELECT * FROM v_stagnation_patterns`);
-      return stmt.all() as any[];
+      return stmt.all() as StagnationPatternRow[];
     }
   }
 
   /**
    * Get cost breakdown
    */
-  getCostBreakdown(sessionId: string): any {
+  getCostBreakdown(sessionId: string): CostBreakdownRow | undefined {
     const stmt = this.db.prepare(`
       SELECT * FROM v_cost_breakdown WHERE session_id = ?
     `);
 
-    return stmt.get(sessionId);
+    return stmt.get(sessionId) as CostBreakdownRow | undefined;
   }
 
   /**
    * Get all TO_REVIEW sessions
    */
-  getToReviewSessions(): any[] {
+  getToReviewSessions(): SessionSummaryRow[] {
     const stmt = this.db.prepare(`
       SELECT * FROM v_session_summary WHERE status = 'TO_REVIEW'
       ORDER BY created_at DESC
     `);
 
-    return stmt.all() as any[];
+    return stmt.all() as SessionSummaryRow[];
   }
 
   /**
    * Get all escalated sessions
    */
-  getEscalatedSessions(): any[] {
+  getEscalatedSessions(): SwarmSessionRow[] {
     const stmt = this.db.prepare(`
       SELECT * FROM swarm_sessions WHERE escalated = 1
       ORDER BY created_at DESC
     `);
 
-    return stmt.all() as any[];
+    return stmt.all() as SwarmSessionRow[];
   }
 
   // ============================================================================
@@ -666,7 +685,7 @@ export class SwarmSQLiteStore {
   /**
    * Map database row to SwarmSession
    */
-  private mapRowToSession(row: any): SwarmSession {
+  private mapRowToSession(row: SwarmSessionRow): SwarmSession {
     return {
       id: row.id,
       programId: row.program_id,
@@ -677,7 +696,7 @@ export class SwarmSQLiteStore {
       consensus: {} as ConsensusResult,
       startedAt: new Date(row.started_at),
       completedAt: row.completed_at ? new Date(row.completed_at) : undefined,
-      duration: row.duration_ms,
+      duration: row.duration_ms || undefined,
       outputFiles: row.output_files ? JSON.parse(row.output_files) : [],
       status: row.status,
     };
