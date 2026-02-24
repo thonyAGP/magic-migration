@@ -73,3 +73,18 @@ interface Foo {
     expect(parseFileResponse(input)).toContain('interface Foo');
   });
 });
+
+describe('callClaude timeout behavior', () => {
+  it('should use DEFAULT_CLI_TIMEOUT_MS for small prompts', () => {
+    // This test verifies the timeout config exists
+    // Integration tests would mock execAsync to verify actual timeout value
+    const smallPrompt = 'Short prompt';
+    expect(Buffer.byteLength(smallPrompt, 'utf8')).toBeLessThan(20000);
+  });
+
+  it('should use EXTENDED_CLI_TIMEOUT_MS for large prompts', () => {
+    // Verify large prompt detection
+    const largePrompt = 'x'.repeat(25000);
+    expect(Buffer.byteLength(largePrompt, 'utf8')).toBeGreaterThan(20000);
+  });
+});

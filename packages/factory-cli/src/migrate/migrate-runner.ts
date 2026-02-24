@@ -21,6 +21,9 @@ import {
 import { setClaudeLogDir, startTokenAccumulator, flushTokenAccumulator } from './migrate-claude.js';
 import { readTracker, writeTracker } from '../core/tracker.js';
 import { loadContracts, parseContract, writeContract } from '../core/contract.js';
+import { createMigrationLogger } from './migrate-logger.js';
+import type { MigrationLogger } from './migrate-logger.js';
+import { updateTokens } from '../server/token-tracker.js';
 import { PipelineStatus } from '../core/types.js';
 import { runSpecPhase } from './phases/phase-spec.js';
 import { runContractPhase } from './phases/phase-contract.js';
@@ -770,6 +773,25 @@ export const createBatch = (
 
 // ─── Helpers ───────────────────────────────────────────────────
 
+const PHASE_LABELS: Record<MigratePhase, string> = {
+  [MP.SPEC]: 'Generating spec...',
+  [MP.CONTRACT]: 'Generating contract...',
+  [MP.ANALYZE]: 'Analyzing program...',
+  [MP.TYPES]: 'Generating types...',
+  [MP.STORE]: 'Generating store...',
+  [MP.API]: 'Generating API...',
+  [MP.PAGE]: 'Generating page...',
+  [MP.COMPONENTS]: 'Generating components...',
+  [MP.TESTS_UNIT]: 'Generating unit tests...',
+  [MP.TESTS_UI]: 'Generating UI tests...',
+  [MP.VERIFY_TSC]: 'Running tsc --noEmit...',
+  [MP.FIX_TSC]: 'Fixing TypeScript errors...',
+  [MP.VERIFY_TESTS]: 'Running tests...',
+  [MP.FIX_TESTS]: 'Fixing test errors...',
+  [MP.INTEGRATE]: 'Integrating modules...',
+  [MP.REVIEW]: 'Reviewing coverage...',
+};
+
 const emit = (
   config: MigrateConfig,
   type: MigrateEventType,
@@ -777,14 +799,44 @@ const emit = (
   extra?: { phase?: MigratePhase; programId?: string | number; data?: Record<string, unknown> },
 ): void => {
   if (!config.onEvent) return;
-  config.onEvent({
+
+  const event: MigrateEvent = {
     type,
     timestamp: new Date().toISOString(),
     message,
     phase: extra?.phase,
     programId: extra?.programId,
     ...(extra?.data ? { data: extra.data } : {}),
-  } as MigrateEvent);
+  };
+
+  config.onEvent(event);
+
+  // Emit token_update event if tokens present in data
+  if (extra?.data?.tokens) {
+    const tokens = extra.data.tokens as { input: number; output: number };
+    const cumulative = updateTokens(config.migrationDir, extra.programId!, extra.phase!, tokens, config.model);
+    config.onEvent({
+      type: 'token_update' as MigrateEventType,
+      timestamp: new Date().toISOString(),
+      message: `Tokens updated: ${tokens.input} in / ${tokens.output} out`,
+      programId: extra.programId,
+      phase: extra.phase,
+      data: { cumulative, programTokens: tokens },
+    } as MigrateEvent);
+  }
+
+  // Emit phase_progress event with label for UI display
+  if (type === ET.PHASE_STARTED && extra?.phase && extra?.programId) {
+    const label = PHASE_LABELS[extra.phase] ?? extra.phase;
+    config.onEvent({
+      type: 'phase_progress' as MigrateEventType,
+      timestamp: new Date().toISOString(),
+      message: label,
+      programId: extra.programId,
+      phase: extra.phase,
+      data: { label },
+    } as MigrateEvent);
+  }
 };
 
 const saveMigrateTracker = (trackerFile: string, data: Record<string, import('./migrate-types.js').ProgramMigration>): void => {

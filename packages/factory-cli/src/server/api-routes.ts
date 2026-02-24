@@ -15,6 +15,8 @@ import { runCalibration } from '../calculators/calibration-runner.js';
 import { createSSEStream } from './sse-stream.js';
 import { loadContracts } from '../core/contract.js';
 import { readTracker } from '../core/tracker.js';
+import { getTokensData, getBatchTokens, getProgramTokens } from './token-tracker.js';
+import { readLogs, searchLogs, getLatestLogs } from './log-storage.js';
 import { runCodegen, runCodegenEnriched } from '../generators/codegen/codegen-runner.js';
 import type { CodegenEnrichConfig, EnrichMode } from '../generators/codegen/enrich-model.js';
 import { runMigration, getMigrateStatus, createBatch } from '../migrate/migrate-runner.js';
@@ -526,4 +528,142 @@ export const handleAnalyzeGet = async (
       status: b.status,
     })),
   });
+};
+
+// ─── Token Endpoints ────────────────────────────────────────────
+
+/**
+ * GET /api/tokens?dir={project}
+ * Returns global + batch + program token usage.
+ */
+export const handleTokensGet = (ctx: RouteContext, query: URLSearchParams, res: ServerResponse): void => {
+  const dir = query.get('dir') ?? ctx.dir;
+  const config = resolveConfig({ ...ctx, dir });
+  const migrationDir = path.join(config.migrationDir, config.contractSubDir);
+
+  const data = getTokensData(migrationDir);
+  if (!data) {
+    json(res, { global: { input: 0, output: 0, costUsd: 0, totalCalls: 0 }, batches: {}, programs: {} });
+    return;
+  }
+
+  json(res, data);
+};
+
+/**
+ * GET /api/tokens/batch?dir={project}&batch={batchId}
+ * Returns token usage for a specific batch.
+ */
+export const handleTokensBatchGet = (ctx: RouteContext, query: URLSearchParams, res: ServerResponse): void => {
+  const dir = query.get('dir') ?? ctx.dir;
+  const batch = query.get('batch');
+  if (!batch) {
+    json(res, { error: 'Missing batch parameter' }, 400);
+    return;
+  }
+
+  const config = resolveConfig({ ...ctx, dir });
+  const migrationDir = path.join(config.migrationDir, config.contractSubDir);
+
+  const data = getBatchTokens(migrationDir, batch);
+  if (!data) {
+    json(res, { input: 0, output: 0, costUsd: 0, perPhase: {} });
+    return;
+  }
+
+  json(res, data);
+};
+
+/**
+ * GET /api/tokens/program?dir={project}&program={programId}
+ * Returns token usage for a specific program.
+ */
+export const handleTokensProgramGet = (ctx: RouteContext, query: URLSearchParams, res: ServerResponse): void => {
+  const dir = query.get('dir') ?? ctx.dir;
+  const program = query.get('program');
+  if (!program) {
+    json(res, { error: 'Missing program parameter' }, 400);
+    return;
+  }
+
+  const config = resolveConfig({ ...ctx, dir });
+  const migrationDir = path.join(config.migrationDir, config.contractSubDir);
+
+  const data = getProgramTokens(migrationDir, program);
+  if (!data) {
+    json(res, { input: 0, output: 0, costUsd: 0 });
+    return;
+  }
+
+  json(res, data);
+};
+
+// ─── Log Endpoints ──────────────────────────────────────────────
+
+/**
+ * GET /api/logs?dir={project}&batch={batchId}&offset=0&limit=100&level=info
+ * Returns migration logs with pagination and filtering.
+ */
+export const handleLogsGet = (ctx: RouteContext, query: URLSearchParams, res: ServerResponse): void => {
+  const dir = query.get('dir') ?? ctx.dir;
+  const batch = query.get('batch');
+  if (!batch) {
+    json(res, { error: 'Missing batch parameter' }, 400);
+    return;
+  }
+
+  const config = resolveConfig({ ...ctx, dir });
+  const logDir = path.join(config.migrationDir, config.contractSubDir, 'logs');
+
+  const offset = Number(query.get('offset') ?? '0');
+  const limit = Number(query.get('limit') ?? '100');
+  const level = query.get('level') as 'info' | 'warn' | 'error' | 'debug' | undefined;
+
+  const result = readLogs(logDir, batch, { offset, limit, level });
+  json(res, result);
+};
+
+/**
+ * GET /api/logs/search?dir={project}&batch={batchId}&q={searchText}&level=info
+ * Search logs by text.
+ */
+export const handleLogsSearchGet = (ctx: RouteContext, query: URLSearchParams, res: ServerResponse): void => {
+  const dir = query.get('dir') ?? ctx.dir;
+  const batch = query.get('batch');
+  const q = query.get('q');
+  if (!batch || !q) {
+    json(res, { error: 'Missing batch or q parameter' }, 400);
+    return;
+  }
+
+  const config = resolveConfig({ ...ctx, dir });
+  const logDir = path.join(config.migrationDir, config.contractSubDir, 'logs');
+
+  const level = query.get('level') as 'info' | 'warn' | 'error' | 'debug' | undefined;
+  const limit = Number(query.get('limit') ?? '100');
+
+  const logs = searchLogs(logDir, batch, q, { level, limit });
+  json(res, logs);
+};
+
+/**
+ * GET /api/logs/latest?dir={project}&batch={batchId}&count=100&level=info
+ * Get latest N logs (most recent first).
+ */
+export const handleLogsLatestGet = (ctx: RouteContext, query: URLSearchParams, res: ServerResponse): void => {
+  const dir = query.get('dir') ?? ctx.dir;
+  const batch = query.get('batch');
+  if (!batch) {
+    json(res, { error: 'Missing batch parameter' }, 400);
+    return;
+  }
+
+  const config = resolveConfig({ ...ctx, dir });
+  const logDir = path.join(config.migrationDir, config.contractSubDir, 'logs');
+
+  const count = Number(query.get('count') ?? '100');
+  const level = query.get('level') as 'info' | 'warn' | 'error' | 'debug' | undefined;
+
+  const logs = getLatestLogs(logDir, batch, count, level);
+  json(res, logs);
 };

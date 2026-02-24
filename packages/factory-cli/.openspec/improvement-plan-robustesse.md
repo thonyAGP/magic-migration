@@ -191,17 +191,43 @@ describe('Expression Coverage', () => {
 
 | Tâche | Effort | Impact | Status |
 |-------|--------|--------|--------|
-| Enrichir contrats avec `legacy_expressions` | 12h | 🔥 Critique | 📝 TODO |
-| Créer tests auto vérification 100% | 8h | 🔥 Critique | 📝 TODO |
-| Implémenter `.migration-history/` | 6h | Haut | 📝 TODO |
+| Enrichir contrats pilote (progs 48/138/154) | 4h | 🔥 Critique | ✅ DONE |
+| Créer script verify-expression-coverage | 3h | 🔥 Critique | ✅ DONE |
+| Générer coverage badge (shields.io) | 1h | Moyen | ✅ DONE |
+| CI/CD integration (GitHub Actions + hooks) | 4h | Haut | ✅ DONE |
+
+**Pilot enrichment** (Phase 2.1):
+- 3 contrats enrichis (48, 138, 154) avec `legacy_expressions`
+- 17 expressions tracées avec `mapped_to` et `test_file`
+- 3 patterns récurrents identifiés
+
+**Verification** (Phase 2.2):
+- `scripts/verify-expression-coverage.ts` - vérification automatique
+- 70% threshold configuré
+
+**CI/CD** (Phase 2.4):
+- `.github/workflows/expression-coverage.yml` - PR checks
+- `.husky/pre-commit-expression-coverage` - local validation
+- `scripts/generate-coverage-badge.ts` - badge auto-update
 
 ### Phase 3: Capitalisation (Semaine 3)
 
 | Tâche | Effort | Impact | Status |
 |-------|--------|--------|--------|
+| Documenter patterns pilote (3 patterns YAML) | 3h | Haut | ✅ DONE |
+| Dashboard "Patterns Learned" HTML generator | 3h | Moyen | ✅ DONE |
 | Créer `decisions/` template | 2h | Moyen | 📝 TODO |
 | Hook post-migration → capture learnings | 4h | Moyen | 📝 TODO |
-| Dashboard "Patterns Learned" | 6h | Moyen | 📝 TODO |
+
+**Patterns documentés** (Phase 3.1):
+- `operation-type-check.yaml` - P. O/T/F [A]='X' (3 occurrences, prog 48)
+- `task-end-flag-check.yaml` - W0 fin tache [X]='F' (3 occurrences, progs 48/138/154)
+- `printer-number-check.yaml` - GetParam('CURRENTPRINTERNUM')=N (4 occurrences, progs 138/154)
+
+**Dashboard généré** (Phase 3.2):
+- `scripts/generate-patterns-dashboard.ts` - générateur HTML
+- `pnpm dashboard:patterns` - commande pour régénérer
+- Vue d'ensemble: 3 patterns, 10 occurrences totales
 
 ---
 

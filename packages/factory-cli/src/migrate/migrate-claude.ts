@@ -131,14 +131,22 @@ const callClaudeApi = async (options: ClaudeCallOptions): Promise<ClaudeCallResu
 
 // ─── CLI mode (claude --print via temp file) ─────────────────────
 
+const DEFAULT_CLI_TIMEOUT_MS = 180_000; // 3 min (increased from 120s)
+const EXTENDED_CLI_TIMEOUT_MS = 300_000; // 5 min for large prompts
+const LARGE_PROMPT_THRESHOLD = 20_000; // bytes - use Sonnet if above
+
 const callClaudeCli = async (options: ClaudeCallOptions): Promise<ClaudeCallResult> => {
   const {
     prompt,
     model,
     cliBin = 'claude',
-    timeoutMs = 120_000,
+    timeoutMs,
     maxBuffer = 4 * 1024 * 1024,
   } = options;
+
+  // Auto-select timeout based on prompt size if not provided
+  const promptSize = Buffer.byteLength(prompt, 'utf8');
+  const timeout = timeoutMs ?? (promptSize > LARGE_PROMPT_THRESHOLD ? EXTENDED_CLI_TIMEOUT_MS : DEFAULT_CLI_TIMEOUT_MS);
 
   const modelArgs = model ? `--model ${model}` : '';
   const start = Date.now();
@@ -152,7 +160,7 @@ const callClaudeCli = async (options: ClaudeCallOptions): Promise<ClaudeCallResu
       : `${cliBin} --print --output-format json ${modelArgs} < "${tmpFile}"`;
 
     const { stdout } = await execAsync(cmd, {
-      timeout: timeoutMs,
+      timeout,
       maxBuffer,
       env: { ...process.env },
       windowsHide: true,
@@ -282,7 +290,8 @@ export interface RetryOptions {
 }
 
 /**
- * Call Claude with automatic retry on transient errors (429, 500, 502, 503, 529, ECONNRESET).
+ * Call Claude with automatic retry + escalation on transient errors or timeout.
+ * Escalation strategy: Haiku → Sonnet on timeout.
  * Uses exponential backoff: delay = min(baseDelay * 2^attempt, maxDelay) + jitter.
  */
 export const callClaudeWithRetry = async (
@@ -297,15 +306,28 @@ export const callClaudeWithRetry = async (
   } = retryOpts;
 
   let lastError: unknown;
+  let currentModel = options.model;
+  let currentOptions = { ...options };
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     try {
-      return await callClaude(options);
+      return await callClaude(currentOptions);
     } catch (err) {
       lastError = err;
+      const isTimeout = err instanceof Error && (err.message.includes('timeout') || err.message.includes('ETIMEDOUT'));
+
+      // Escalate Haiku → Sonnet on timeout
+      if (isTimeout && currentModel === 'haiku' && attempt < maxAttempts - 1) {
+        currentModel = 'sonnet';
+        currentOptions = { ...options, model: currentModel, timeoutMs: EXTENDED_CLI_TIMEOUT_MS };
+        onRetry?.(attempt + 1, new Error(`Timeout with Haiku, escalating to Sonnet`), 0);
+        continue; // Retry immediately with Sonnet
+      }
+
       if (attempt + 1 >= maxAttempts || !isRetryable(err)) {
         throw err;
       }
+
       const delay = Math.min(baseDelayMs * Math.pow(2, attempt), maxDelayMs);
       const jitter = Math.floor(Math.random() * delay * 0.1);
       const totalDelay = delay + jitter;
