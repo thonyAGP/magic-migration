@@ -151,6 +151,9 @@ export const clearLogs = (logDir: string, batchId: string): void => {
 export const listLoggedBatches = (logDir: string): string[] => {
   if (!fs.existsSync(logDir)) return [];
 
-  const files = fs.readdirSync(logDir).filter(f => f.endsWith('.jsonl') && !f.includes('.'));
+  // Filter for main batch files (exclude rotated files like B2.1.jsonl)
+  const files = fs.readdirSync(logDir).filter(f => {
+    return f.endsWith('.jsonl') && !f.match(/\.\d+\.jsonl$/);
+  });
   return files.map(f => f.replace('.jsonl', ''));
 };

@@ -14,18 +14,21 @@ import {
   listLoggedBatches,
 } from '../src/server/log-storage.js';
 
-const TEST_LOG_DIR = path.join(process.cwd(), '.test-logs');
+import os from 'node:os';
+
+const TEST_LOG_DIR = path.join(os.tmpdir(), 'factory-cli-tests', 'log-storage');
 
 describe('LogStorage', () => {
   beforeEach(() => {
     if (fs.existsSync(TEST_LOG_DIR)) {
-      fs.rmSync(TEST_LOG_DIR, { recursive: true });
+      fs.rmSync(TEST_LOG_DIR, { recursive: true, force: true });
     }
+    fs.mkdirSync(TEST_LOG_DIR, { recursive: true });
   });
 
   afterEach(() => {
     if (fs.existsSync(TEST_LOG_DIR)) {
-      fs.rmSync(TEST_LOG_DIR, { recursive: true });
+      fs.rmSync(TEST_LOG_DIR, { recursive: true, force: true });
     }
   });
 
