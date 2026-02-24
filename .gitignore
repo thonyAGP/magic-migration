@@ -50,6 +50,10 @@ openspec/domains/**/*.json
 .openspec/tickets/patterns.sqlite
 tools/MagicKnowledgeBase/magic_kb.sqlite
 
+# === Migration history logs (regenerable) ===
+.migration-history/migration-stats.jsonl
+.migration-history/patterns/stats.json
+
 # === Large metadata (regenerable) ===
 tools/db-metadata/PHU2512-metadata.json
 tools/KbIndexRunner/index-output.txt

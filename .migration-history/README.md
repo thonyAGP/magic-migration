@@ -124,14 +124,60 @@ tsx scripts/generate-learning-report.ts \
 
 ## Intégration
 
-### Hook post-migration
+### Hook post-migration (✅ Implémenté)
 
-Quand une migration réussit, le système peut automatiquement:
-1. Capturer les patterns utilisés
-2. Documenter les décisions prises
-3. Archiver les logs
+**Script**: `packages/factory-cli/scripts/post-migration-hook.ts`
 
-### Hook post-échec
+Après une migration réussie, exécuter:
+
+```bash
+# Single contract
+pnpm hook:post-migration \
+  --contract .openspec/migration/ADH/ADH-IDE-48.contract.yaml \
+  --output ../adh-web/src
+```
+
+**Le hook analyse automatiquement**:
+- ✅ Coverage des expressions (mapped, tested, verified)
+- ✅ Détection de patterns récurrents (min 2 occurrences)
+- ✅ Suggestion de decision records si patterns complexes
+- ✅ Log des statistiques dans `migration-stats.jsonl`
+- ✅ Mise à jour des stats patterns dans `patterns/stats.json`
+
+**Output**:
+```
+📊 Post-Migration Summary
+
+Program: Saisie Contenu Caisse (ID 48)
+Contract: .openspec/migration/ADH/ADH-IDE-48.contract.yaml
+
+Coverage:
+  Total expressions: 17
+  Mapped: 15
+  Tested: 12
+  Verified: 10
+  Coverage: 59%
+
+🔍 Patterns detected: 3
+  1. P. O/T/F [X]='X' (3x across 1 program(s))
+  2. W0 fin tache [X]='F' (2x across 1 program(s))
+  3. GetParam('X')=N (2x across 1 program(s))
+
+💡 Decision records suggested: 1
+  1. Nested IF expression handling strategy (4 found)
+
+   Create decision records using:
+   cp .migration-history/decisions/TEMPLATE.md \
+      .migration-history/decisions/$(date +%Y-%m-%d)-<topic>.md
+
+✅ Post-migration hook complete
+```
+
+**Fichiers créés/mis à jour**:
+- `.migration-history/migration-stats.jsonl` - ligne par migration
+- `.migration-history/patterns/stats.json` - stats cumulatives
+
+### Hook post-échec (📝 TODO)
 
 Quand une migration échoue:
 1. Créer automatiquement un fichier JSON dans `failures/`
