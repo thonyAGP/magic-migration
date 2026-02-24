@@ -1148,6 +1148,7 @@ const run = async () => {
             to: getArg('to'),
             format: getArg('format') as any,
             output: getArg('output'),
+            summary: hasFlag('summary'),
           });
           break;
         }
@@ -1262,7 +1263,7 @@ const run = async () => {
           console.log('  swarm execute  --contract <file> [--model opus|sonnet|haiku]  Executer migration SWARM');
           console.log('                 [--max-rounds N] [--format text|json]');
           console.log('  swarm analyze  --contract <file> [--format text|json]         Analyser complexite');
-          console.log('  swarm report   [--from date] [--to date]                      Generer rapport analytics');
+          console.log('  swarm report   [--from date] [--to date] [--summary]           Generer rapport analytics');
           console.log('                 [--format markdown|json] [--output file]');
           console.log('  swarm inspect  <session-id> [--show-votes] [--show-analyses]  Inspecter session');
           console.log('  swarm list     [--status COMPLETED|FAILED|ESCALATED]          Lister sessions');
@@ -1281,6 +1282,7 @@ const run = async () => {
           console.log('  --max-rounds N    Rounds max avant escalation (defaut: 10)');
           console.log('  --format <fmt>    Format sortie (text|json|markdown|table)');
           console.log('  --output <file>   Fichier sortie (defaut: stdout)');
+          console.log('  --summary         Afficher uniquement le resume executif (report)');
           break;
       }
       break;
