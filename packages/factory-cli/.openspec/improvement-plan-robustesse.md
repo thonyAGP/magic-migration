@@ -350,10 +350,11 @@ if (report.gaps.length > 0) process.exit(1);
 
 ## 🔄 Suivi d'Avancement
 
-### 2026-02-24
-- [x] Audit initial réalisé
+### 2026-02-24 - Session 1: Logger Structuré
+
+- [x] Audit initial réalisé (score 23%)
 - [x] Plan créé et sauvegardé
-- [x] Phase 1.1: Logger structuré - TERMINÉ
+- [x] Phase 1.1: Logger structuré - TERMINÉ (commit `16c739f7`)
   - [x] pino + pino-pretty installés
   - [x] src/utils/logger.ts créé (logger structuré, redaction automatique)
   - [x] src/core/correlation.ts créé (correlation IDs, batch logging)
@@ -363,7 +364,14 @@ if (report.gaps.length > 0) process.exit(1);
     - docs/logging-migration-example.md (avant/après)
     - docs/logger-quick-reference.md (guide complet)
 
-### À venir
-- Phase 1.2: Remplacement console.log (3 fichiers src/: cli.ts, action-server.ts, codegen-runner.ts)
-- Phase 1.3: Expression coverage script
-- Phase 1.4: Coverage metrics vitest
+- [x] Phase 1.2: Logging applicatif - TERMINÉ (commit `8eca7f7a`)
+  - [x] action-server.ts: Correlation IDs par requête HTTP
+  - [x] codegen-runner.ts: Logging génération de fichiers
+  - [x] docs/console-vs-logger.md: Guide de décision
+  - [x] Stratégie: console.log (UX) + logger (tracing interne)
+
+**Tests**: 557 passed, tous passants ✅
+
+### À venir (Phase 1 restante)
+- [ ] Phase 1.3: Expression coverage script (6h)
+- [ ] Phase 1.4: Coverage metrics vitest (1h)
