@@ -920,6 +920,23 @@ export class SwarmSQLiteStore {
   }
 
   /**
+   * K4: Get total cost between two dates (for daily budget check)
+   */
+  getTotalCostBetween(from: Date, to: Date): number {
+    const query = `
+      SELECT COALESCE(SUM(total_tokens_cost_usd), 0) as totalCost
+      FROM swarm_sessions
+      WHERE started_at >= ? AND started_at < ?
+    `;
+
+    const result = this.db.prepare(query).get(from.toISOString(), to.toISOString()) as {
+      totalCost: number;
+    };
+
+    return result.totalCost || 0;
+  }
+
+  /**
    * Close database connection
    */
   close(): void {

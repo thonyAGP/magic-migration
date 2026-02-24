@@ -1303,6 +1303,22 @@ const run = async () => {
       break;
     }
 
+    case 'swarm:costs': {
+      // K4: Cost monitoring dashboard
+      const { createSwarmStore } = await import('./swarm/storage/sqlite-store.js');
+      const { calculateCostStatistics, renderCostDashboard } = await import('./swarm/analytics/cost-dashboard.js');
+      const { DEFAULT_SWARM_CONFIG } = await import('./swarm/types.js');
+
+      const dbPath = getArg('db') ?? '.swarm-sessions/swarm.db';
+      const dailyBudget = getArg('daily-budget') ? parseFloat(getArg('daily-budget')!) : DEFAULT_SWARM_CONFIG.dailyBudget;
+
+      const store = createSwarmStore(dbPath);
+      const stats = calculateCostStatistics(store, dailyBudget);
+      renderCostDashboard(stats);
+      store.close();
+      break;
+    }
+
     default:
       console.log('Migration Factory - Pipeline de migration SPECMAP generique\n');
       console.log('Commandes principales :');
@@ -1349,6 +1365,7 @@ const run = async () => {
       console.log('  swarm report   [--from date] [--to date]           Generer rapport analytics');
       console.log('  swarm inspect  <session-id>                        Inspecter session detaillee');
       console.log('  swarm list     [--status <statut>]                 Lister sessions SWARM');
+      console.log('  swarm:costs    [--daily-budget N] [--db <path>]    Dashboard de couts et budget tracking (K4)');
       console.log('  swarm escalation [list|review|resolve] [...]       Gerer les escalations (Phase 3)');
       console.log('  (Utilisez "factory swarm" pour voir toutes les options SWARM)');
       console.log('');

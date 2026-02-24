@@ -22,7 +22,7 @@ import type {
   AgentConcern,
   DoubleVoteSession,
 } from './types.js';
-import { DEFAULT_SWARM_CONFIG, AgentRoles, ConsensusThresholds, VoteValues, ConcernSeverity, AgentTimeouts, VoteNumericValues } from './types.js';
+import { DEFAULT_SWARM_CONFIG, AgentRoles, ConsensusThresholds, VoteValues, ConcernSeverity, AgentTimeouts, VoteNumericValues, BudgetExceededError } from './types.js';
 import { calculateComplexity } from './complexity-calculator.js';
 import { createVoteCollector } from './voting/vote-collector.js';
 import { calculateConsensus } from './voting/consensus-engine.js';
@@ -282,6 +282,9 @@ export class SwarmOrchestrator {
 
       // Calculate total token cost
       const totalTokensCost = this.calculateTotalTokensCost(session);
+
+      // K4: Check budget constraints
+      await this.checkBudget(totalTokensCost);
 
       // Step 5: Execute double vote if critical
       if (
@@ -544,6 +547,7 @@ export class SwarmOrchestrator {
       concerns,
       suggestions: [],
       timestamp: new Date(),
+      tokens: vote.tokens, // K4: Preserve token tracking
     };
   }
 
@@ -817,15 +821,22 @@ export class SwarmOrchestrator {
   }
 
   /**
-   * Calculate total token cost from session analyses
+   * Calculate total token cost from session (analyses + votes)
    */
   private calculateTotalTokensCost(session: SwarmSession): number {
     let total = 0;
 
-    // Sum costs from analyses
+    // Sum costs from analyses (Phase 2 data)
     for (const analysis of session.analyses) {
       if (analysis.tokens?.cost) {
         total += analysis.tokens.cost;
+      }
+    }
+
+    // K4: Also sum from votes (Phase 3 LLM votes have tokens)
+    for (const vote of session.votes) {
+      if ((vote as any).tokens?.cost) {
+        total += (vote as any).tokens.cost;
       }
     }
 
@@ -963,6 +974,45 @@ export class SwarmOrchestrator {
 
     const complexity = calculateComplexity(contract);
     return complexity.useSwarm;
+  }
+
+  /**
+   * K4: Check budget constraints (session and daily)
+   */
+  private async checkBudget(sessionCost: number): Promise<void> {
+    if (!this.config.enableBudgetGuards) {
+      return; // Budget guards disabled
+    }
+
+    // Check session budget
+    const maxSessionCost = this.config.maxCostPerSession ?? 5.0;
+    if (sessionCost > maxSessionCost) {
+      throw new BudgetExceededError(
+        `Session cost $${sessionCost.toFixed(2)} exceeds limit $${maxSessionCost.toFixed(2)}`,
+        sessionCost,
+        maxSessionCost,
+        'session',
+      );
+    }
+
+    // Check daily budget
+    const dailyLimit = this.config.dailyBudget ?? 100.0;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const dailyCost = this.store.getTotalCostBetween(today, tomorrow);
+    const projectedDailyCost = dailyCost + sessionCost;
+
+    if (projectedDailyCost > dailyLimit) {
+      throw new BudgetExceededError(
+        `Daily cost $${projectedDailyCost.toFixed(2)} would exceed limit $${dailyLimit.toFixed(2)} (current: $${dailyCost.toFixed(2)})`,
+        projectedDailyCost,
+        dailyLimit,
+        'daily',
+      );
+    }
   }
 
   /**

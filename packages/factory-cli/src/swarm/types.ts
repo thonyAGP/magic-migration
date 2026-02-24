@@ -119,6 +119,12 @@ export interface AgentVote {
   suggestions: string[];
   /** Timestamp of vote */
   timestamp: Date;
+  /** K4: Token usage for cost tracking */
+  tokens?: {
+    input: number;
+    output: number;
+    cost: number;
+  };
 }
 
 /**
@@ -467,6 +473,25 @@ export interface AnalyticsReport {
 }
 
 // ============================================================================
+// Errors
+// ============================================================================
+
+/**
+ * K4: Budget exceeded error
+ */
+export class BudgetExceededError extends Error {
+  constructor(
+    message: string,
+    public readonly currentCost: number,
+    public readonly limit: number,
+    public readonly limitType: 'session' | 'daily',
+  ) {
+    super(message);
+    this.name = 'BudgetExceededError';
+  }
+}
+
+// ============================================================================
 // Configuration
 // ============================================================================
 
@@ -492,6 +517,12 @@ export interface SwarmConfig {
   enableVisualization: boolean;
   /** Maximum voting rounds before escalation */
   maxRounds: number;
+  /** K4: Enable budget guards */
+  enableBudgetGuards?: boolean;
+  /** K4: Maximum cost per session in USD (default: $5.00) */
+  maxCostPerSession?: number;
+  /** K4: Daily budget limit in USD (default: $100.00) */
+  dailyBudget?: number;
 }
 
 /**
@@ -507,4 +538,7 @@ export const DEFAULT_SWARM_CONFIG: SwarmConfig = {
   maxConcurrentAgents: 6, // All agents in parallel
   enableVisualization: true,
   maxRounds: 10, // Maximum rounds before escalation
+  enableBudgetGuards: false, // K4: Disabled by default
+  maxCostPerSession: 5.0, // K4: $5 max per session
+  dailyBudget: 100.0, // K4: $100 max per day
 };

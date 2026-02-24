@@ -16,7 +16,7 @@ import type { SwarmSQLiteStore } from '../../../../src/swarm/storage/sqlite-stor
 /**
  * In-memory mock store for testing
  */
-export class MockSwarmStore implements Pick<SwarmSQLiteStore, 'createSession' | 'storeComplexity' | 'updateSessionStatus' | 'storeVote' | 'storeConsensus' | 'recordRound' | 'getSession' | 'completeSession' | 'storeAnalysis' | 'storeVotingRound' | 'storeDoubleVote' | 'close'> {
+export class MockSwarmStore implements Pick<SwarmSQLiteStore, 'createSession' | 'storeComplexity' | 'updateSessionStatus' | 'storeVote' | 'storeConsensus' | 'recordRound' | 'getSession' | 'completeSession' | 'storeAnalysis' | 'storeVotingRound' | 'storeDoubleVote' | 'close' | 'getTotalCostBetween'> {
   private sessions: Map<string, SessionRecord> = new Map();
   private votes: Map<string, VoteRecord[]> = new Map();
   private complexity: Map<string, ComplexityRecord> = new Map();
@@ -126,6 +126,20 @@ export class MockSwarmStore implements Pick<SwarmSQLiteStore, 'createSession' | 
 
   close(): void {
     // No-op for in-memory store
+  }
+
+  /**
+   * K4: Get total cost between two dates (for budget checks)
+   */
+  getTotalCostBetween(from: Date, to: Date): number {
+    let total = 0;
+    for (const [, session] of this.sessions) {
+      const sessionDate = session.startedAt ? new Date(session.startedAt) : new Date();
+      if (sessionDate >= from && sessionDate < to) {
+        total += session.totalTokensCost || 0;
+      }
+    }
+    return total;
   }
 
   /**
