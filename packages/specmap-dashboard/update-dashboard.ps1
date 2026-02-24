@@ -3,10 +3,11 @@
 
 $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$RootDir = Split-Path -Parent $ScriptDir
+$PackagesDir = Split-Path -Parent $ScriptDir
+$RootDir = Split-Path -Parent $PackagesDir
 
 Write-Host "Regenerating migration report..." -ForegroundColor Cyan
-Push-Location "$RootDir\factory-cli"
+Push-Location "$PackagesDir\factory-cli"
 npx tsx src/cli.ts report --project $RootDir --multi
 Pop-Location
 
