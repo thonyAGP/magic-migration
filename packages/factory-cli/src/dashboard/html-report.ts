@@ -29,13 +29,32 @@ ${CSS}
 ${renderHeader(report)}
 ${renderKpiCards(report)}
 ${renderPipelineSection(pipeline, live)}
-${renderDocumentationSection()}
 ${renderEstimationSection(report)}
 ${renderModulesSection(modules)}
 ${renderMigrationSequence(report)}
 ${renderDecommissionSection(decommission, live)}
 ${renderProgramTable(programs)}
 ${renderFooter(report)}
+
+<!-- Help Button (floating) -->
+<button id="help-button" class="help-fab" title="Documentation et aide" aria-label="Ouvrir l'aide">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="12" cy="12" r="10"></circle>
+    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+  </svg>
+</button>
+
+<!-- Help Modal -->
+<div id="help-modal" class="help-modal">
+  <div class="help-modal-content">
+    <div class="help-modal-header">
+      <h2>📚 Documentation</h2>
+      <button id="help-close" class="help-close" aria-label="Fermer">&times;</button>
+    </div>
+    ${renderDocumentationSection()}
+  </div>
+</div>
 
 </div>
 <script>
@@ -534,6 +553,7 @@ ${MULTI_CSS}
       <span id="mp-dry-badge" style="display:none;background:#f59e0b;color:#000;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px">DRY-RUN</span>
       <span id="migrate-panel-badge" class="migrate-badge" style="display:none"></span>
       <button class="action-btn" id="migrate-overlay-abort" style="display:none;padding:2px 10px;font-size:11px;background:#f85149;color:#fff;border:none;border-radius:4px;cursor:pointer" title="Annuler la migration">Annuler</button>
+      <button class="action-btn" id="migrate-logs-btn" style="display:none;padding:2px 10px;font-size:11px;background:#58a6ff;color:#fff;border:none;border-radius:4px;cursor:pointer" title="Voir les logs">Logs</button>
       <button class="action-btn" id="migrate-overlay-minimize" style="padding:2px 8px;font-size:11px" title="Minimize/Expand">_</button>
       <button class="action-btn" id="migrate-overlay-close" style="padding:2px 8px;font-size:11px" title="Close">X</button>
     </div>
@@ -601,6 +621,32 @@ ${MULTI_CSS}
     <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px">
       <button class="action-btn" id="modal-cancel">Annuler</button>
       <button class="action-btn primary" id="modal-launch" style="background:#059669;border-color:#059669">Lancer la migration</button>
+    </div>
+  </div>
+</div>
+
+<!-- Logs Modal -->
+<div id="logs-modal" class="logs-modal">
+  <div class="logs-modal-content">
+    <div class="logs-modal-header">
+      <h3>📝 Logs Migration</h3>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="logs-level" class="logs-select">
+          <option value="debug">Debug+</option>
+          <option value="info" selected>Info+</option>
+          <option value="warn">Warn+</option>
+          <option value="error">Error</option>
+        </select>
+        <input type="text" id="logs-search" placeholder="Rechercher..." class="logs-search">
+        <button id="logs-refresh" class="action-btn" title="Rafraîchir">↻</button>
+        <button id="logs-close" class="action-btn">&times;</button>
+      </div>
+    </div>
+    <div id="logs-container" class="logs-container">
+      <div id="logs-list"></div>
+    </div>
+    <div class="logs-footer">
+      <span id="logs-count"></span>
     </div>
   </div>
 </div>
@@ -1236,9 +1282,276 @@ footer {
   font-size: 12px;
 }
 
+/* Help Floating Action Button */
+.help-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--blue);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(88, 166, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  z-index: 999;
+}
+
+.help-fab:hover {
+  background: #6eb4ff;
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(88, 166, 255, 0.6);
+}
+
+.help-fab:active {
+  transform: scale(0.95);
+}
+
+/* Help Modal */
+.help-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  overflow: auto;
+  padding: 24px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.help-modal.show {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 40px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.help-modal-content {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  max-width: 900px;
+  width: 100%;
+  max-height: calc(100vh - 80px);
+  overflow: auto;
+  animation: slideUp 0.3s ease-out;
+  position: relative;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.help-modal-header {
+  position: sticky;
+  top: 0;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.help-modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+  color: var(--text);
+  border: none;
+  padding: 0;
+}
+
+.help-close {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 32px;
+  line-height: 1;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.help-close:hover {
+  background: rgba(248, 81, 73, 0.1);
+  color: var(--red);
+}
+
+.help-modal-content .card {
+  border: none;
+  border-radius: 0;
+  margin: 0;
+}
+
+/* Logs Modal */
+.logs-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1001;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.logs-modal.show {
+  display: flex;
+}
+
+.logs-modal-content {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 1000px;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.logs-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+
+.logs-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--text);
+}
+
+.logs-select {
+  padding: 4px 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.logs-search {
+  padding: 4px 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 12px;
+  width: 200px;
+}
+
+.logs-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.log-entry {
+  display: flex;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.3);
+}
+
+.log-entry:hover {
+  background: rgba(88, 166, 255, 0.05);
+}
+
+.log-time {
+  color: #8b949e;
+  flex-shrink: 0;
+  width: 80px;
+}
+
+.log-level {
+  flex-shrink: 0;
+  width: 50px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.log-level-debug { color: #6b7280; }
+.log-level-info { color: #58a6ff; }
+.log-level-warn { color: #f59e0b; }
+.log-level-error { color: #f85149; }
+
+.log-program {
+  flex-shrink: 0;
+  width: 60px;
+  color: #d2a8ff;
+}
+
+.log-message {
+  flex: 1;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.logs-footer {
+  padding: 8px 20px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-dim);
+  text-align: right;
+}
+
+.logs-empty {
+  padding: 40px;
+  text-align: center;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
 @media (max-width: 768px) {
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
   .decommission-grid { grid-template-columns: repeat(2, 1fr); }
+  .help-fab { bottom: 16px; right: 16px; width: 48px; height: 48px; }
+  .help-modal { padding: 12px; }
+  .help-modal-content { max-height: calc(100vh - 24px); }
+  .logs-modal-content { width: 95%; height: 90vh; }
+  .logs-search { width: 120px; }
 }
 ` + DOC_CSS;
 
@@ -1333,6 +1646,155 @@ document.querySelectorAll('th[data-sort]').forEach(th => {
     rows.forEach(r => tbody.appendChild(r));
   });
 });
+
+// Help modal management
+(function() {
+  const helpBtn = document.getElementById('help-button');
+  const helpModal = document.getElementById('help-modal');
+  const helpClose = document.getElementById('help-close');
+
+  if (helpBtn && helpModal && helpClose) {
+    helpBtn.addEventListener('click', () => {
+      helpModal.classList.add('show');
+    });
+
+    helpClose.addEventListener('click', () => {
+      helpModal.classList.remove('show');
+    });
+
+    helpModal.addEventListener('click', (e) => {
+      if (e.target === helpModal) {
+        helpModal.classList.remove('show');
+      }
+    });
+
+    // ESC key to close
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && helpModal.classList.contains('show')) {
+        helpModal.classList.remove('show');
+      }
+    });
+  }
+})();
+
+// Logs modal management
+(function() {
+  const logsBtn = document.getElementById('migrate-logs-btn');
+  const logsModal = document.getElementById('logs-modal');
+  const logsClose = document.getElementById('logs-close');
+  const logsRefresh = document.getElementById('logs-refresh');
+  const logsLevel = document.getElementById('logs-level');
+  const logsSearch = document.getElementById('logs-search');
+  const logsList = document.getElementById('logs-list');
+  const logsCount = document.getElementById('logs-count');
+
+  let currentBatch = null;
+  let allLogs = [];
+
+  function formatTime(timestamp) {
+    const d = new Date(timestamp);
+    return d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+
+  function loadLogs() {
+    if (!currentBatch) return;
+    const level = logsLevel.value;
+    const url = '/api/logs?dir=ADH&batch=' + currentBatch + '&level=' + level + '&limit=1000';
+
+    fetch(url)
+      .then(r => r.json())
+      .then(data => {
+        allLogs = data.logs || [];
+        filterLogs();
+      })
+      .catch(err => {
+        if (logsList) logsList.innerHTML = '<div class="logs-empty">Erreur chargement logs: ' + err.message + '</div>';
+      });
+  }
+
+  function filterLogs() {
+    if (!logsList) return;
+    const search = logsSearch.value.toLowerCase();
+    const filtered = search
+      ? allLogs.filter(log =>
+          (log.message && log.message.toLowerCase().includes(search)) ||
+          (log.programId && String(log.programId).includes(search)) ||
+          (log.type && log.type.toLowerCase().includes(search))
+        )
+      : allLogs;
+
+    if (filtered.length === 0) {
+      logsList.innerHTML = '<div class="logs-empty">Aucun log trouvé</div>';
+      if (logsCount) logsCount.textContent = '0 logs';
+      return;
+    }
+
+    const html = filtered.map(log => {
+      const levelClass = 'log-level-' + (log.level || 'info');
+      const progId = log.programId ? 'IDE ' + log.programId : '';
+      return '<div class="log-entry">'
+        + '<span class="log-time">' + formatTime(log.timestamp) + '</span>'
+        + '<span class="log-level ' + levelClass + '">' + (log.level || 'info') + '</span>'
+        + (progId ? '<span class="log-program">' + progId + '</span>' : '')
+        + '<span class="log-message">' + (log.message || '') + '</span>'
+        + '</div>';
+    }).join('');
+
+    logsList.innerHTML = html;
+    if (logsCount) logsCount.textContent = filtered.length + ' / ' + allLogs.length + ' logs';
+  }
+
+  if (logsBtn) {
+    logsBtn.addEventListener('click', function() {
+      if (logsModal) logsModal.classList.add('show');
+      loadLogs();
+    });
+  }
+
+  if (logsClose) {
+    logsClose.addEventListener('click', function() {
+      if (logsModal) logsModal.classList.remove('show');
+    });
+  }
+
+  if (logsRefresh) {
+    logsRefresh.addEventListener('click', function() {
+      loadLogs();
+    });
+  }
+
+  if (logsLevel) {
+    logsLevel.addEventListener('change', function() {
+      loadLogs();
+    });
+  }
+
+  if (logsSearch) {
+    logsSearch.addEventListener('input', function() {
+      filterLogs();
+    });
+  }
+
+  if (logsModal) {
+    logsModal.addEventListener('click', function(e) {
+      if (e.target === logsModal) {
+        logsModal.classList.remove('show');
+      }
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && logsModal.classList.contains('show')) {
+        logsModal.classList.remove('show');
+      }
+    });
+  }
+
+  // Expose function to set batch from migration start
+  window.setLogsBatch = function(batch) {
+    currentBatch = batch;
+    if (logsBtn) logsBtn.style.display = '';
+  };
+})();
 `;
 
 // ─── Multi-Project CSS ──────────────────────────────────────────
@@ -1579,6 +2041,21 @@ const MULTI_CSS = `
 .mp-row-active { background: rgba(59,130,246,0.1); }
 .mp-row-done td { opacity: 0.6; }
 .mp-dots { display: flex; gap: 2px; }
+.mp-phase-item { display: flex; align-items: center; gap: 3px; }
+.mp-phase-label {
+  font-size: 10px;
+  color: #8b949e;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 0.3s ease, opacity 0.3s ease;
+}
+.mp-phase-label.active {
+  max-width: 120px;
+  opacity: 1;
+  color: #f59e0b;
+}
 .mp-dot { width: 8px; height: 8px; border-radius: 50%; background: #334155; flex-shrink: 0; }
 .mp-dot.done { background: #3fb950; }
 .mp-dot.skipped { background: #6b7280; }
@@ -1586,6 +2063,7 @@ const MULTI_CSS = `
 .mp-dot.failed { background: #f85149; }
 @keyframes mp-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
 .mp-pulse-bar { width: 100% !important; animation: mp-pulse 1.5s ease-in-out infinite; }
+.mp-eta { font-size: 11px; color: #8b949e; white-space: nowrap; width: 50px; }
 .mp-log-section { padding: 0 16px 8px; flex: 1; display: flex; flex-direction: column; min-height: 0; }
 .mp-log-toggle { font-size: 12px; color: #8b949e; cursor: pointer; padding: 4px 0; user-select: none; }
 .mp-log-toggle:hover { color: #e2e8f0; }
@@ -2217,6 +2695,25 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     for (var pid in migrateState.programStartTimes) {
       var el = document.getElementById('mp-dur-' + pid);
       if (el) el.textContent = formatElapsed(now - migrateState.programStartTimes[pid]);
+      updateProgramETA(pid);
+    }
+  }
+
+  function updateProgramETA(progId) {
+    var ps = migrateState.programPhases[progId];
+    if (!ps || ps.status !== 'running') return;
+
+    var completed = Object.keys(ps.completedPhases).length;
+    var total = ALL_PHASES.length;
+    if (completed === 0) return; // No data yet
+
+    var elapsed = Date.now() - migrateState.programStartTimes[progId];
+    var avgPerPhase = elapsed / completed;
+    var remaining = (total - completed) * avgPerPhase;
+
+    var etaEl = document.getElementById('mp-eta-' + progId);
+    if (etaEl) {
+      etaEl.textContent = '~' + formatElapsed(remaining);
     }
   }
 
@@ -2258,12 +2755,16 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       tr.id = 'mp-row-' + p.id;
       var dotsHtml = '';
       for (var j = 0; j < ALL_PHASES.length; j++) {
-        dotsHtml += '<span class="mp-dot" data-prog="' + escAttr(p.id) + '" data-phase="' + ALL_PHASES[j] + '" title="' + ALL_PHASES[j] + '"></span>';
+        dotsHtml += '<div class="mp-phase-item">'
+          + '<span class="mp-phase-label" data-prog="' + escAttr(p.id) + '" data-phase="' + ALL_PHASES[j] + '"></span>'
+          + '<span class="mp-dot" data-prog="' + escAttr(p.id) + '" data-phase="' + ALL_PHASES[j] + '" title="' + ALL_PHASES[j] + '"></span>'
+          + '</div>';
       }
       tr.innerHTML = '<td>' + escAttr(p.id) + '</td>'
         + '<td title="' + escAttr(p.name) + '">' + escAttr(p.name) + '</td>'
         + '<td class="mp-icon" id="mp-icon-' + escAttr(p.id) + '">&#9203;</td>'
         + '<td class="mp-dur" id="mp-dur-' + escAttr(p.id) + '"></td>'
+        + '<td class="mp-eta" id="mp-eta-' + escAttr(p.id) + '"></td>'
         + '<td><div class="mp-dots">' + dotsHtml + '</div></td>';
       tbody.appendChild(tr);
     }
@@ -2343,6 +2844,10 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       if (msg.programList && msg.programList.length) {
         migrateState.programList = msg.programList;
         buildProgramGrid(msg.programList);
+      }
+      // Enable logs button if batch is set
+      if (msg.batch && window.setLogsBatch) {
+        window.setLogsBatch(msg.batch);
       }
       updateModuleProgress(0, migrateState.totalProgs);
       var agentInfo = msg.parallel > 0 ? ', ' + msg.parallel + ' agents' : '';
@@ -2593,6 +3098,31 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       migrateState.batchProgress = 0.4;
       updateModuleProgress(migrateState.doneProgs, migrateState.totalProgs);
       addMLog('[verify] ' + (msg.message || ''));
+      return;
+    }
+
+    if (msg.type === 'token_update') {
+      // Real-time token update during migration
+      if (msg.cumulative) {
+        migrateState.tokensIn = msg.cumulative.input || 0;
+        migrateState.tokensOut = msg.cumulative.output || 0;
+        updateTokenDisplay();
+      }
+      return;
+    }
+
+    if (msg.type === 'phase_progress') {
+      // Phase label display next to progress dots
+      var pid = msg.programId;
+      var phase = msg.phase;
+      var label = msg.label || msg.message || '';
+      if (pid && phase && label) {
+        var labelEl = document.querySelector('.mp-phase-label[data-prog="' + pid + '"][data-phase="' + phase + '"]');
+        if (labelEl) {
+          labelEl.textContent = label;
+          labelEl.classList.add('active');
+        }
+      }
       return;
     }
 

@@ -17,6 +17,15 @@ Given a legacy application's program graph (call tree), the factory:
 5. **Identifies deliverable modules**: complete subtrees where 100% of programs are verified
 6. **Suggests batches** from graph topology for team planning
 
+## Documentation
+
+| Guide | Description |
+|-------|-------------|
+| [Model Optimization](./docs/MODEL_OPTIMIZATION.md) | Optimiser coûts & performances (timeouts, retry, logs) |
+| [CI/CD Integration](./docs/ci-cd-integration.md) | Automatiser expression coverage |
+| [Coverage Metrics](./docs/coverage-metrics.md) | Métriques de couverture |
+| [Contract Enrichment](./docs/contract-enrichment-guide.md) | Workflow enrichissement contrats |
+
 ## Quick Start
 
 ```bash

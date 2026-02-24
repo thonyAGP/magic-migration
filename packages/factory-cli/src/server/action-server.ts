@@ -15,6 +15,8 @@ import {
   handleMigrateStream, handleMigrateStatus, handleMigrateBatchCreate, handleMigrateActive,
   handleMigrateAbort,
   handleAnalyze, handleAnalyzeGet,
+  handleTokensGet, handleTokensBatchGet, handleTokensProgramGet,
+  handleLogsGet, handleLogsSearchGet, handleLogsLatestGet,
 } from './api-routes.js';
 import type { RouteContext } from './api-routes.js';
 import { generateServerDashboard } from './dashboard-html.js';
@@ -186,6 +188,20 @@ export const startActionServer = async (config: ActionServerConfig): Promise<htt
         await handleAnalyze(ctx, body, res);
       } else if (pathname === '/api/analyze' && req.method === 'GET') {
         await handleAnalyzeGet(ctx, res);
+      } else if (pathname === '/api/tokens' && req.method === 'GET') {
+        reqLogger.debug('Handling tokens request');
+        handleTokensGet(ctx, url.searchParams, res);
+      } else if (pathname === '/api/tokens/batch' && req.method === 'GET') {
+        handleTokensBatchGet(ctx, url.searchParams, res);
+      } else if (pathname === '/api/tokens/program' && req.method === 'GET') {
+        handleTokensProgramGet(ctx, url.searchParams, res);
+      } else if (pathname === '/api/logs' && req.method === 'GET') {
+        reqLogger.debug('Handling logs request');
+        handleLogsGet(ctx, url.searchParams, res);
+      } else if (pathname === '/api/logs/search' && req.method === 'GET') {
+        handleLogsSearchGet(ctx, url.searchParams, res);
+      } else if (pathname === '/api/logs/latest' && req.method === 'GET') {
+        handleLogsLatestGet(ctx, url.searchParams, res);
       } else {
         reqLogger.warn({ pathname }, 'Route not found');
         json(res, { error: 'Not found' }, 404);
