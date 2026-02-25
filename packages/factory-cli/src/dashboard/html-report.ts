@@ -2946,7 +2946,6 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
         if (String(migrateState.programList[i].id) === String(id)) { progName = migrateState.programList[i].name; break; }
       }
       migrateState.currentTask = 'IDE ' + id + ' ' + progName;
-      updateTaskInfoDisplay();
       if (row) { row.classList.add('mp-row-active'); row.classList.remove('mp-row-done'); }
     }
     else if (status === 'done') {
