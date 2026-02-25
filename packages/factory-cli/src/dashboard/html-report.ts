@@ -553,7 +553,7 @@ ${MULTI_CSS}
     <strong id="migrate-overlay-title">Migration</strong>
     <div style="display:flex;align-items:center;gap:6px">
       <span id="mp-dry-badge" style="display:none;background:#f59e0b;color:#000;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px">DRY-RUN</span>
-      <span id="migrate-panel-badge" class="migrate-badge" style="display:none"></span>
+      <span id="migrate-panel-badge" class="migrate-badge" style="display:none;cursor:pointer" title="Cliquez pour rouvrir"></span>
       <button class="action-btn" id="migrate-overlay-abort" style="display:none;padding:2px 10px;font-size:11px;background:#f85149;color:#fff;border:none;border-radius:4px;cursor:pointer" title="Annuler la migration">Annuler</button>
       <button class="action-btn" id="migrate-logs-btn" style="display:none;padding:2px 10px;font-size:11px;background:#58a6ff;color:#fff;border:none;border-radius:4px;cursor:pointer" title="Voir les logs">Logs</button>
       <button class="action-btn" id="migrate-overlay-minimize" style="padding:2px 8px;font-size:11px" title="Minimize/Expand">_</button>
@@ -570,6 +570,13 @@ ${MULTI_CSS}
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div class="mp-elapsed" id="mp-elapsed"></div>
         <div class="mp-elapsed" id="mp-tokens" style="color:#d2a8ff"></div>
+      </div>
+    </div>
+    <!-- Section 1b: Last task / Current task display -->
+    <div class="mp-section" id="mp-task-info" style="display:none">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:#8b949e;gap:16px">
+        <div><span style="color:#cbd5e1">Dernière:</span> <span id="mp-last-task">–</span></div>
+        <div><span style="color:#cbd5e1">En cours:</span> <span id="mp-current-task">–</span></div>
       </div>
     </div>
     <!-- Section 2: Current program progress bar -->
@@ -2694,8 +2701,11 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     tokensIn: 0, tokensOut: 0,
     eventsProcessed: 0,
     estimatedHours: 0,
+    estimatedDurationMs: 0, // Locked estimate from first completion
     batchPhaseActive: false, batchPhaseStart: 0,
-    batchProgress: 0, batchElapsedStart: 0, batchReviewsDone: 0
+    batchProgress: 0, batchElapsedStart: 0, batchReviewsDone: 0,
+    lastCompletedTask: null, currentTask: null, // Track for display
+    completedResult: null // Store final result for reopening
   };
 
   function escAttr(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -2710,14 +2720,19 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     document.getElementById('mp-grid-section').style.display = 'none';
     document.getElementById('mp-grid-body').innerHTML = '';
     document.getElementById('mp-log').innerHTML = '';
+    document.getElementById('mp-task-info').style.display = 'none';
     migrateOverlay.classList.remove('collapsed');
     migrateOverlay.classList.add('visible');
     migrateMinimize.textContent = '_';
     if (migrateBadge) migrateBadge.style.display = 'none';
-    // Reset batch progress tracking
+    // Reset batch progress tracking and task display
     migrateState.batchProgress = 0;
     migrateState.batchElapsedStart = 0;
     migrateState.batchReviewsDone = 0;
+    migrateState.estimatedDurationMs = 0; // Reset locked estimate
+    migrateState.lastCompletedTask = null;
+    migrateState.currentTask = null;
+    migrateState.completedResult = null;
   }
 
   function closeMigrateOverlay() {
@@ -2736,6 +2751,17 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   migrateOverlayClose.addEventListener('click', closeMigrateOverlay);
   migrateMinimize.addEventListener('click', function(e) { e.stopPropagation(); toggleMigratePanel(); });
   migratePanelToggle.addEventListener('dblclick', toggleMigratePanel);
+
+  // Badge click: reopen completed migration modal
+  if (migrateBadge) {
+    migrateBadge.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (migrateState.completedResult) {
+        migrateOverlay.classList.remove('collapsed');
+        migrateOverlay.classList.add('visible');
+      }
+    });
+  }
 
   migrateAbortBtn.addEventListener('click', function(e) {
     e.stopPropagation();
@@ -2771,7 +2797,16 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     }
     if (remaining <= 0) return '';
 
-    // ── Per-program ETA ──
+    // ── Per-program ETA: Use locked estimate (set after first completion) ──
+    if (migrateState.estimatedDurationMs > 0) {
+      var par = migrateState.parallelCount > 1 ? migrateState.parallelCount : 1;
+      var elapsed = Date.now() - migrateState.migrationStart;
+      var totalEst = migrateState.estimatedDurationMs;
+      var remainingEst = Math.max(0, totalEst - elapsed);
+      return ' | ETA: ~' + formatElapsed(remainingEst);
+    }
+
+    // ── First program hasn't completed yet: estimate from available data ──
     var par = migrateState.parallelCount > 1 ? migrateState.parallelCount : 1;
     var durations = migrateState.programDurations;
     // Filter trivial (<5s) = programs with existing files (no real generation)
@@ -2819,6 +2854,21 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     }
     var cost = estimateCost(migrateState.tokensIn, migrateState.tokensOut);
     el.textContent = 'Tokens: ' + formatTokens(migrateState.tokensIn) + ' in / ' + formatTokens(migrateState.tokensOut) + ' out (~$' + cost.toFixed(2) + ')';
+  }
+
+  function updateTaskInfoDisplay() {
+    var taskInfoEl = document.getElementById('mp-task-info');
+    var lastTaskEl = document.getElementById('mp-last-task');
+    var currentTaskEl = document.getElementById('mp-current-task');
+    if (!taskInfoEl || !lastTaskEl || !currentTaskEl) return;
+
+    if (migrateState.lastCompletedTask || migrateState.currentTask) {
+      taskInfoEl.style.display = '';
+      lastTaskEl.textContent = migrateState.lastCompletedTask || '–';
+      currentTaskEl.textContent = migrateState.currentTask || '–';
+    } else {
+      taskInfoEl.style.display = 'none';
+    }
   }
 
   function updateRunningDurations() {
@@ -2906,9 +2956,35 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     var el = document.getElementById('mp-icon-' + id);
     if (!el) return;
     var row = document.getElementById('mp-row-' + id);
-    if (status === 'running') { el.innerHTML = '&#9654;'; if (row) { row.classList.add('mp-row-active'); row.classList.remove('mp-row-done'); } }
-    else if (status === 'done') { el.innerHTML = '&#10003;'; if (row) { row.classList.remove('mp-row-active'); row.classList.add('mp-row-done'); } }
-    else if (status === 'failed') { el.innerHTML = '&#10007;'; if (row) { row.classList.remove('mp-row-active'); row.classList.add('mp-row-done'); } }
+    if (status === 'running') {
+      el.innerHTML = '&#9654;';
+      // Update current task display
+      var progName = '';
+      for (var i = 0; i < migrateState.programList.length; i++) {
+        if (String(migrateState.programList[i].id) === String(id)) { progName = migrateState.programList[i].name; break; }
+      }
+      migrateState.currentTask = 'IDE ' + id + ' ' + progName;
+      updateTaskInfoDisplay();
+      if (row) { row.classList.add('mp-row-active'); row.classList.remove('mp-row-done'); }
+    }
+    else if (status === 'done') {
+      el.innerHTML = '&#10003;';
+      // Update last task display
+      var progName = '';
+      for (var i = 0; i < migrateState.programList.length; i++) {
+        if (String(migrateState.programList[i].id) === String(id)) { progName = migrateState.programList[i].name; break; }
+      }
+      migrateState.lastCompletedTask = 'IDE ' + id + ' ' + progName;
+      migrateState.currentTask = null;
+      updateTaskInfoDisplay();
+      if (row) { row.classList.remove('mp-row-active'); row.classList.add('mp-row-done'); }
+    }
+    else if (status === 'failed') {
+      el.innerHTML = '&#10007;';
+      migrateState.currentTask = null;
+      updateTaskInfoDisplay();
+      if (row) { row.classList.remove('mp-row-active'); row.classList.add('mp-row-done'); }
+    }
     else { el.innerHTML = '&#9203;'; }
   }
 
@@ -3148,6 +3224,23 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       }
       updateProgramIcon(pid, 'done');
       migrateState.doneProgs++;
+      // Lock ETA estimate after first completion: project total duration based on completed work
+      if (migrateState.estimatedDurationMs === 0 && !isSkipped && dur > 0) {
+        var completed = migrateState.doneProgs;
+        var remaining = migrateState.totalProgs - completed;
+        var elapsed = Date.now() - migrateState.migrationStart;
+        // Conservative estimate: use average of real programs only
+        var durations = migrateState.programDurations;
+        var real = [];
+        for (var i = 0; i < durations.length; i++) { if (durations[i] >= 5000) real.push(durations[i]); }
+        if (real.length > 0) {
+          var sum = 0;
+          for (var i = 0; i < real.length; i++) sum += real[i];
+          var avgPerProg = sum / real.length;
+          var par = migrateState.parallelCount > 1 ? migrateState.parallelCount : 1;
+          migrateState.estimatedDurationMs = elapsed + Math.ceil(remaining / par) * avgPerProg;
+        }
+      }
       updateModuleProgress(migrateState.doneProgs, migrateState.totalProgs);
       updateProgramProgress(null, null);
       addMLog(isSkipped ? '[ignor\\u00e9] IDE ' + pid + ' : d\\u00e9j\\u00e0 migr\\u00e9' : '[termin\\u00e9] IDE ' + pid + ' : ' + (msg.message || ''));
@@ -3179,6 +3272,9 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     if (msg.type === 'migrate_result') {
       var r = msg.data;
       migrateState.batchPhaseActive = false;
+      migrateState.completedResult = r; // Store for badge reopening
+      migrateState.currentTask = null;
+      updateTaskInfoDisplay();
       clearInterval(migrateState.elapsedTid);
       var bar = document.getElementById('mp-module-bar');
       if (bar) bar.style.width = '100%';
