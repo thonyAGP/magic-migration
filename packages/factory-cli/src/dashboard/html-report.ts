@@ -3272,8 +3272,9 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       }
       if (migrateState.programPhases[pid]) {
         if (isSkipped) {
-          // Mark all generation phase dots as skipped (grey)
-          for (var si = 0; si < ALL_PHASES.length; si++) updatePhaseDot(pid, ALL_PHASES[si], 'skipped');
+          // Don't override dots already marked 'done' from phase_completed events
+          // Skipped programs have phase_completed before program_completed
+          // So dots are already green - keep them green, don't turn grey
         } else {
           var cur = migrateState.programPhases[pid].currentPhase;
           if (cur) {
