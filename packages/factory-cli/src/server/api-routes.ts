@@ -394,7 +394,8 @@ export const handleMigrateStream = async (
     programIds = batchDef.priorityOrder;
     batchId = batchDef.id;
     batchName = batchDef.name;
-    batchEstimatedHours = batchDef.estimatedHours ?? 0;
+    // Read estimated_hours (snake_case in JSON) or estimatedHours (camelCase)
+    batchEstimatedHours = (batchDef as any).estimated_hours ?? batchDef.estimatedHours ?? 0;
   } else if (programs) {
     programIds = programs.split(',').map(s => s.trim()).filter(Boolean);
     batchId = `auto-${Date.now()}`;
