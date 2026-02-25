@@ -571,7 +571,13 @@ export const getBatchesStatus = (config: PipelineConfig): BatchStatusView[] => {
     const estimatedHours = batch.estimatedHours ?? 0;
     const lastActivity: string | undefined = batch.enrichedDate ?? batch.verifiedDate ?? batch.contractedDate;
 
-    if (batch.stats) {
+    // Check if batch.stats exists and is non-empty (has real data)
+    const hasStats = batch.stats && (
+      (batch.stats as any).fully_impl > 0 || (batch.stats as any).fullyImpl > 0 ||
+      (batch.stats as any).frontend_enrich > 0 || (batch.stats as any).frontendEnrich > 0
+    );
+
+    if (hasStats) {
       // Post-migration: use stats from tracker (written by migrate-runner)
       // Map tracker stats format (snake_case JSON) to API format
       const stats = batch.stats as Record<string, any>;
@@ -584,6 +590,9 @@ export const getBatchesStatus = (config: PipelineConfig): BatchStatusView[] => {
       coverageAvg = stats['coverage_avg_frontend'] ?? stats.coverageAvgFrontend ?? 0;
     } else {
       // Pre-migration: scan contracts to compute stats
+      let coverageSum = 0;
+      let coverageCount = 0;
+
       for (const programId of batch.priorityOrder) {
         const contract = contracts.get(programId) ?? contracts.get(Number(programId)) ?? contracts.get(String(programId));
 
@@ -600,7 +609,15 @@ export const getBatchesStatus = (config: PipelineConfig): BatchStatusView[] => {
             case PipelineStatus.VERIFIED: verified++; break;
           }
         }
+
+        // Accumulate coverage for average
+        if (contract.overall.coveragePct !== undefined) {
+          coverageSum += contract.overall.coveragePct;
+          coverageCount++;
+        }
       }
+
+      coverageAvg = coverageCount > 0 ? Math.round(coverageSum / coverageCount) : 0;
     }
 
     views.push({
