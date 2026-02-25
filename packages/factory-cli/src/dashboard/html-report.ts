@@ -2713,7 +2713,6 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     document.getElementById('mp-grid-section').style.display = 'none';
     document.getElementById('mp-grid-body').innerHTML = '';
     document.getElementById('mp-log').innerHTML = '';
-    document.getElementById('mp-task-info').style.display = 'none';
     migrateOverlay.classList.remove('collapsed');
     migrateOverlay.classList.add('visible');
     migrateMinimize.textContent = '_';
