@@ -34,7 +34,7 @@ tests/e2e/
   pages/
     dashboard.page.ts   # Page Object Model (POM)
   global-setup.ts       # Resets fixtures for idempotent runs
-  smoke.spec.ts         # 14 smoke tests across 11 groups
+  smoke.spec.ts         # 20 smoke tests across 17 groups (FULL — SWARM max)
 ```
 
 ## Test Inventory (max 20 — SWARM guard-fou)
@@ -55,8 +55,14 @@ tests/e2e/
 | 12 | SMOKE 9 | Tokens empty state | Tokens tab lazy-loads, shows empty state |
 | 13 | SMOKE 10 | Programme table | Table renders, search filters, status dropdown |
 | 14 | SMOKE 11 | Panel close + persistence | Close panel, enrichment mode persists in localStorage |
+| 15 | SMOKE 12 | Module filters + sort | Filter buttons, sort by readiness, reset to "Tous" |
+| 16 | SMOKE 13 | Table sort + status filter | Sortable headers, name sort toggle, status dropdown |
+| 17 | SMOKE 14 | Help button + docs | ? button scrolls to documentation section |
+| 18 | SMOKE 15 | Migration modal | Open modal, batch info, parallel input, cancel |
+| 19 | SMOKE 16 | Logs modal | Logs modal controls, level filter, search input |
+| 20 | SMOKE 17 | Error handling | Action buttons without batch don't crash JS |
 
-**Current: 14/20** — Room for 6 more tests.
+**FULL: 20/20** — SWARM guard-fou max reached. To add a test, archive the least valuable first.
 
 ## Guard-Fous (SWARM Decision)
 

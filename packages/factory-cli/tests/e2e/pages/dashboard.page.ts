@@ -51,6 +51,30 @@ export class DashboardPage {
   // Modules section
   readonly filterBtns: Locator;
   readonly sortBtns: Locator;
+  readonly moduleList: Locator;
+
+  // Migration confirmation modal
+  readonly migrateModal: Locator;
+  readonly modalBatchInfo: Locator;
+  readonly modalTargetDir: Locator;
+  readonly modalParallel: Locator;
+  readonly modalClaudeMode: Locator;
+  readonly modalDryRun: Locator;
+  readonly modalCancel: Locator;
+  readonly modalLaunch: Locator;
+
+  // Help
+  readonly btnHelp: Locator;
+  readonly docSection: Locator;
+
+  // Logs modal
+  readonly logsModal: Locator;
+  readonly logsLevel: Locator;
+  readonly logsSearch: Locator;
+  readonly logsRefresh: Locator;
+  readonly logsClose: Locator;
+  readonly logsCount: Locator;
+  readonly logsList: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -99,6 +123,30 @@ export class DashboardPage {
     // Modules section
     this.filterBtns = page.locator('.filter-btn');
     this.sortBtns = page.locator('.sort-btn');
+    this.moduleList = page.locator('.module-list');
+
+    // Migration confirmation modal
+    this.migrateModal = page.locator('#migrate-confirm-modal');
+    this.modalBatchInfo = page.locator('#modal-batch-info');
+    this.modalTargetDir = page.locator('#modal-target-dir');
+    this.modalParallel = page.locator('#modal-parallel');
+    this.modalClaudeMode = page.locator('#modal-claude-mode');
+    this.modalDryRun = page.locator('#modal-dry-run');
+    this.modalCancel = page.locator('#modal-cancel');
+    this.modalLaunch = page.locator('#modal-launch');
+
+    // Help
+    this.btnHelp = page.locator('#btn-help');
+    this.docSection = page.locator('#documentation-section');
+
+    // Logs modal
+    this.logsModal = page.locator('#logs-modal');
+    this.logsLevel = page.locator('#logs-level');
+    this.logsSearch = page.locator('#logs-search');
+    this.logsRefresh = page.locator('#logs-refresh');
+    this.logsClose = page.locator('#logs-close');
+    this.logsCount = page.locator('#logs-count');
+    this.logsList = page.locator('#logs-list');
   }
 
   async goto() {
@@ -174,5 +222,19 @@ export class DashboardPage {
   async navigateToADH() {
     await this.tabADH.click();
     await this.page.waitForTimeout(500);
+  }
+
+  async isModalVisible(modal: Locator): Promise<boolean> {
+    const cls = await modal.getAttribute('class');
+    return cls?.includes('visible') === true || cls?.includes('show') === true;
+  }
+
+  async getModuleRowCount(): Promise<number> {
+    return this.moduleList.locator('.module-row').count();
+  }
+
+  async getVisibleModuleRows(): Promise<number> {
+    // Count rows not hidden by display:none
+    return this.moduleList.locator('.module-row:not([style*="display: none"])').count();
   }
 }
