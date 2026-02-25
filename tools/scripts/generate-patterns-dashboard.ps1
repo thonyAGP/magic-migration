@@ -2,12 +2,12 @@
 # Phase 3 PDCA - Metriques patterns KB
 
 param(
-    [string]$OutputPath = "D:\Projects\Lecteur_Magic\.openspec\reports\patterns-dashboard.html"
+    [string]$OutputPath = "D:\Projects\ClubMed\LecteurMagic\.openspec\reports\patterns-dashboard.html"
 )
 
 $ErrorActionPreference = "Stop"
-$patternsPath = "D:\Projects\Lecteur_Magic\.openspec\patterns"
-$ticketsPath = "D:\Projects\Lecteur_Magic\.openspec\tickets"
+$patternsPath = "D:\Projects\ClubMed\LecteurMagic\.openspec\patterns"
+$ticketsPath = "D:\Projects\ClubMed\LecteurMagic\.openspec\tickets"
 
 Write-Host "=== Patterns Analytics Dashboard ===" -ForegroundColor Cyan
 
@@ -33,7 +33,7 @@ foreach ($file in $patternFiles) {
 
     # Count specs linked
     $linkedSpecs = 0
-    $linkingReport = "D:\Projects\Lecteur_Magic\.openspec\reports\LINKING_SPECS_PATTERNS.md"
+    $linkingReport = "D:\Projects\ClubMed\LecteurMagic\.openspec\reports\LINKING_SPECS_PATTERNS.md"
     if (Test-Path $linkingReport) {
         $linkContent = Get-Content $linkingReport -Raw
         $linkedSpecs = ([regex]::Matches($linkContent, [regex]::Escape($name))).Count

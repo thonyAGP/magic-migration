@@ -35,7 +35,7 @@ La Phase 1 met en place un systeme hybride permettant de combiner :
 ### 1. Generer une spec V2.0
 
 ```powershell
-cd D:\Projects\Lecteur_Magic\tools\spec-generator
+cd D:\Projects\ClubMed\LecteurMagic\tools\spec-generator
 .\Generate-ProgramSpecV2.ps1 -Project ADH -IDE 121
 ```
 

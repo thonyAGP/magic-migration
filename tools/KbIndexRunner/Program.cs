@@ -231,7 +231,7 @@ if (args.Length > 1 && args[0] == "query")
 // Sync patterns mode: import .openspec/patterns/*.md to resolution_patterns table
 if (args.Length > 0 && args[0] == "sync-patterns")
 {
-    var patternsPath = args.Length > 1 ? args[1] : @"D:\Projects\Lecteur_Magic\.openspec\patterns";
+    var patternsPath = args.Length > 1 ? args[1] : @"D:\Projects\ClubMed\LecteurMagic\.openspec\patterns";
     var syncDb = new KnowledgeDb();
 
     if (!syncDb.IsInitialized())
@@ -2355,7 +2355,7 @@ if (args.Length > 1 && args[0] == "forms-json")
 // Import SQL Server metadata from JSON (produced by Extract-SqlMetadata.ps1)
 if (args.Length > 0 && args[0] == "import-sql-metadata")
 {
-    var jsonPath = args.Length > 1 ? args[1] : @"D:\Projects\Lecteur_Magic\tools\db-metadata\PHU2512-metadata.json";
+    var jsonPath = args.Length > 1 ? args[1] : @"D:\Projects\ClubMed\LecteurMagic\tools\db-metadata\PHU2512-metadata.json";
     var importDb = new KnowledgeDb();
 
     if (!importDb.IsInitialized())

@@ -2395,50 +2395,63 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
 
   btnClose.addEventListener('click', function() { panel.classList.remove('visible'); });
 
-  // Load batches (hide fully verified ones from migration dropdown)
+  // Update module stats from API
+  function updateModuleStats() {
+    fetch('/api/status').then(function(r) { return r.json(); }).then(function(batches) {
+      if (!Array.isArray(batches)) return;
+      batches.forEach(function(b) {
+        // Update module row stats (modules generated from batches)
+        var moduleRows = document.querySelectorAll('.module-row');
+        for (var i = 0; i < moduleRows.length; i++) {
+          var row = moduleRows[i];
+          var nameEl = row.querySelector('.module-name');
+          if (nameEl && nameEl.textContent && nameEl.textContent.includes(b.id)) {
+            // Update tags in module-breakdown
+            var tags = row.querySelectorAll('.module-breakdown .tag');
+            if (tags.length >= 4) {
+              tags[0].textContent = b.verified + ' vérifiés';
+              tags[1].textContent = b.enriched + ' enrichis';
+              tags[3].textContent = b.pending + ' en attente';
+            }
+            // Update percentage
+            var pctEl = row.querySelector('.module-pct');
+            if (pctEl) {
+              var pct = b.programCount > 0 ? Math.round((b.verified / b.programCount) * 100) : 0;
+              pctEl.textContent = pct + '% vérifié';
+            }
+            // Update progress bars
+            var bars = row.querySelectorAll('.bar-fill');
+            if (bars.length >= 3 && b.programCount > 0) {
+              var verifiedPct = (b.verified / b.programCount) * 100;
+              var enrichedPct = (b.enriched / b.programCount) * 100;
+              bars[0].style.width = verifiedPct + '%';
+              bars[1].style.width = enrichedPct + '%';
+              bars[1].style.left = verifiedPct + '%';
+            }
+            break;
+          }
+        }
+      });
+    }).catch(function(err) {
+      console.error('Failed to update module stats:', err);
+    });
+  }
+
+  // Load batches dropdown (hide fully verified)
   fetch('/api/status').then(function(r) { return r.json(); }).then(function(batches) {
     if (!Array.isArray(batches)) return;
     batches.forEach(function(b) {
-      // Update module row stats from API (modules generated from batches)
-      var moduleRows = document.querySelectorAll('.module-row');
-      for (var i = 0; i < moduleRows.length; i++) {
-        var row = moduleRows[i];
-        var nameEl = row.querySelector('.module-name');
-        if (nameEl && nameEl.textContent && nameEl.textContent.includes(b.id)) {
-          // Update tags in module-breakdown
-          var tags = row.querySelectorAll('.module-breakdown .tag');
-          if (tags.length >= 4) {
-            tags[0].textContent = b.verified + ' vérifiés';   // tag-green
-            tags[1].textContent = b.enriched + ' enrichis';   // tag-blue
-            // tags[2] is analyzed (keep 0)
-            tags[3].textContent = b.pending + ' en attente';  // tag-gray
-          }
-          // Update percentage
-          var pctEl = row.querySelector('.module-pct');
-          if (pctEl) {
-            var pct = b.programCount > 0 ? Math.round((b.verified / b.programCount) * 100) : 0;
-            pctEl.textContent = pct + '% vérifié';
-          }
-          // Update progress bars
-          var bars = row.querySelectorAll('.bar-fill');
-          if (bars.length >= 3 && b.programCount > 0) {
-            var verifiedPct = (b.verified / b.programCount) * 100;
-            var enrichedPct = (b.enriched / b.programCount) * 100;
-            bars[0].style.width = verifiedPct + '%';                    // bar-verified
-            bars[1].style.width = enrichedPct + '%';                    // bar-enriched
-            bars[1].style.left = verifiedPct + '%';
-          }
-          break;
-        }
-      }
-
-      if (b.status === 'verified') return; // Skip completed batches
+      if (b.status === 'verified') return;
       var opt = document.createElement('option');
       opt.value = b.id;
       opt.textContent = b.id + ' - ' + b.name + ' (' + b.programCount + ' progs, ' + b.verified + '/' + b.programCount + ' v\\u00e9rifi\\u00e9s)';
       batchSelect.appendChild(opt);
     });
+    updateModuleStats(); // Initial update
   });
+
+  // Auto-refresh module stats every 20 seconds
+  setInterval(updateModuleStats, 20000);
 
   // Preflight
   btnPreflight.addEventListener('click', function() {
@@ -2770,6 +2783,10 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   function closeMigrateOverlay() {
     migrateOverlay.classList.remove('visible');
     migrateOverlay.classList.remove('collapsed');
+    // Refresh module stats after migration closes
+    if (typeof updateModuleStats === 'function') {
+      updateModuleStats();
+    }
   }
 
   function toggleMigratePanel() {

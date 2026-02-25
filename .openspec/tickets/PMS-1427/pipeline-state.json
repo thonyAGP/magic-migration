@@ -3,37 +3,37 @@
     "TicketKey":  "PMS-1427",
     "Phases":  {
                    "Generate":  {
-                                    "Output":  "D:\\Projects\\Lecteur_Magic\\.openspec\\tickets\\PMS-1427\\analysis.md",
+                                    "Output":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\tickets\\PMS-1427\\analysis.md",
                                     "Status":  "completed",
                                     "EndTime":  "2026-01-29T12:34:26.6891644+01:00",
                                     "StartTime":  "2026-01-29T12:34:26.4530690+01:00"
                                 },
                    "PatternMatch":  {
-                                        "Output":  "D:\\Projects\\Lecteur_Magic\\.openspec\\tickets\\PMS-1427\\patterns.json",
+                                        "Output":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\tickets\\PMS-1427\\patterns.json",
                                         "Status":  "completed",
                                         "EndTime":  "2026-01-29T12:34:26.4530690+01:00",
                                         "StartTime":  "2026-01-29T12:34:26.2791808+01:00"
                                     },
                    "Expressions":  {
-                                       "Output":  "D:\\Projects\\Lecteur_Magic\\.openspec\\tickets\\PMS-1427\\expressions.json",
+                                       "Output":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\tickets\\PMS-1427\\expressions.json",
                                        "Status":  "completed",
                                        "EndTime":  "2026-01-29T12:34:26.2756469+01:00",
                                        "StartTime":  "2026-01-29T12:34:26.2317064+01:00"
                                    },
                    "Context":  {
-                                   "Output":  "D:\\Projects\\Lecteur_Magic\\.openspec\\tickets\\PMS-1427\\context.json",
+                                   "Output":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\tickets\\PMS-1427\\context.json",
                                    "Status":  "completed",
                                    "EndTime":  "2026-01-29T12:34:22.3552243+01:00",
                                    "StartTime":  "2026-01-29T12:34:22.1184434+01:00"
                                },
                    "FlowTrace":  {
-                                     "Output":  "D:\\Projects\\Lecteur_Magic\\.openspec\\tickets\\PMS-1427\\flow.json",
+                                     "Output":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\tickets\\PMS-1427\\flow.json",
                                      "Status":  "completed",
                                      "EndTime":  "2026-01-29T12:34:26.2159322+01:00",
                                      "StartTime":  "2026-01-29T12:34:26.0263692+01:00"
                                  },
                    "Localization":  {
-                                        "Output":  "D:\\Projects\\Lecteur_Magic\\.openspec\\tickets\\PMS-1427\\programs.json",
+                                        "Output":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\tickets\\PMS-1427\\programs.json",
                                         "Status":  "completed",
                                         "EndTime":  "2026-01-29T12:34:26.0106262+01:00",
                                         "StartTime":  "2026-01-29T12:34:22.3708561+01:00"
@@ -61,7 +61,7 @@
                                                     "Weight":  2
                                                 }
                                             ],
-                                "File":  "D:\\Projects\\Lecteur_Magic\\.openspec\\patterns\\table-link-missing.md",
+                                "File":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\patterns\\table-link-missing.md",
                                 "Source":  "",
                                 "HasContent":  true
                             },
@@ -87,7 +87,7 @@
                                                     "Weight":  1
                                                 }
                                             ],
-                                "File":  "D:\\Projects\\Lecteur_Magic\\.openspec\\patterns\\date-format-inversion.md",
+                                "File":  "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\patterns\\date-format-inversion.md",
                                 "Source":  "",
                                 "HasContent":  true
                             }

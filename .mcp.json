@@ -5,7 +5,7 @@
       "args": [
         "run",
         "--project",
-        "D:\\Projects\\Lecteur_Magic\\tools\\MagicMcp\\MagicMcp.csproj"
+        "D:\\Projects\\ClubMed\\LecteurMagic\\services\\mcp-server\\MagicMcp.csproj"
       ],
       "env": {
         "MAGIC_PROJECTS_PATH": "D:\\Data\\Migration\\XPA\\PMS"

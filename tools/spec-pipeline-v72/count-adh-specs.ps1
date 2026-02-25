@@ -1,5 +1,5 @@
 # Count ADH specs and list IDE numbers
-$specs = Get-ChildItem 'D:\Projects\Lecteur_Magic\.openspec\specs\ADH-IDE-*.md' |
+$specs = Get-ChildItem 'D:\Projects\ClubMed\LecteurMagic\.openspec\specs\ADH-IDE-*.md' |
     Where-Object { $_.Name -notmatch '-summary' }
 
 Write-Host "Total ADH specs: $($specs.Count)"

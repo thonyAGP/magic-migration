@@ -4,7 +4,7 @@
     Reads from actual file system and updates config file.
 
 .DESCRIPTION
-    Creates/updates D:\Projects\Lecteur_Magic\.openspec\magic-config.json
+    Creates/updates D:\Projects\ClubMed\LecteurMagic\.openspec\magic-config.json
     - Projects: discovered from D:\Data\Migration\XPA\PMS\*\Source folders
     - Villages: loaded from REF village table or fallback list
 
@@ -15,7 +15,7 @@
 #>
 param(
     [string]$ProjectsBasePath = "D:\Data\Migration\XPA\PMS",
-    [string]$OutputPath = "D:\Projects\Lecteur_Magic\.openspec\magic-config.json"
+    [string]$OutputPath = "D:\Projects\ClubMed\LecteurMagic\.openspec\magic-config.json"
 )
 
 $ErrorActionPreference = "Stop"

@@ -80,7 +80,7 @@ describe('enrichissement ADH IDE {N}', () => {
 ### Phase 6 : Validation
 
 ```bash
-cd /mnt/d/Projects/Lecteur_Magic/adh-web
+cd /mnt/d/Projects/ClubMed/LecteurMagic/adh-web
 npx tsc --noEmit
 npx vitest run --pool=vmForks
 npm run build

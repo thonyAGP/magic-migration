@@ -34,7 +34,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 # Load config for project list
-$configPath = "D:\Projects\Lecteur_Magic\.openspec\magic-config.json"
+$configPath = "D:\Projects\ClubMed\LecteurMagic\.openspec\magic-config.json"
 $config = $null
 $projectList = @("ADH", "PBP", "REF", "VIL", "PBG", "PVE", "PUG")
 

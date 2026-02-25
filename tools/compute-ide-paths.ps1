@@ -27,10 +27,10 @@ function Build-Paths {
 }
 
 Write-Host '=== ADH IDE 237 ===' -ForegroundColor Cyan
-$json237 = Get-Content 'D:\Projects\Lecteur_Magic\tools\spec-pipeline-v72\output\ADH-IDE-237\algo.json' -Raw | ConvertFrom-Json
+$json237 = Get-Content 'D:\Projects\ClubMed\LecteurMagic\tools\spec-pipeline-v72\output\ADH-IDE-237\algo.json' -Raw | ConvertFrom-Json
 Build-Paths $json237.tasks 237
 
 Write-Host ''
 Write-Host '=== ADH IDE 121 ===' -ForegroundColor Cyan
-$json121 = Get-Content 'D:\Projects\Lecteur_Magic\tools\spec-pipeline-v72\output\ADH-IDE-121\algo.json' -Raw | ConvertFrom-Json
+$json121 = Get-Content 'D:\Projects\ClubMed\LecteurMagic\tools\spec-pipeline-v72\output\ADH-IDE-121\algo.json' -Raw | ConvertFrom-Json
 Build-Paths $json121.tasks 121

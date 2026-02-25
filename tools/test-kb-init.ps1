@@ -34,7 +34,7 @@ foreach ($proj in $projects) {
 # Run MagicMcp to initialize KB
 Write-Host ""
 Write-Host "To initialize the Knowledge Base, start MagicMcp server or run:" -ForegroundColor Yellow
-Write-Host "  cd D:\Projects\Lecteur_Magic\tools\MagicMcp" -ForegroundColor White
+Write-Host "  cd D:\Projects\ClubMed\LecteurMagic\tools\MagicMcp" -ForegroundColor White
 Write-Host "  dotnet run" -ForegroundColor White
 Write-Host ""
 Write-Host "Then use the magic_kb_reindex tool to index all projects." -ForegroundColor Yellow

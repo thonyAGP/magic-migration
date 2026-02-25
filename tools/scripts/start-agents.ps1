@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Launch Claude Code with Agent Teams for Lecteur_Magic
+    Launch Claude Code with Agent Teams for ClubMed\LecteurMagic
 .DESCRIPTION
     Starts a Claude Code session with 5 specialized agents for Magic Unipaas migration:
     - magic-router: Lead agent, intent detection and routing (existing)
@@ -34,7 +34,7 @@ param(
     [string]$Focus = "all"
 )
 
-$ProjectDir = "D:\Projects\Lecteur_Magic"
+$ProjectDir = "D:\Projects\ClubMed\LecteurMagic"
 $KbPath = "$env:USERPROFILE\.magic-kb\knowledge.db"
 $SourcePath = "D:\Data\Migration\XPA\PMS"
 
@@ -209,7 +209,7 @@ if ($Focus -ne "all") {
 $agentsJson = $agents | ConvertTo-Json -Depth 3 -Compress
 
 Write-Host ""
-Write-Host "=== Lecteur_Magic - Agent Teams ===" -ForegroundColor Cyan
+Write-Host "=== ClubMed\LecteurMagic - Agent Teams ===" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "  Mode   : $Mode" -ForegroundColor Yellow
 Write-Host "  Model  : $Model (lead)" -ForegroundColor Yellow

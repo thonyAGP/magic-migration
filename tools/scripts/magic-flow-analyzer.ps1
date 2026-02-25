@@ -28,7 +28,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 # Load dynamic config for project validation
-$configPath = "D:\Projects\Lecteur_Magic\.openspec\magic-config.json"
+$configPath = "D:\Projects\ClubMed\LecteurMagic\.openspec\magic-config.json"
 $config = $null
 $validProjects = @("ADH", "PBP", "REF", "VIL", "PBG", "PVE", "PUG")  # Fallback
 

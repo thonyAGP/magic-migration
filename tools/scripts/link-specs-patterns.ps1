@@ -8,8 +8,8 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$specsPath = "D:\Projects\Lecteur_Magic\.openspec\specs"
-$patternsPath = "D:\Projects\Lecteur_Magic\.openspec\patterns"
+$specsPath = "D:\Projects\ClubMed\LecteurMagic\.openspec\specs"
+$patternsPath = "D:\Projects\ClubMed\LecteurMagic\.openspec\patterns"
 
 # Pattern keywords for matching
 $patternKeywords = @{
@@ -101,7 +101,7 @@ Write-Host "- Patterns utilises: $($linkedPatterns.Keys.Count) / $($patternKeywo
 Write-Host ""
 
 # Generate linking report
-$reportPath = "D:\Projects\Lecteur_Magic\.openspec\reports\LINKING_SPECS_PATTERNS.md"
+$reportPath = "D:\Projects\ClubMed\LecteurMagic\.openspec\reports\LINKING_SPECS_PATTERNS.md"
 
 $report = @"
 # Linking Specs <-> Patterns

@@ -17,7 +17,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 # Load dynamic config
-$configPath = "D:\Projects\Lecteur_Magic\.openspec\magic-config.json"
+$configPath = "D:\Projects\ClubMed\LecteurMagic\.openspec\magic-config.json"
 $config = $null
 if (Test-Path $configPath) {
     $config = Get-Content $configPath -Raw | ConvertFrom-Json

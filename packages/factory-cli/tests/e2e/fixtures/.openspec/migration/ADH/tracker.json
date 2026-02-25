@@ -9,11 +9,11 @@
     "live_programs": 6,
     "orphan_programs": 4,
     "ecf_programs": 0,
-    "contracted": 1,
-    "enriched": 1,
+    "contracted": 4,
+    "enriched": 0,
     "verified": 0,
     "max_level": 3,
-    "last_computed": "2026-02-25T12:34:03.828Z"
+    "last_computed": "2026-02-25"
   },
   "batches": [
     {
@@ -21,14 +21,14 @@
       "name": "Smoke Test Batch",
       "root": 100,
       "programs": 3,
-      "status": "enriched",
+      "status": "contracted",
       "stats": {
         "backend_na": 0,
-        "frontend_enrich": 2,
-        "fully_impl": 1,
-        "coverage_avg_frontend": 75,
-        "total_partial": 1,
-        "total_missing": 0
+        "frontend_enrich": 0,
+        "fully_impl": 0,
+        "coverage_avg_frontend": 0,
+        "total_partial": 0,
+        "total_missing": 3
       },
       "priority_order": [
         100,
@@ -41,14 +41,14 @@
       "name": "Smoke Test Batch 2",
       "root": 103,
       "programs": 2,
-      "status": "verified",
+      "status": "contracted",
       "stats": {
         "backend_na": 0,
-        "frontend_enrich": 2,
-        "fully_impl": 2,
-        "coverage_avg_frontend": 100,
+        "frontend_enrich": 0,
+        "fully_impl": 0,
+        "coverage_avg_frontend": 0,
         "total_partial": 0,
-        "total_missing": 0
+        "total_missing": 2
       },
       "priority_order": [
         103,
@@ -60,8 +60,7 @@
       "name": "Smoke Test Batch Empty",
       "root": 105,
       "programs": 1,
-      "status": "contracted",
-      "contracted_date": "2026-02-25",
+      "status": "pending",
       "stats": {
         "backend_na": 0,
         "frontend_enrich": 0,

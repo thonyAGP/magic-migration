@@ -1,0 +1,45 @@
+program:
+  id: 101
+  name: "Test Tables Only"
+  complexity: LOW
+  callers: []
+  callees: []
+  tasks_count: 2
+  tables_count: 3
+  expressions_count: 0
+rules: []
+variables: []
+tables:
+  - id: 1
+    name: test_caisse_histo
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 2
+    name: test_vente
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 3
+    name: test_sessions
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+callees: []
+overall:
+  rules_total: 0
+  rules_impl: 0
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 0
+  variables_key_count: 0
+  callees_total: 0
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 0
+  status: contracted
+  generated: "2026-02-25"
+  notes: "E2E test fixture - 3 tables only"

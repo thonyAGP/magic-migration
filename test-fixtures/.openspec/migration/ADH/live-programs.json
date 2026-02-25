@@ -1,0 +1,18 @@
+{
+  "generated": "2026-02-25",
+  "method": "E2E test fixtures",
+  "total_adh": 10,
+  "live_count": 6,
+  "orphan_count": 4,
+  "seeds": [1],
+  "ecf_programs": [],
+  "programs": [
+    { "ide": 100, "name": "SMOKE_ROOT_1", "complexity": "MEDIUM", "level": 3, "callers": [], "callees": [101, 102], "source": "seed", "domain": "" },
+    { "ide": 101, "name": "SMOKE_CHILD_1", "complexity": "LOW", "level": 2, "callers": [100], "callees": [103], "source": "bfs", "domain": "" },
+    { "ide": 102, "name": "SMOKE_CHILD_2", "complexity": "MEDIUM", "level": 2, "callers": [100], "callees": [], "source": "bfs", "domain": "" },
+    { "ide": 103, "name": "SMOKE_LEAF_1", "complexity": "LOW", "level": 1, "callers": [101], "callees": [], "source": "bfs", "domain": "" },
+    { "ide": 104, "name": "SMOKE_LEAF_2", "complexity": "HIGH", "level": 1, "callers": [102], "callees": [], "source": "bfs", "domain": "" },
+    { "ide": 105, "name": "SMOKE_LEAF_3", "complexity": "LOW", "level": 1, "callers": [102], "callees": [], "source": "bfs", "domain": "" }
+  ],
+  "orphans": [200, 201, 202, 203]
+}

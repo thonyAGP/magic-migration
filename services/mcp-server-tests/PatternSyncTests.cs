@@ -5,7 +5,7 @@ namespace MagicMcp.Tests;
 
 public class PatternSyncTests
 {
-    private const string PatternsDir = @"D:\Projects\Lecteur_Magic\.openspec\patterns";
+    private const string PatternsDir = @"D:\Projects\ClubMed\LecteurMagic\.openspec\patterns";
 
     [Fact]
     public void KnowledgeDb_ShouldInitialize()

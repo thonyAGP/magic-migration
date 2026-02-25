@@ -62,7 +62,7 @@ Classification :
 ### Phase 3 : Validation technique
 
 ```bash
-cd /mnt/d/Projects/Lecteur_Magic/adh-web
+cd /mnt/d/Projects/ClubMed/LecteurMagic/adh-web
 npx tsc --noEmit          # 0 erreurs
 npx vitest run --pool=vmForks  # tous passent
 npm run build             # build OK

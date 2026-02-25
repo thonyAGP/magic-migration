@@ -5,7 +5,7 @@ $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 Write-Host "=== Test Phase 2 with PMS-1427 ===" -ForegroundColor Cyan
 
 # Read context.json from Phase 1
-$ctxPath = "D:\Projects\Lecteur_Magic\.openspec\tickets\PMS-1427\context.json"
+$ctxPath = "D:\Projects\ClubMed\LecteurMagic\.openspec\tickets\PMS-1427\context.json"
 $raw = [System.IO.File]::ReadAllText($ctxPath, [System.Text.Encoding]::UTF8)
 $raw = $raw.TrimStart([char]0xFEFF)
 $context = $raw | ConvertFrom-Json
@@ -16,7 +16,7 @@ foreach ($p in $context.Programs) {
 }
 
 # Run Phase 2
-$outPath = "D:\Projects\Lecteur_Magic\.openspec\tickets\PMS-1427\programs.json"
+$outPath = "D:\Projects\ClubMed\LecteurMagic\.openspec\tickets\PMS-1427\programs.json"
 & "$ScriptDir\auto-find-programs.ps1" -Programs $context.Programs -Tables $context.Tables -OutputFile $outPath
 
 # Check output

@@ -5,7 +5,7 @@ $ErrorActionPreference = "Stop"
 
 # Build first
 Write-Host "Building MagicMcp..." -ForegroundColor Cyan
-Push-Location "D:\Projects\Lecteur_Magic\tools\MagicMcp"
+Push-Location "D:\Projects\ClubMed\LecteurMagic\tools\MagicMcp"
 dotnet build --configuration Release -v q 2>&1 | Out-Null
 Pop-Location
 
@@ -41,7 +41,7 @@ try {
 Console.WriteLine();
 Console.WriteLine("=== Pattern Sync Test ===");
 var syncService = new PatternSyncService(db);
-var patternsDir = @"D:\Projects\Lecteur_Magic\.openspec\patterns";
+var patternsDir = @"D:\Projects\ClubMed\LecteurMagic\.openspec\patterns";
 
 var status = syncService.GetSyncStatus(patternsDir);
 Console.WriteLine($"Files on disk: {status.FilesOnDisk}");
@@ -80,7 +80,7 @@ foreach (var r in searchResults) {
 '@
 
 # Save test code
-$testFile = "D:\Projects\Lecteur_Magic\tools\PatternSyncTest.cs"
+$testFile = "D:\Projects\ClubMed\LecteurMagic\tools\PatternSyncTest.cs"
 $testCode | Out-File -FilePath $testFile -Encoding UTF8
 
 Write-Host ""

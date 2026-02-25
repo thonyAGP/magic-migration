@@ -1,7 +1,7 @@
 # Fix section 3: Replace T{ISN2} with ide_path and add [ECRAN] links
 param(
-    [string]$SpecPath = "D:\Projects\Lecteur_Magic\.openspec\specs\ADH-IDE-237.md",
-    [string]$AlgoPath = "D:\Projects\Lecteur_Magic\tools\spec-pipeline-v72\output\ADH-IDE-237\algo.json"
+    [string]$SpecPath = "D:\Projects\ClubMed\LecteurMagic\.openspec\specs\ADH-IDE-237.md",
+    [string]$AlgoPath = "D:\Projects\ClubMed\LecteurMagic\tools\spec-pipeline-v72\output\ADH-IDE-237\algo.json"
 )
 
 # Build ISN2 -> ide_path mapping

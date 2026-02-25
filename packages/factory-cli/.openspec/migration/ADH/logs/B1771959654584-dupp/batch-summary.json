@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-02-24T19:00:54.585Z",
+  "batchId": "B1771959654584-dupp",
+  "totalPrograms": 2,
+  "completed": 1,
+  "failed": 1,
+  "duration_ms": 120000,
+  "totalTokens": {
+    "input": 50000,
+    "output": 20000
+  }
+}

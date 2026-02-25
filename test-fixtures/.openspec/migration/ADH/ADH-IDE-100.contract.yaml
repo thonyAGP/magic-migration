@@ -1,0 +1,52 @@
+program:
+  id: 100
+  name: SMOKE_ROOT_1
+  complexity: MEDIUM
+  callers: []
+  callees:
+    - 101
+    - 102
+  tasks_count: 3
+  tables_count: 2
+  expressions_count: 5
+rules:
+  - local_id: R1
+    description: "Validate input data"
+    category: validation
+    status: IMPL
+    target_file: ""
+    gap_notes: ""
+  - local_id: R2
+    description: "Format output"
+    category: display
+    status: PARTIAL
+    target_file: ""
+    gap_notes: "Missing error format"
+variables:
+  - local_id: A
+    name: customerName
+    type: Alpha
+    status: IMPL
+    target_file: ""
+    gap_notes: ""
+tables: []
+callees:
+  - id: 101
+    name: SMOKE_CHILD_1
+    status: IMPL
+    target_file: ""
+    gap_notes: ""
+overall:
+  rules_total: 2
+  rules_impl: 1
+  rules_partial: 1
+  rules_missing: 0
+  rules_na: 0
+  variables_key_count: 1
+  callees_total: 1
+  callees_impl: 1
+  callees_missing: 0
+  coverage_pct: 75
+  status: enriched
+  generated: "2026-02-25"
+  notes: "Smoke test contract"

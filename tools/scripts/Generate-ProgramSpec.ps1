@@ -27,7 +27,7 @@ param(
     [Parameter(Mandatory=$true)]
     [int]$IDE,
 
-    [string]$OutputPath = "D:\Projects\Lecteur_Magic\.openspec\specs"
+    [string]$OutputPath = "D:\Projects\ClubMed\LecteurMagic\.openspec\specs"
 )
 
 $ErrorActionPreference = "Stop"

@@ -105,7 +105,7 @@ fonctionnelle du projet ADH-Web (migration Magic Unipaas vers React).
 ## CONTEXTE PROJET
 
 - **Stack** : React 19 + Vite 7 + TypeScript 5.9 + Tailwind v4 + Zustand + TanStack Table + Zod v4
-- **Dossier** : /mnt/d/Projects/Lecteur_Magic/adh-web/
+- **Dossier** : /mnt/d/Projects/ClubMed/LecteurMagic/adh-web/
 - **Port dev** : 3050, proxy /api -> :5287 (backend C#)
 - **Etat actuel** : Lots 0-7 complets, audit fonctionnel termine
   - 229 fichiers source, 720 tests, build 1128KB, 0 erreurs TS/lint
@@ -264,7 +264,7 @@ fonctionnelle du projet ADH-Web (migration Magic Unipaas vers React).
 ## CONTEXTE PROJET
 
 - **Stack** : React 19 + Vite 7 + TypeScript 5.9 + Tailwind v4 + Zustand + TanStack Table + Zod v4
-- **Dossier** : /mnt/d/Projects/Lecteur_Magic/adh-web/
+- **Dossier** : /mnt/d/Projects/ClubMed/LecteurMagic/adh-web/
 - **Port dev** : 3050, proxy /api -> :5287 (backend C#)
 - **Etat actuel** : Phase 1 terminee (T1 Editions + T2 Transactions)
   - Couverture fonctionnelle : ~65%
@@ -408,7 +408,7 @@ fonctionnelle du projet ADH-Web (migration Magic Unipaas vers React).
 ## CONTEXTE PROJET
 
 - **Stack** : React 19 + Vite 7 + TypeScript 5.9 + Tailwind v4 + Zustand + TanStack Table + Zod v4
-- **Dossier** : /mnt/d/Projects/Lecteur_Magic/adh-web/
+- **Dossier** : /mnt/d/Projects/ClubMed/LecteurMagic/adh-web/
 - **Port dev** : 3050, proxy /api -> :5287 (backend C#)
 - **Etat actuel** : Phases 1-2 terminees
   - Couverture fonctionnelle : ~78%
@@ -602,7 +602,7 @@ completude fonctionnelle du projet ADH-Web (migration Magic Unipaas vers React).
 ## CONTEXTE PROJET
 
 - **Stack** : React 19 + Vite 7 + TypeScript 5.9 + Tailwind v4 + Zustand + TanStack Table + Zod v4
-- **Dossier** : /mnt/d/Projects/Lecteur_Magic/adh-web/
+- **Dossier** : /mnt/d/Projects/ClubMed/LecteurMagic/adh-web/
 - **Port dev** : 3050, proxy /api -> :5287 (backend C#)
 - **Etat actuel** : Phases 1-3 terminees
   - Couverture fonctionnelle : ~92%

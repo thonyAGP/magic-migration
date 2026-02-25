@@ -22,7 +22,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$ProjectRoot = "D:\Projects\Lecteur_Magic"
+$ProjectRoot = "D:\Projects\ClubMed\LecteurMagic"
 $TicketsDir = "$ProjectRoot\.openspec\tickets"
 $TicketDir = "$TicketsDir\$TicketKey"
 

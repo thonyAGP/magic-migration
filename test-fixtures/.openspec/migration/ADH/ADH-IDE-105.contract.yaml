@@ -1,0 +1,40 @@
+program:
+  id: 105
+  name: SMOKE_LEAF_3
+  complexity: LOW
+  callers:
+    - 102
+  callees: []
+  tasks_count: 1
+  tables_count: 1
+  expressions_count: 2
+rules:
+  - local_id: R1
+    description: "Validate user input"
+    category: validation
+    status: MISSING
+    target_file: ""
+    gap_notes: "Not yet implemented"
+variables:
+  - local_id: A
+    name: amount
+    type: Numeric
+    status: MISSING
+    target_file: ""
+    gap_notes: "Needs mapping"
+tables: []
+callees: []
+overall:
+  rules_total: 1
+  rules_impl: 0
+  rules_partial: 0
+  rules_missing: 1
+  rules_na: 0
+  variables_key_count: 1
+  callees_total: 0
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 0
+  status: contracted
+  generated: "2026-02-25"
+  notes: "Contract needing enrichment for E2E test"
