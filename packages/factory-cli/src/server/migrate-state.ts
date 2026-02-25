@@ -4,6 +4,9 @@
  * after a page refresh and see what happened.
  */
 
+import fs from 'node:fs';
+import path from 'node:path';
+
 export interface MigrateActiveState {
   running: boolean;
   batch: string;
@@ -76,4 +79,65 @@ export const addMigrateEvent = (event: unknown): void => {
 
 export const endMigration = (): void => {
   state.running = false;
+};
+
+// ─── Phase 3: State Persistence ──────────────────────────────────
+
+/**
+ * Persist current migration state to disk for crash recovery.
+ */
+export const persistState = (filePath: string): void => {
+  try {
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    fs.writeFileSync(filePath, JSON.stringify(state, null, 2), 'utf8');
+  } catch (err) {
+    console.error('[STATE PERSIST FAILED]', {
+      filePath,
+      error: err instanceof Error ? err.message : String(err),
+    });
+  }
+};
+
+/**
+ * Load persisted migration state from disk (for recovery after restart).
+ * Returns null if file doesn't exist or is corrupted.
+ */
+export const loadPersistedState = (filePath: string): MigrateActiveState | null => {
+  if (!fs.existsSync(filePath)) return null;
+
+  try {
+    const content = fs.readFileSync(filePath, 'utf8');
+    const loaded = JSON.parse(content) as MigrateActiveState;
+
+    // Restore state
+    state = {
+      ...loaded,
+      programList: [...loaded.programList],
+      events: [...loaded.events],
+    };
+
+    return state;
+  } catch (err) {
+    console.error('[STATE RECOVERY FAILED] Corrupted migration-state.json, starting fresh', {
+      filePath,
+      error: err instanceof Error ? err.message : String(err),
+    });
+    return null;
+  }
+};
+
+/**
+ * Clear persisted state file (called after successful migration completion).
+ */
+export const clearPersistedState = (filePath: string): void => {
+  try {
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+  } catch (err) {
+    console.error('[STATE CLEANUP FAILED]', {
+      filePath,
+      error: err instanceof Error ? err.message : String(err),
+    });
+  }
 };
