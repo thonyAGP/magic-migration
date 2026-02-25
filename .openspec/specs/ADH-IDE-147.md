@@ -1,6 +1,6 @@
 ﻿# ADH IDE 147 - Devises des tickets WS
 
-> **Analyse**: Phases 1-4 2026-02-07 03:50 -> 03:30 (23h39min) | Assemblage 03:30
+> **Analyse**: Phases 1-4 2026-02-23 18:22 -> 18:22 (1s) | Assemblage 12:26
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,13 +22,51 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-## ADH IDE 147 - Devises des tickets WS
+**Devises des tickets WS** enregistre les informations multi-devise associees aux tickets de webservices lors des operations de caisse. Appele par les flux d'ouverture ([IDE 122](ADH-IDE-122.md), [IDE 297](ADH-IDE-297.md)) et de fermeture ([IDE 131](ADH-IDE-131.md), [IDE 299](ADH-IDE-299.md)), il cree des enregistrements temporaires dans pv_invoiceprintfiliationtmp. Programme sans ecran (14 taches), delegue les calculs a [Devises finales F/F Qte WS (IDE 145)](ADH-IDE-145.md).
 
-Programme d'agrégation des devises utilisées lors des transactions sur terminaux de paiement (WebService). Il consolide les mouvements de change effectués pendant une session de caisse, en distinguant les tickets d'ouverture et de fermeture. Chaque ticket enregistre la devise de session utilisée et génère un enregistrement dans la table temporaire `pv_invoiceprintfiliationtmp` pour traçabilité.
+### Contexte ticket ouverture
 
-Le flux traite deux scénarios : d'abord les devises collectées lors de l'ouverture de session (tâche "Ticket ouverture"), puis celles de la fermeture (tâche "Ticket fermeture"). Pour chaque ticket, le programme applique la devise de session en cours et appelle ADH IDE 145 pour calculer les équivalents finaux. Cette structure permet de rapprocher précisément les mouvements de change avec les tickets de paiement correspondants.
+La branche ouverture (147.2) applique la devise de la session courante (147.3, variables EO = devise locale, EP = session, ES = quantite) puis cree les enregistrements temporaires correspondants. Le sous-programme [IDE 145](ADH-IDE-145.md) est appele pour recuperer les quantites et montants finalises par devise.
 
-Ce programme est appelé massivement par les trois points d'entrée de gestion de caisse (ouverture IDE 122/297, fermeture IDE 131/299), garantissant que chaque opération de caisse dispose d'un audit complet des devises. Le rôle critique dans la fermeture de caisse en fait un élément clé pour la réconciliation des écarts de change.
+<details>
+<summary>3 taches : 147.2, 147.3, 147.4</summary>
+
+- **147.2** - Ticket ouverture (branche ouverture caisse)
+- **147.3** - Avec devise session (applique devise EO, session EP)
+- **147.4** - Creation enregistrement ouverture (ecrit pv_invoiceprintfiliationtmp)
+
+</details>
+
+### Contexte ticket fermeture
+
+La branche fermeture (147.5) est plus complexe : elle traite d'abord la devise session (147.6), puis gere le contexte historique devise (147.8). Les soldes de fermeture sont calcules en plusieurs passes (147.10, 147.11, 147.13) avec un total consolide (147.12, 147.14). Chaque passe delegue a [IDE 145](ADH-IDE-145.md) pour garantir la coherence des montants multi-devise.
+
+<details>
+<summary>8 taches : 147.5, 147.6, 147.7, 147.8, 147.9, 147.10, 147.11, 147.12</summary>
+
+- **147.5** - Ticket fermeture (branche fermeture caisse)
+- **147.6** - Avec devise session (applique devise EO, session EP pour fermeture)
+- **147.7** - Creation enregistrement fermeture
+- **147.8** - Avec histo devise (contexte devise historique)
+- **147.9** - Creation enregistrement histo
+- **147.10** - Solde fermeture (calcul solde devise)
+- **147.11** - Solde fermeture (calcul solde histo)
+- **147.12** - Total solde final (consolidation multi-devise)
+
+</details>
+
+### Creation des enregistrements temporaires
+
+Les 3 taches de creation (147.4, 147.7, 147.9) ecrivent dans la table pv_invoiceprintfiliationtmp en mode Create. Ces enregistrements temporaires servent de source de verite pour les editions et rapports de cloture, assurant la tracabilite multi-devise du point de vente.
+
+<details>
+<summary>3 taches : 147.4, 147.7, 147.9</summary>
+
+- **147.4** - Creation ticket ouverture (ecrit pv_invoiceprintfiliationtmp)
+- **147.7** - Creation ticket fermeture (ecrit pv_invoiceprintfiliationtmp)
+- **147.9** - Creation ticket histo devise (ecrit pv_invoiceprintfiliationtmp)
+
+</details>
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -38,20 +76,20 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t1"></a>147 - Devises des tickets WS
+#### <a id="t1"></a>T1 - Devises des tickets WS
 
 **Role** : Generation du document : Devises des tickets WS.
 **Delegue a** : [Devises finales F/F Qte WS (IDE 145)](ADH-IDE-145.md)
 
 ---
 
-#### <a id="t2"></a>147.1 - Ticket ouverture
+#### <a id="t2"></a>T2 - Ticket ouverture
 
 **Role** : Generation du document : Ticket ouverture.
 
 ---
 
-#### <a id="t5"></a>147.2 - Ticket fermeture
+#### <a id="t5"></a>T5 - Ticket fermeture
 
 **Role** : Generation du document : Ticket fermeture.
 
@@ -62,7 +100,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t3"></a>147.1.1 - Avec devise session
+#### <a id="t3"></a>T3 - Avec devise session
 
 **Role** : Traitement : Avec devise session.
 **Variables liees** : EO (Param devise locale), EP (Param N° session), ES (Quantite devise)
@@ -70,7 +108,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t6"></a>147.2.1 - Avec devise session
+#### <a id="t6"></a>T6 - Avec devise session
 
 **Role** : Traitement : Avec devise session.
 **Variables liees** : EO (Param devise locale), EP (Param N° session), ES (Quantite devise)
@@ -78,7 +116,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t8"></a>147.2.2 - Avec histo devise
+#### <a id="t8"></a>T8 - Avec histo devise
 
 **Role** : Traitement : Avec histo devise.
 **Variables liees** : EO (Param devise locale), ES (Quantite devise)
@@ -86,35 +124,35 @@ Traitements internes.
 
 ---
 
-#### <a id="t10"></a>147.2.3 - Solde fermeture
+#### <a id="t10"></a>T10 - Solde fermeture
 
 **Role** : Consultation/chargement : Solde fermeture.
 **Delegue a** : [Devises finales F/F Qte WS (IDE 145)](ADH-IDE-145.md)
 
 ---
 
-#### <a id="t11"></a>147.2.3.1 - Solde fermeture
+#### <a id="t11"></a>T11 - Solde fermeture
 
 **Role** : Consultation/chargement : Solde fermeture.
 **Delegue a** : [Devises finales F/F Qte WS (IDE 145)](ADH-IDE-145.md)
 
 ---
 
-#### <a id="t12"></a>147.2.3.1.1 - Total solde final
+#### <a id="t12"></a>T12 - Total solde final
 
 **Role** : Consultation/chargement : Total solde final.
 **Delegue a** : [Devises finales F/F Qte WS (IDE 145)](ADH-IDE-145.md)
 
 ---
 
-#### <a id="t13"></a>147.2.3.2 - Solde fermeture
+#### <a id="t13"></a>T13 - Solde fermeture
 
 **Role** : Consultation/chargement : Solde fermeture.
 **Delegue a** : [Devises finales F/F Qte WS (IDE 145)](ADH-IDE-145.md)
 
 ---
 
-#### <a id="t14"></a>147.2.3.2.1 - Total solde final
+#### <a id="t14"></a>T14 - Total solde final
 
 **Role** : Consultation/chargement : Total solde final.
 **Delegue a** : [Devises finales F/F Qte WS (IDE 145)](ADH-IDE-145.md)
@@ -126,19 +164,19 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t4"></a>147.1.1.1 - Creation
+#### <a id="t4"></a>T4 - Creation
 
 **Role** : Creation d'enregistrement : Creation.
 
 ---
 
-#### <a id="t7"></a>147.2.1.1 - Creation
+#### <a id="t7"></a>T7 - Creation
 
 **Role** : Creation d'enregistrement : Creation.
 
 ---
 
-#### <a id="t9"></a>147.2.2.1 - creation
+#### <a id="t9"></a>T9 - creation
 
 **Role** : Creation d'enregistrement : creation.
 
@@ -186,47 +224,71 @@ Insertion de nouveaux enregistrements en base.
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **147.1** | [**Devises des tickets WS** (147)](#t1) | MDI | - | Impression |
-| 147.1.1 | [Ticket ouverture (147.1)](#t2) | MDI | - | |
-| 147.1.2 | [Ticket fermeture (147.2)](#t5) | MDI | - | |
-| **147.2** | [**Avec devise session** (147.1.1)](#t3) | MDI | - | Traitement |
-| 147.2.1 | [Avec devise session (147.2.1)](#t6) | MDI | - | |
-| 147.2.2 | [Avec histo devise (147.2.2)](#t8) | MDI | - | |
-| 147.2.3 | [Solde fermeture (147.2.3)](#t10) | MDI | - | |
-| 147.2.4 | [Solde fermeture (147.2.3.1)](#t11) | MDI | - | |
-| 147.2.5 | [Total solde final (147.2.3.1.1)](#t12) | MDI | - | |
-| 147.2.6 | [Solde fermeture (147.2.3.2)](#t13) | MDI | - | |
-| 147.2.7 | [Total solde final (147.2.3.2.1)](#t14) | MDI | - | |
-| **147.3** | [**Creation** (147.1.1.1)](#t4) | MDI | - | Creation |
-| 147.3.1 | [Creation (147.2.1.1)](#t7) | MDI | - | |
-| 147.3.2 | [creation (147.2.2.1)](#t9) | MDI | - | |
+| **147.1** | [**Devises des tickets WS** (T1)](#t1) | MDI | - | Impression |
+| 147.1.1 | [Ticket ouverture (T2)](#t2) | MDI | - | |
+| 147.1.2 | [Ticket fermeture (T5)](#t5) | MDI | - | |
+| **147.2** | [**Avec devise session** (T3)](#t3) | MDI | - | Traitement |
+| 147.2.1 | [Avec devise session (T6)](#t6) | MDI | - | |
+| 147.2.2 | [Avec histo devise (T8)](#t8) | MDI | - | |
+| 147.2.3 | [Solde fermeture (T10)](#t10) | MDI | - | |
+| 147.2.4 | [Solde fermeture (T11)](#t11) | MDI | - | |
+| 147.2.5 | [Total solde final (T12)](#t12) | MDI | - | |
+| 147.2.6 | [Solde fermeture (T13)](#t13) | MDI | - | |
+| 147.2.7 | [Total solde final (T14)](#t14) | MDI | - | |
+| **147.3** | [**Creation** (T4)](#t4) | MDI | - | Creation |
+| 147.3.1 | [Creation (T7)](#t7) | MDI | - | |
+| 147.3.2 | [creation (T9)](#t9) | MDI | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    DECISION{Param Quand}
-    PROCESS[Traitement]
-    UPDATE[MAJ 1 tables]
-    ENDOK([END OK])
-    ENDKO([END KO])
+    START([Appel depuis caisse])
+    CTXTYPE{Ouverture ou Fermeture}
+    DEVSESS1[Devise session ouverture]
+    CREATEOUV[Creer enreg ouverture]
+    DEVSESS2[Devise session fermeture]
+    CREATEFERM[Creer enreg fermeture]
+    HISTODEV[Devise historique]
+    CREATEHIST[Creer enreg histo]
+    SOLDES[Calcul soldes devise]
+    TOTAL[Total solde consolide]
+    ENDOK([Fin OK])
 
-    START --> INIT --> SAISIE --> DECISION
-    DECISION -->|OUI| PROCESS
-    DECISION -->|NON| ENDKO
-    PROCESS --> UPDATE --> ENDOK
+    START --> CTXTYPE
+    CTXTYPE -->|Ouverture| DEVSESS1
+    DEVSESS1 --> CREATEOUV
+    CREATEOUV --> ENDOK
+    CTXTYPE -->|Fermeture| DEVSESS2
+    DEVSESS2 --> CREATEFERM
+    CREATEFERM --> HISTODEV
+    HISTODEV --> CREATEHIST
+    CREATEHIST --> SOLDES
+    SOLDES --> TOTAL
+    TOTAL --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
-    style ENDKO fill:#f85149,color:#fff
-    style DECISION fill:#58a6ff,color:#000
+    style CTXTYPE fill:#58a6ff,color:#000
+    style CREATEOUV fill:#ffeb3b,color:#000
+    style CREATEFERM fill:#ffeb3b,color:#000
+    style CREATEHIST fill:#ffeb3b,color:#000
+    style TOTAL fill:#ffeb3b,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Jaune = Flux devises WS | Bleu = Decisions
+
+| Noeud | Source | Justification |
+|-------|--------|---------------|
+| CTXTYPE | Tache 147.1 | Branchement ouverture (147.2) vs fermeture (147.5) |
+| DEVSESS1 | Tache 147.3 | Applique devise session EO pour ouverture |
+| CREATEOUV | Tache 147.4 | Ecrit pv_invoiceprintfiliationtmp (ouverture) |
+| DEVSESS2 | Tache 147.6 | Applique devise session EO pour fermeture |
+| CREATEFERM | Tache 147.7 | Ecrit pv_invoiceprintfiliationtmp (fermeture) |
+| HISTODEV | Tache 147.8 | Contexte devise historique |
+| CREATEHIST | Tache 147.9 | Ecrit pv_invoiceprintfiliationtmp (histo) |
+| SOLDES | Taches 147.10-147.11 | Calcul soldes par devise via IDE 145 |
+| TOTAL | Taches 147.12-147.14 | Consolidation totaux multi-devise |
 
 <!-- TAB:Donnees -->
 
@@ -449,4 +511,4 @@ graph LR
 | [Devises finales F/F Qte WS (IDE 145)](ADH-IDE-145.md) | Sous-programme | 2x | Haute - Sous-programme |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:30*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-25 12:27*

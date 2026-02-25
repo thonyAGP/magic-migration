@@ -1,6 +1,6 @@
 ﻿# ADH IDE 151 - Reimpression tickets fermeture
 
-> **Analyse**: Phases 1-4 2026-02-07 03:51 -> 03:35 (23h44min) | Assemblage 03:35
+> **Analyse**: Phases 1-4 2026-02-23 18:22 -> 18:22 (1s) | Assemblage 12:25
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,32 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 151 gère la réimpression des tickets de fermeture de caisse après clôture d'une session. Le programme affiche d'abord un tableau récapitulatif (IDE 154) listant les dernières sessions fermées avec leurs dates et montants, puis propose à l'utilisateur de sélectionner une session pour relancer l'impression. Cette fonctionnalité est utile quand un ticket de fermeture a été perdu ou endommagé et doit être imprimé à nouveau sans refaire la clôture.
+**Reimpression tickets fermeture** permet de reimprimer les documents de cloture de session sans rejouer la fermeture complete. Appele depuis [Gestion Caisse (IDE 121)](ADH-IDE-121.md) et [IDE 298](ADH-IDE-298.md), il propose 3 types de documents : tableau recapitulatif, ticket standard et ticket appro remise. Programme simple (5 taches, 1 ecran de choix).
 
-Le flux principal récupère les paramètres de configuration (sélection de la session), puis branche vers deux programmes d'impression distincts: le Ticket fermeture session (IDE 138) qui réimprime le ticket de clôture standard, ou le Ticket appro remise (IDE 139) pour les tickets d'approvisionnement. Cette architecture permet une séparation claire entre la sélection de la session et l'exécution de l'impression, évitant la duplication de logique.
+### Recuperation et parametrage
 
-L'interface propose à l'utilisateur un choix entre plusieurs options d'impression (fermeture standard, approvisionnement, ou annulation) avant de lancer le programme d'impression correspondant. Les paramètres (numéro de session, type d'impression) sont transmis aux sous-programmes appelés via le contexte de la caisse.
+La tache racine (151.1) configure le contexte de reimpression. La sous-tache "Derniere session" (151.2) interroge histo_sessions_caisse_detail pour charger la derniere cloture disponible (variable EV = session, FJ = date fin). La sous-tache "parametres" (151.3) charge les preferences d'impression (numero imprimante, format).
+
+<details>
+<summary>3 taches : 151.1, 151.2, 151.3</summary>
+
+- **151.1** - Reimpression tickets fermeture (racine, config contexte)
+- **151.2** - Derniere session (lit histo_sessions_caisse_detail, delegue a [IDE 154](ADH-IDE-154.md))
+- **151.3** - Parametres (charge preferences impression)
+
+</details>
+
+### Choix du document et impression
+
+L'ecran de choix (151.4) **[ECRAN]** presente une grille 595x151 DLU avec les 3 types de documents reimprimables. L'utilisateur selectionne le document souhaite et la tache "imprimer" (151.5) execute le CallTask correspondant : [Ticket fermeture session (IDE 138)](ADH-IDE-138.md), [Ticket appro remise (IDE 139)](ADH-IDE-139.md) ou [Tableau recap fermeture (IDE 154)](ADH-IDE-154.md). Si erreur d'impression (variable FI), le flux s'interrompt sans impact comptable.
+
+<details>
+<summary>2 taches : 151.4, 151.5</summary>
+
+- **151.4** - Choix **[ECRAN]** (grille selection document, 595x151 DLU)
+- **151.5** - Imprimer (execute CallTask selon choix, delegue a [IDE 138](ADH-IDE-138.md), [IDE 139](ADH-IDE-139.md))
+
+</details>
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,7 +57,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t1"></a>151 - Reimpression tickets fermeture
+#### <a id="t1"></a>T1 - Reimpression tickets fermeture
 
 **Role** : Generation du document : Reimpression tickets fermeture.
 **Variables liees** : FH (P2 montant ecart fermeture)
@@ -44,7 +65,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t5"></a>151.4 - imprimer
+#### <a id="t5"></a>T5 - imprimer
 
 **Role** : Configuration/parametrage : imprimer.
 **Delegue a** : [Ticket fermeture session (IDE 138)](ADH-IDE-138.md), [Ticket appro remise (IDE 139)](ADH-IDE-139.md)
@@ -56,7 +77,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t2"></a>151.1 - Dernière session
+#### <a id="t2"></a>T2 - Dernière session
 
 **Role** : Traitement : Dernière session.
 **Variables liees** : EV (P0 session), FJ (date fin session)
@@ -64,7 +85,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t3"></a>151.2 - parametres
+#### <a id="t3"></a>T3 - parametres
 
 **Role** : Traitement : parametres.
 **Delegue a** : [Tableau recap fermeture (IDE 154)](ADH-IDE-154.md)
@@ -76,7 +97,7 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t4"></a>151.3 - Choix [[ECRAN]](#ecran-t4)
+#### <a id="t4"></a>T4 - Choix [ECRAN]
 
 **Role** : Selection par l'operateur : Choix.
 **Ecran** : 595 x 151 DLU (MDI) | [Voir mockup](#ecran-t4)
@@ -111,14 +132,14 @@ Ecrans de recherche et consultation.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 151.3 | 151.3 | Choix | MDI | 595 | 151 | Consultation |
+| 1 | 151.3 | T4 | Choix | MDI | 595 | 151 | Consultation |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t4"></a>151.3 - Choix
-**Tache** : [151.3](#t4) | **Type** : MDI | **Dimensions** : 595 x 151 DLU
+**Tache** : [T4](#t4) | **Type** : MDI | **Dimensions** : 595 x 151 DLU
 **Bloc** : Consultation | **Titre IDE** : Choix
 
 <!-- FORM-DATA:
@@ -280,37 +301,61 @@ Ecran unique: **Choix**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **151.1** | [**Reimpression tickets fermeture** (151)](#t1) | MDI | - | Impression |
-| 151.1.1 | [imprimer (151.4)](#t5) | MDI | - | |
-| **151.2** | [**Dernière session** (151.1)](#t2) | MDI | - | Traitement |
-| 151.2.1 | [parametres (151.2)](#t3) | MDI | - | |
-| **151.3** | [**Choix** (151.3)](#t4) [mockup](#ecran-t4) | MDI | 595x151 | Consultation |
+| **151.1** | [**Reimpression tickets fermeture** (T1)](#t1) | MDI | - | Impression |
+| 151.1.1 | [imprimer (T5)](#t5) | MDI | - | |
+| **151.2** | [**Dernière session** (T2)](#t2) | MDI | - | Traitement |
+| 151.2.1 | [parametres (T3)](#t3) | MDI | - | |
+| **151.3** | [**Choix** (T4)](#t4) [mockup](#ecran-t4) | MDI | 595x151 | Consultation |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    INIT[Init controles]
-    SAISIE[Choix]
-    DECISION{date fin session}
-    PROCESS[Traitement]
-    ENDOK([END OK])
-    ENDKO([END KO])
+    START([Appel reimpression])
+    LSESS[Charger derniere session]
+    PARAMS[Charger preferences]
+    CHOIX{Choix document}
+    RECAP[Tableau recapitulatif]
+    TICKET[Ticket fermeture]
+    APPRO[Ticket appro remise]
+    PRINT[Lancer impression]
+    CHERR{Erreur impression}
+    ENDOK([Fin OK])
+    ENDKO([Fin KO])
 
-    START --> INIT --> SAISIE --> DECISION
-    DECISION -->|OUI| PROCESS
-    DECISION -->|NON| ENDKO
-    PROCESS --> ENDOK
+    START --> LSESS
+    LSESS --> PARAMS
+    PARAMS --> CHOIX
+    CHOIX -->|Recap| RECAP
+    CHOIX -->|Standard| TICKET
+    CHOIX -->|Appro| APPRO
+    RECAP --> PRINT
+    TICKET --> PRINT
+    APPRO --> PRINT
+    PRINT --> CHERR
+    CHERR -->|NON| ENDOK
+    CHERR -->|OUI| ENDKO
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
     style ENDKO fill:#f85149,color:#fff
-    style DECISION fill:#58a6ff,color:#000
+    style CHOIX fill:#58a6ff,color:#000
+    style CHERR fill:#58a6ff,color:#000
+    style PRINT fill:#ffeb3b,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Jaune = Flux impression | Bleu = Decisions
+
+| Noeud | Source | Justification |
+|-------|--------|---------------|
+| LSESS | Tache 151.2 | Interroge histo_sessions_caisse_detail pour derniere cloture |
+| PARAMS | Tache 151.3 | Charge preferences impression (imprimante, format) |
+| CHOIX | Tache 151.4 | Ecran de selection parmi 3 types de documents |
+| RECAP | CallTask vers IDE 154 | Tableau recapitulatif fermeture |
+| TICKET | CallTask vers IDE 138 | Ticket fermeture session standard |
+| APPRO | CallTask vers IDE 139 | Ticket approvisionnement remise |
+| PRINT | Tache 151.5 | Execute impression selon choix utilisateur |
+| CHERR | Expression 6 | NOT(erreur FI) : gestion erreur impression |
 
 <!-- TAB:Donnees -->
 
@@ -378,7 +423,7 @@ Variables diverses.
 | FG | P2 montant remise monnaie final | Numeric | - |
 | FH | P2 montant ecart fermeture | Numeric | - |
 | FI | erreur | Logical | 1x refs |
-| FJ | date fin session | Date | [151.1](#t2) |
+| FJ | date fin session | Date | [T2](#t2) |
 | FK | date comptable | Date | 1x refs |
 
 <details>
@@ -561,4 +606,4 @@ graph LR
 | [Ticket fermeture session (IDE 138)](ADH-IDE-138.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:35*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-25 12:25*

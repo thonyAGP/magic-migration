@@ -1,6 +1,6 @@
 ﻿# ADH IDE 24 - Print reçu change vente
 
-> **Analyse**: Phases 1-4 2026-02-07 03:41 -> 01:22 (21h40min) | Assemblage 01:22
+> **Analyse**: Phases 1-4 2026-02-23 18:22 -> 18:22 (1s) | Assemblage 12:28
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -72,7 +72,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>24 - Veuillez patienter ... [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Veuillez patienter ... [ECRAN]
 
 **Role** : Tache d'orchestration : point d'entree du programme (8 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 424 x 56 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -82,61 +82,61 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [24.1.1](#t3) | Impression reçu change **[[ECRAN]](#ecran-t3)** | Traitement |
-| [24.1.2](#t4) | Impression reçu change **[[ECRAN]](#ecran-t4)** | Traitement |
-| [24.2.1](#t6) | Impression reçu change **[[ECRAN]](#ecran-t6)** | Traitement |
-| [24.2.2](#t7) | Impression reçu change **[[ECRAN]](#ecran-t7)** | Traitement |
-| [24.4.1](#t11) | Impression reçu change **[[ECRAN]](#ecran-t11)** | Traitement |
-| [24.5.1](#t13) | Impression reçu change **[[ECRAN]](#ecran-t13)** | Traitement |
-| [24.6](#t16) | Impression reçu change **[[ECRAN]](#ecran-t16)** | Traitement |
+| [T3](#t3) | Impression reçu change **[ECRAN]** | Traitement |
+| [T4](#t4) | Impression reçu change **[ECRAN]** | Traitement |
+| [T6](#t6) | Impression reçu change **[ECRAN]** | Traitement |
+| [T7](#t7) | Impression reçu change **[ECRAN]** | Traitement |
+| [T11](#t11) | Impression reçu change **[ECRAN]** | Traitement |
+| [T13](#t13) | Impression reçu change **[ECRAN]** | Traitement |
+| [T16](#t16) | Impression reçu change **[ECRAN]** | Traitement |
 
 </details>
 
 ---
 
-#### <a id="t3"></a>24.1.1 - Impression reçu change [[ECRAN]](#ecran-t3)
+#### <a id="t3"></a>T3 - Impression reçu change [ECRAN]
 
 **Role** : Generation du document : Impression reçu change.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t3)
 
 ---
 
-#### <a id="t4"></a>24.1.2 - Impression reçu change [[ECRAN]](#ecran-t4)
+#### <a id="t4"></a>T4 - Impression reçu change [ECRAN]
 
 **Role** : Generation du document : Impression reçu change.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t4)
 
 ---
 
-#### <a id="t6"></a>24.2.1 - Impression reçu change [[ECRAN]](#ecran-t6)
+#### <a id="t6"></a>T6 - Impression reçu change [ECRAN]
 
 **Role** : Generation du document : Impression reçu change.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t6)
 
 ---
 
-#### <a id="t7"></a>24.2.2 - Impression reçu change [[ECRAN]](#ecran-t7)
+#### <a id="t7"></a>T7 - Impression reçu change [ECRAN]
 
 **Role** : Generation du document : Impression reçu change.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t7)
 
 ---
 
-#### <a id="t11"></a>24.4.1 - Impression reçu change [[ECRAN]](#ecran-t11)
+#### <a id="t11"></a>T11 - Impression reçu change [ECRAN]
 
 **Role** : Generation du document : Impression reçu change.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t11)
 
 ---
 
-#### <a id="t13"></a>24.5.1 - Impression reçu change [[ECRAN]](#ecran-t13)
+#### <a id="t13"></a>T13 - Impression reçu change [ECRAN]
 
 **Role** : Generation du document : Impression reçu change.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t13)
 
 ---
 
-#### <a id="t16"></a>24.6 - Impression reçu change [[ECRAN]](#ecran-t16)
+#### <a id="t16"></a>T16 - Impression reçu change [ECRAN]
 
 **Role** : Generation du document : Impression reçu change.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t16)
@@ -148,7 +148,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t2"></a>24.1 - Printer 1 [[ECRAN]](#ecran-t2)
+#### <a id="t2"></a>T2 - Printer 1 [ECRAN]
 
 **Role** : Generation du document : Printer 1.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t2)
@@ -156,7 +156,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t5"></a>24.2 - Printer 4 [[ECRAN]](#ecran-t5)
+#### <a id="t5"></a>T5 - Printer 4 [ECRAN]
 
 **Role** : Generation du document : Printer 4.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t5)
@@ -164,7 +164,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t8"></a>24.3 - Printer 5 [[ECRAN]](#ecran-t8)
+#### <a id="t8"></a>T8 - Printer 5 [ECRAN]
 
 **Role** : Generation du document : Printer 5.
 **Ecran** : 357 x 103 DLU (MDI) | [Voir mockup](#ecran-t8)
@@ -172,7 +172,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t9"></a>24.3.1 - Impression reçu change ticket [[ECRAN]](#ecran-t9)
+#### <a id="t9"></a>T9 - Impression reçu change ticket [ECRAN]
 
 **Role** : Generation du document : Impression reçu change ticket.
 **Ecran** : 357 x 103 DLU (MDI) | [Voir mockup](#ecran-t9)
@@ -181,7 +181,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t10"></a>24.4 - Printer 8 [[ECRAN]](#ecran-t10)
+#### <a id="t10"></a>T10 - Printer 8 [ECRAN]
 
 **Role** : Generation du document : Printer 8.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t10)
@@ -189,7 +189,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t12"></a>24.5 - Printer 9 [[ECRAN]](#ecran-t12)
+#### <a id="t12"></a>T12 - Printer 9 [ECRAN]
 
 **Role** : Generation du document : Printer 9.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t12)
@@ -210,7 +210,7 @@ Generation des documents et tickets.
 | **Si vrai** | Action si CURRENTPRINTERNUM = 1 |
 | **Expression source** | Expression 3 : `GetParam ('CURRENTPRINTERNUM')=1` |
 | **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=1 â†’ Action si CURRENTPRINTERNUM = 1 |
-| **Impact** | [24.1 - Printer 1](#t2) |
+| **Impact** | [T2 - Printer 1](#t2) |
 
 #### <a id="rm-RM-002"></a>[RM-002] Verification que l'imprimante courante est la n4
 
@@ -220,7 +220,7 @@ Generation des documents et tickets.
 | **Si vrai** | Action si CURRENTPRINTERNUM = 4 |
 | **Expression source** | Expression 4 : `GetParam ('CURRENTPRINTERNUM')=4` |
 | **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=4 â†’ Action si CURRENTPRINTERNUM = 4 |
-| **Impact** | [24.1 - Printer 1](#t2) |
+| **Impact** | [T2 - Printer 1](#t2) |
 
 #### <a id="rm-RM-003"></a>[RM-003] Verification que l'imprimante courante est la n5
 
@@ -230,7 +230,7 @@ Generation des documents et tickets.
 | **Si vrai** | Action si CURRENTPRINTERNUM = 5 |
 | **Expression source** | Expression 5 : `GetParam ('CURRENTPRINTERNUM')=5` |
 | **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=5 â†’ Action si CURRENTPRINTERNUM = 5 |
-| **Impact** | [24.1 - Printer 1](#t2) |
+| **Impact** | [T2 - Printer 1](#t2) |
 
 #### <a id="rm-RM-004"></a>[RM-004] Verification que l'imprimante courante est la n8
 
@@ -240,7 +240,7 @@ Generation des documents et tickets.
 | **Si vrai** | Action si CURRENTPRINTERNUM = 8 |
 | **Expression source** | Expression 6 : `GetParam ('CURRENTPRINTERNUM')=8` |
 | **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=8 â†’ Action si CURRENTPRINTERNUM = 8 |
-| **Impact** | [24.1 - Printer 1](#t2) |
+| **Impact** | [T2 - Printer 1](#t2) |
 
 #### <a id="rm-RM-005"></a>[RM-005] Verification que l'imprimante courante est la n9
 
@@ -250,7 +250,7 @@ Generation des documents et tickets.
 | **Si vrai** | Action si CURRENTPRINTERNUM = 9 |
 | **Expression source** | Expression 7 : `GetParam ('CURRENTPRINTERNUM')=9` |
 | **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=9 â†’ Action si CURRENTPRINTERNUM = 9 |
-| **Impact** | [24.1 - Printer 1](#t2) |
+| **Impact** | [T2 - Printer 1](#t2) |
 
 ### Autres (1 regles)
 
@@ -277,14 +277,14 @@ Generation des documents et tickets.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 24 | 24 | Veuillez patienter ... | MDI | 424 | 56 | Traitement |
+| 1 | 24 | T1 | Veuillez patienter ... | MDI | 424 | 56 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>24 - Veuillez patienter ...
-**Tache** : [24](#t1) | **Type** : MDI | **Dimensions** : 424 x 56 DLU
+**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 424 x 56 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter ...
 
 <!-- FORM-DATA:
@@ -373,39 +373,71 @@ Ecran unique: **Veuillez patienter ...**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **24.1** | [**Veuillez patienter ...** (24)](#t1) [mockup](#ecran-t1) | MDI | 424x56 | Traitement |
-| 24.1.1 | [Impression reçu change (24.1.1)](#t3) [mockup](#ecran-t3) | MDI | 1058x791 | |
-| 24.1.2 | [Impression reçu change (24.1.2)](#t4) [mockup](#ecran-t4) | MDI | 1058x791 | |
-| 24.1.3 | [Impression reçu change (24.2.1)](#t6) [mockup](#ecran-t6) | MDI | 1058x791 | |
-| 24.1.4 | [Impression reçu change (24.2.2)](#t7) [mockup](#ecran-t7) | MDI | 1058x791 | |
-| 24.1.5 | [Impression reçu change (24.4.1)](#t11) [mockup](#ecran-t11) | MDI | 1058x791 | |
-| 24.1.6 | [Impression reçu change (24.5.1)](#t13) [mockup](#ecran-t13) | MDI | 1058x791 | |
-| 24.1.7 | [Impression reçu change (24.6)](#t16) [mockup](#ecran-t16) | MDI | 1058x791 | |
-| **24.2** | [**Printer 1** (24.1)](#t2) [mockup](#ecran-t2) | MDI | 1058x791 | Impression |
-| 24.2.1 | [Printer 4 (24.2)](#t5) [mockup](#ecran-t5) | MDI | 1058x791 | |
-| 24.2.2 | [Printer 5 (24.3)](#t8) [mockup](#ecran-t8) | MDI | 357x103 | |
-| 24.2.3 | [Impression reçu change ticket (24.3.1)](#t9) [mockup](#ecran-t9) | MDI | 357x103 | |
-| 24.2.4 | [Printer 8 (24.4)](#t10) [mockup](#ecran-t10) | MDI | 1058x791 | |
-| 24.2.5 | [Printer 9 (24.5)](#t12) [mockup](#ecran-t12) | MDI | 1058x791 | |
+| **24.1** | [**Veuillez patienter ...** (T1)](#t1) [mockup](#ecran-t1) | MDI | 424x56 | Traitement |
+| 24.1.1 | [Impression reçu change (T3)](#t3) [mockup](#ecran-t3) | MDI | 1058x791 | |
+| 24.1.2 | [Impression reçu change (T4)](#t4) [mockup](#ecran-t4) | MDI | 1058x791 | |
+| 24.1.3 | [Impression reçu change (T6)](#t6) [mockup](#ecran-t6) | MDI | 1058x791 | |
+| 24.1.4 | [Impression reçu change (T7)](#t7) [mockup](#ecran-t7) | MDI | 1058x791 | |
+| 24.1.5 | [Impression reçu change (T11)](#t11) [mockup](#ecran-t11) | MDI | 1058x791 | |
+| 24.1.6 | [Impression reçu change (T13)](#t13) [mockup](#ecran-t13) | MDI | 1058x791 | |
+| 24.1.7 | [Impression reçu change (T16)](#t16) [mockup](#ecran-t16) | MDI | 1058x791 | |
+| **24.2** | [**Printer 1** (T2)](#t2) [mockup](#ecran-t2) | MDI | 1058x791 | Impression |
+| 24.2.1 | [Printer 4 (T5)](#t5) [mockup](#ecran-t5) | MDI | 1058x791 | |
+| 24.2.2 | [Printer 5 (T8)](#t8) [mockup](#ecran-t8) | MDI | 357x103 | |
+| 24.2.3 | [Impression reçu change ticket (T9)](#t9) [mockup](#ecran-t9) | MDI | 357x103 | |
+| 24.2.4 | [Printer 8 (T10)](#t10) [mockup](#ecran-t10) | MDI | 1058x791 | |
+| 24.2.5 | [Printer 9 (T12)](#t12) [mockup](#ecran-t12) | MDI | 1058x791 | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    ENDOK([END OK])
+    START([Appel impression recu])
+    INIT[Chargement donnees vente]
+    RAZPRINT[RAZ imprimante courante]
+    SELPRINT{Choix imprimante}
+    P1[Printer 1 standard]
+    P4[Printer 4 secondaire]
+    P5[Printer 5 ticket]
+    P8[Printer 8 backup]
+    P9[Printer 9 backup]
+    FORMAT[Formatage recu change]
+    PRINT[Impression ticket]
+    ENDOK([Fin OK])
 
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
+    START --> INIT
+    INIT --> RAZPRINT
+    RAZPRINT --> SELPRINT
+    SELPRINT -->|P1| P1
+    SELPRINT -->|P4| P4
+    SELPRINT -->|P5| P5
+    SELPRINT -->|P8| P8
+    SELPRINT -->|P9| P9
+    P1 --> FORMAT
+    P4 --> FORMAT
+    P5 --> FORMAT
+    P8 --> FORMAT
+    P9 --> FORMAT
+    FORMAT --> PRINT
+    PRINT --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style SELPRINT fill:#58a6ff,color:#000
+    style FORMAT fill:#ffeb3b,color:#000
+    style PRINT fill:#ffeb3b,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Jaune = Flux impression recu change | Bleu = Decisions
+
+| Noeud | Source | Justification |
+|-------|--------|---------------|
+| INIT | Tache 24 (racine) | Chargement contexte operation change vente |
+| RAZPRINT | CallTask vers IDE 182 | Reset imprimante via Raz Current Printer |
+| SELPRINT | Expression CURRENTPRINTERNUM | Aiguillage vers imprimante selon config |
+| P1-P9 | Taches 24.1 a 24.5 | Chaque imprimante a sa sous-tache dediee |
+| FORMAT | Taches 24.x.1-24.x.2 | Formatage multi-langue du recu (montant, taux, devise) |
+| PRINT | Taches impression | Envoi vers imprimante physique |
 
 <!-- TAB:Donnees -->
 
@@ -762,4 +794,4 @@ graph LR
 | [Raz Current Printer (IDE 182)](ADH-IDE-182.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:22*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-25 12:28*

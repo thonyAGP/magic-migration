@@ -1,6 +1,6 @@
 ﻿# ADH IDE 149 - Calcul stock produit WS
 
-> **Analyse**: Phases 1-4 2026-02-07 03:50 -> 03:32 (23h41min) | Assemblage 03:32
+> **Analyse**: Phases 1-4 2026-02-23 18:22 -> 18:22 (1s) | Assemblage 12:22
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,43 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**ADH IDE 149 - Calcul stock produit WS** est un programme de lecture de stock de produits en libre-service (Wine Shop, distributeurs de boissons/snacks). Il s'exécute dans le contexte de transactions de caisse (ventes, remises) pour mettre à jour les compteurs de disponibilité et de consommation. Le programme récupère l'état de la session ouverte, lit le comptage initial d'ouverture de caisse, puis effectue les calculs d'approvisionnement progressif et de ventes déjà réalisées.
+**Calcul stock produit WS** calcule le stock net disponible des produits Wellness & Services (Gift Pass, Resort Credit, services) en combinant 3 sources de donnees (session active, comptage ouverture, approvisionnements) et en soustrayant les ventes et ordres de depot deja realises. Programme sans ecran (6 taches), appele par 9 programmes de transaction de vente ([IDE 237](ADH-IDE-237.md), [IDE 238](ADH-IDE-238.md), [IDE 239](ADH-IDE-239.md), [IDE 240](ADH-IDE-240.md), [IDE 300](ADH-IDE-300.md), [IDE 307](ADH-IDE-307.md), [IDE 310](ADH-IDE-310.md), [IDE 316](ADH-IDE-316.md)) et de caisse ([IDE 125](ADH-IDE-125.md)).
 
-Le flux principal parcourt deux axes : d'abord la **comptabilité physique** (état du distributeur au moment de l'ouverture de caisse avec lecture des capteurs/compteurs), ensuite la **comptabilité transactionnelle** (enregistrement des opérations de dépôt et retrait effectuées depuis l'ouverture). Cela permet de reconcilier l'inventaire théorique avec la réalité du terrain, en tenant compte des approvisionnements partiels réalisés pendant la session et des ventes d'articles déjà enregistrées.
+### Lecture du contexte transactionnel
 
-Le programme alimente les logiques de validation et de caisse qui en dépendent (9 appelants, dont ADH IDE 125 la remise en caisse, ADH IDE 237-240 les ventes Gift Pass/Resort Credit, ADH IDE 300/307/310/316 les saisies transactionnelles). Il joue un rôle critique dans l'intégrité du stock et la traçabilité des mouvements de produits tout au long de la session caisse.
+La tache racine (149.1) recoit en parametre le type d'article (variable EQ) et lance la lecture de la session active. La sous-tache 149.2 interroge la table histo_sessions_caisse (caisse_session) pour obtenir la session en cours, la date de debut (ES) et l'heure de debut (ET). Ces informations servent de filtre pour toutes les requetes suivantes.
+
+<details>
+<summary>2 taches : 149.1, 149.2</summary>
+
+- **149.1** - Calcul stock produit WS (racine, parametre EQ)
+- **149.2** - Lecture session (lit histo_sessions_caisse)
+
+</details>
+
+### Calcul du stock initial et approvisionnements
+
+Le stock initial est calcule par comptage des articles approvisionnes a l'ouverture de la session (149.3, lit comptage_caisse_histo et histo_sessions_caisse_detail). Les approvisionnements additionnels effectues pendant la session sont comptabilises separement (149.4, lit comptable________cte et histo_sessions_caisse_article en LINK). La somme des deux constitue le stock brut disponible.
+
+<details>
+<summary>2 taches : 149.3, 149.4</summary>
+
+- **149.3** - Comptage ouverture (lit comptage_caisse_histo, histo_sessions_caisse_detail)
+- **149.4** - Appro remise pendant (lit comptable________cte, LINK histo_sessions_caisse_article)
+
+</details>
+
+### Deduction des mouvements sortants
+
+Les ventes deja realisees pendant la session (149.5, lit vente/caisse_vente) et les ordres de depot deja saisis (149.6) sont soustraits du stock brut. Le resultat est le stock net disponible pour la prochaine transaction, evitant les depassements d'inventaire et assurant la tracabilite des mouvements au niveau local et consolide.
+
+<details>
+<summary>2 taches : 149.5, 149.6</summary>
+
+- **149.5** - Ventes deja faites (lit vente/caisse_vente)
+- **149.6** - OD deja faites (ordres de depot)
+
+</details>
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,14 +68,14 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t1"></a>149 - Calcul stock produit WS
+#### <a id="t1"></a>T1 - Calcul stock produit WS
 
 **Role** : Calcul : Calcul stock produit WS.
 **Variables liees** : EQ (Param stock article)
 
 ---
 
-#### <a id="t3"></a>149.2 - comptage ouverture
+#### <a id="t3"></a>T3 - comptage ouverture
 
 **Role** : Traitement : comptage ouverture.
 
@@ -54,20 +86,20 @@ Traitements internes.
 
 ---
 
-#### <a id="t2"></a>149.1 - Lecture session
+#### <a id="t2"></a>T2 - Lecture session
 
 **Role** : Traitement : Lecture session.
 **Variables liees** : ER (Session), ES (Date debut session), ET (Heure debut session)
 
 ---
 
-#### <a id="t4"></a>149.3 - appro remise pendant
+#### <a id="t4"></a>T4 - appro remise pendant
 
 **Role** : Calcul fidelite/avantage : appro remise pendant.
 
 ---
 
-#### <a id="t6"></a>149.5 - od deja faites
+#### <a id="t6"></a>T6 - od deja faites
 
 **Role** : Traitement : od deja faites.
 
@@ -78,7 +110,7 @@ Ce bloc traite la saisie des donnees de la transaction.
 
 ---
 
-#### <a id="t5"></a>149.4 - Ventes deja faites
+#### <a id="t5"></a>T5 - Ventes deja faites
 
 **Role** : Saisie des donnees : Ventes deja faites.
 
@@ -104,31 +136,53 @@ Ce bloc traite la saisie des donnees de la transaction.
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **149.1** | [**Calcul stock produit WS** (149)](#t1) | MDI | - | Calcul |
-| 149.1.1 | [comptage ouverture (149.2)](#t3) | MDI | - | |
-| **149.2** | [**Lecture session** (149.1)](#t2) | MDI | - | Traitement |
-| 149.2.1 | [appro remise pendant (149.3)](#t4) | MDI | - | |
-| 149.2.2 | [od deja faites (149.5)](#t6) | MDI | - | |
-| **149.3** | [**Ventes deja faites** (149.4)](#t5) | MDI | - | Saisie |
+| **149.1** | [**Calcul stock produit WS** (T1)](#t1) | MDI | - | Calcul |
+| 149.1.1 | [comptage ouverture (T3)](#t3) | MDI | - | |
+| **149.2** | [**Lecture session** (T2)](#t2) | MDI | - | Traitement |
+| 149.2.1 | [appro remise pendant (T4)](#t4) | MDI | - | |
+| 149.2.2 | [od deja faites (T6)](#t6) | MDI | - | |
+| **149.3** | [**Ventes deja faites** (T5)](#t5) | MDI | - | Saisie |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    ENDOK([END OK])
+    START([Appel avec type article])
+    LSESS[Lecture session active]
+    CPTOUV[Comptage stock ouverture]
+    APPRO[Appros pendant session]
+    CALCBRUT[Stock brut cumule]
+    VENTES[Deduction ventes faites]
+    OD[Deduction OD saisies]
+    STOCKNET[Stock net disponible]
+    ENDOK([Retour appelant])
 
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
+    START --> LSESS
+    LSESS --> CPTOUV
+    CPTOUV --> APPRO
+    APPRO --> CALCBRUT
+    CALCBRUT --> VENTES
+    VENTES --> OD
+    OD --> STOCKNET
+    STOCKNET --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style CALCBRUT fill:#ffeb3b,color:#000
+    style STOCKNET fill:#ffeb3b,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Jaune = Flux stock WS | Bleu = Decisions
+
+| Noeud | Source | Justification |
+|-------|--------|---------------|
+| LSESS | Tache 149.2 | Lecture histo_sessions_caisse pour contexte transactionnel |
+| CPTOUV | Tache 149.3 | Comptage articles approvisionnes a ouverture session |
+| APPRO | Tache 149.4 | Approvisionnements additionnels pendant session |
+| CALCBRUT | Taches 149.3 + 149.4 | Somme stock initial + appros = stock brut |
+| VENTES | Tache 149.5 | Soustraction ventes Gift Pass/Resort Credit realisees |
+| OD | Tache 149.6 | Soustraction ordres de depot saisis |
+| STOCKNET | Expression 1 | Resultat net : brut - ventes - OD = stock disponible |
 
 <!-- TAB:Donnees -->
 
@@ -386,4 +440,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:33*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-25 12:22*
