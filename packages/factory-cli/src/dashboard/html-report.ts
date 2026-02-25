@@ -2917,14 +2917,34 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
 
   function updateProgramETA(progId) {
     var ps = migrateState.programPhases[progId];
-    if (!ps || ps.status !== 'running') return;
+    if (!ps) return;
+
+    // Skip if program fully done (status='done' AND no batch phase active)
+    if (ps.status === 'done' && !migrateState.batchPhaseActive) return;
+
+    // For batch phases (review): show estimated remaining time
+    if (migrateState.batchPhaseActive && ps.status === 'done') {
+      // Program in batch phase (review/verify) - estimate based on batch progress
+      var batchRemaining = 0;
+      if (migrateState.batchProgress > 0 && migrateState.batchProgress < 1) {
+        var batchElapsed = Date.now() - (migrateState.batchElapsedStart || migrateState.migrationStart);
+        batchRemaining = batchElapsed * ((1 - migrateState.batchProgress) / migrateState.batchProgress);
+      }
+      var etaEl = document.getElementById('mp-eta-' + progId);
+      if (etaEl && batchRemaining > 0) {
+        etaEl.textContent = '~' + formatElapsed(batchRemaining);
+      }
+      return;
+    }
+
+    // Regular program ETA (during generation phases)
+    if (ps.status !== 'running') return;
 
     var completed = Object.keys(ps.completedPhases).length;
     var total = ALL_PHASES.length;
     var remaining = total - completed;
-    if (remaining <= 0) return; // All phases done
+    if (remaining <= 0) return;
 
-    // Use average real duration from completed programs
     var avgRealMs = 0;
     if (migrateState.programDurations.length > 0) {
       var sum = 0;
@@ -2933,7 +2953,6 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       }
       avgRealMs = sum / migrateState.programDurations.length;
     } else if (migrateState.estimatedDurationMs > 0 && migrateState.totalProgs > 0) {
-      // Fallback: use initial estimate divided by total programs
       avgRealMs = migrateState.estimatedDurationMs / migrateState.totalProgs;
     }
 

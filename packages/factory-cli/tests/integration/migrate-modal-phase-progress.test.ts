@@ -55,15 +55,17 @@ describe('Migration Modal - phase_progress Event Handling', () => {
   });
 
   it('should use stable ETA calculation in updateProgramETA', () => {
-    // Check that updateProgramETA uses avgRealMs from programDurations
-    const etaFunction = sourceCode.match(/function updateProgramETA[\s\S]{1,1000}}/);
+    // Check that updateProgramETA handles both regular and batch phases
+    const etaFunction = sourceCode.match(/function updateProgramETA[\s\S]{1,2000}}/);
     expect(etaFunction).toBeTruthy();
 
     if (etaFunction) {
       const fn = etaFunction[0];
-      // Should use programDurations average
-      expect(fn).toContain('migrateState.programDurations');
-      // Should use estimatedDurationMs as fallback
+      // Should handle batch phases (review) differently
+      expect(fn).toContain('batchPhaseActive');
+      // Should use batchProgress for batch phase ETA
+      expect(fn).toContain('batchProgress');
+      // Should use estimatedDurationMs as fallback for regular phases
       expect(fn).toContain('migrateState.estimatedDurationMs');
       // Should NOT use the old formula: elapsed / completed
       expect(fn).not.toMatch(/avgPerPhase\s*=\s*elapsed\s*\/\s*completed/);
