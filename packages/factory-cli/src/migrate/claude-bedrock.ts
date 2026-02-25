@@ -49,15 +49,15 @@ export const getBedrockConfig = (): BedrockConfig | null => {
   return { region, bearerToken };
 };
 
-/** Map short model name to Bedrock model ID. */
+/** Map short model name to Bedrock model ID (cross-region `us.` prefix required). */
 const resolveBedrockModelId = (shortName?: string): string => {
   const modelMap: Record<string, string> = {
-    haiku: 'anthropic.claude-3-5-haiku-20241022-v1:0',
-    sonnet: 'anthropic.claude-sonnet-4-6-20260205-v1:0', // Sonnet 4.6 (Feb 2026)
-    opus: 'anthropic.claude-opus-4-6-20260205-v1:0', // Opus 4.6 (Feb 2026)
+    haiku: 'us.anthropic.claude-3-5-haiku-20241022-v1:0',
+    sonnet: 'us.anthropic.claude-sonnet-4-20250514-v1:0',
+    opus: 'us.anthropic.claude-opus-4-20250514-v1:0',
   };
 
-  return modelMap[shortName ?? 'sonnet'] ?? modelMap.sonnet;
+  return modelMap[shortName ?? 'haiku'] ?? modelMap.haiku;
 };
 
 /** Call Claude via AWS Bedrock. */
@@ -79,7 +79,7 @@ export const callClaudeBedrock = async (
     messages: [{ role: 'user', content: prompt }],
   };
 
-  const url = `https://bedrock-runtime.${config.region}.amazonaws.com/model/${modelId}/invoke`;
+  const url = `https://bedrock-runtime.${config.region}.amazonaws.com/model/${encodeURIComponent(modelId)}/invoke`;
 
   const response = await fetch(url, {
     method: 'POST',

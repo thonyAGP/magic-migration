@@ -1,6 +1,6 @@
 ﻿# ADH IDE 69 - Extrait de compte
 
-> **Analyse**: Phases 1-4 2026-02-07 03:43 -> 02:06 (22h22min) | Assemblage 02:06
+> **Analyse**: Phases 1-4 2026-02-23 18:22 -> 18:22 (1s) | Assemblage 12:29
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -139,7 +139,7 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t1"></a>69 - Extrait de compte [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Extrait de compte [ECRAN]
 
 **Role** : Traitement : Extrait de compte.
 **Ecran** : 166 x 15 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -149,10 +149,10 @@ Calculs metier : montants, stocks, compteurs.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [69.1](#t2) | Recalcul solde | Calcul |
-| [69.2](#t4) | Reaffichage infos compte | Calcul |
-| [69.3](#t5) | Scroll compte **[[ECRAN]](#ecran-t5)** | Calcul |
-| [69.4](#t12) | Reaffichage infos compte | Calcul |
+| [T2](#t2) | Recalcul solde | Calcul |
+| [T4](#t4) | Reaffichage infos compte | Calcul |
+| [T5](#t5) | Scroll compte **[ECRAN]** | Calcul |
+| [T12](#t12) | Reaffichage infos compte | Calcul |
 
 </details>
 **Variables liees** : ET (< solde compte), EU (< etat compte)
@@ -160,21 +160,21 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t2"></a>69.1 - Recalcul solde
+#### <a id="t2"></a>T2 - Recalcul solde
 
 **Role** : Calcul : Recalcul solde.
 **Variables liees** : ET (< solde compte), EV (< date solde)
 
 ---
 
-#### <a id="t4"></a>69.2 - Reaffichage infos compte
+#### <a id="t4"></a>T4 - Reaffichage infos compte
 
 **Role** : Reinitialisation : Reaffichage infos compte.
 **Variables liees** : ET (< solde compte), EU (< etat compte)
 
 ---
 
-#### <a id="t5"></a>69.3 - Scroll compte [[ECRAN]](#ecran-t5)
+#### <a id="t5"></a>T5 - Scroll compte [ECRAN]
 
 **Role** : Traitement : Scroll compte.
 **Ecran** : 1496 x 291 DLU (MDI) | [Voir mockup](#ecran-t5)
@@ -182,7 +182,7 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t12"></a>69.4 - Reaffichage infos compte
+#### <a id="t12"></a>T12 - Reaffichage infos compte
 
 **Role** : Reinitialisation : Reaffichage infos compte.
 **Variables liees** : ET (< solde compte), EU (< etat compte)
@@ -194,7 +194,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t3"></a>69.1.1 - Solde GM
+#### <a id="t3"></a>T3 - Solde GM
 
 **Role** : Consultation/chargement : Solde GM.
 **Variables liees** : ET (< solde compte), EV (< date solde)
@@ -202,14 +202,14 @@ Traitements internes.
 
 ---
 
-#### <a id="t8"></a>69.3.3 - SendMail
+#### <a id="t8"></a>T8 - SendMail
 
 **Role** : Traitement : SendMail.
 **Delegue a** : [Set Listing Number (IDE 181)](ADH-IDE-181.md), [Other Listing (IDE 183)](ADH-IDE-183.md), [Recuperation du titre (IDE 43)](ADH-IDE-43.md)
 
 ---
 
-#### <a id="t10"></a>69.3.5 - Check recu detail
+#### <a id="t10"></a>T10 - Check recu detail
 
 **Role** : Traitement : Check recu detail.
 **Variables liees** : FF (v.Flag recu détaillé), FG (v.Blob recu détaillé), FH (v.Fichier recu détaillé), FM (v.Retour_recu_detail)
@@ -217,7 +217,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t11"></a>69.3.6 - PDF mobilité POS [[ECRAN]](#ecran-t11)
+#### <a id="t11"></a>T11 - PDF mobilité POS [ECRAN]
 
 **Role** : Traitement : PDF mobilité POS.
 **Ecran** : 123 x 195 DLU | [Voir mockup](#ecran-t11)
@@ -231,7 +231,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t6"></a>69.3.1 - Choix Edition [[ECRAN]](#ecran-t6)
+#### <a id="t6"></a>T6 - Choix Edition [ECRAN]
 
 **Role** : Generation du document : Choix Edition.
 **Ecran** : 537 x 41 DLU | [Voir mockup](#ecran-t6)
@@ -245,7 +245,7 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t7"></a>69.3.2 - Zoom Listing [[ECRAN]](#ecran-t7)
+#### <a id="t7"></a>T7 - Zoom Listing [ECRAN]
 
 **Role** : Selection par l'operateur : Zoom Listing.
 **Ecran** : 818 x 0 DLU (MDI) | [Voir mockup](#ecran-t7)
@@ -258,7 +258,7 @@ Ce bloc traite la saisie des donnees de la transaction.
 
 ---
 
-#### <a id="t9"></a>69.3.4 - Vérif. Vente avec signature
+#### <a id="t9"></a>T9 - Vérif. Vente avec signature
 
 **Role** : Saisie des donnees : Vérif. Vente avec signature.
 **Variables liees** : FL (v.Retour isVenteODSignature)
@@ -303,16 +303,16 @@ Ce bloc traite la saisie des donnees de la transaction.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 69.3 | 69.3 | Scroll compte | MDI | 1496 | 291 | Calcul |
-| 2 | 69.3.1 | 69.3.1 | Choix Edition | Type0 | 537 | 41 | Impression |
-| 3 | 69.3.2 | 69.3.2 | Zoom Listing | MDI | 818 | 0 | Consultation |
+| 1 | 69.3 | T5 | Scroll compte | MDI | 1496 | 291 | Calcul |
+| 2 | 69.3.1 | T6 | Choix Edition | Type0 | 537 | 41 | Impression |
+| 3 | 69.3.2 | T7 | Zoom Listing | MDI | 818 | 0 | Consultation |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t5"></a>69.3 - Scroll compte
-**Tache** : [69.3](#t5) | **Type** : MDI | **Dimensions** : 1496 x 291 DLU
+**Tache** : [T5](#t5) | **Type** : MDI | **Dimensions** : 1496 x 291 DLU
 **Bloc** : Calcul | **Titre IDE** : Scroll compte
 
 <!-- FORM-DATA:
@@ -1055,7 +1055,7 @@ Ce bloc traite la saisie des donnees de la transaction.
 ---
 
 #### <a id="ecran-t6"></a>69.3.1 - Choix Edition
-**Tache** : [69.3.1](#t6) | **Type** : Type0 | **Dimensions** : 537 x 41 DLU
+**Tache** : [T6](#t6) | **Type** : Type0 | **Dimensions** : 537 x 41 DLU
 **Bloc** : Impression | **Titre IDE** : Choix Edition
 
 <!-- FORM-DATA:
@@ -1124,7 +1124,7 @@ Ce bloc traite la saisie des donnees de la transaction.
 ---
 
 #### <a id="ecran-t7"></a>69.3.2 - Zoom Listing
-**Tache** : [69.3.2](#t7) | **Type** : MDI | **Dimensions** : 818 x 0 DLU
+**Tache** : [T7](#t7) | **Type** : MDI | **Dimensions** : 818 x 0 DLU
 **Bloc** : Consultation | **Titre IDE** : Zoom Listing
 
 <!-- FORM-DATA:
@@ -1193,11 +1193,11 @@ Ce bloc traite la saisie des donnees de la transaction.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF5[69.3 Scroll compte]
+    VF5[T5 Scroll compte]
     style VF5 fill:#58a6ff
-    VF6[69.3.1 Choix Edition]
+    VF6[T6 Choix Edition]
     style VF6 fill:#58a6ff
-    VF7[69.3.2 Zoom Listing]
+    VF7[T7 Zoom Listing]
     style VF7 fill:#58a6ff
     EXT179[IDE 179 Get Printer]
     style EXT179 fill:#3fb950
@@ -1264,45 +1264,98 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **69.1** | [**Extrait de compte** (69)](#t1) [mockup](#ecran-t1) | MDI | 166x15 | Calcul |
-| 69.1.1 | [Recalcul solde (69.1)](#t2) | SDI | - | |
-| 69.1.2 | [Reaffichage infos compte (69.2)](#t4) | MDI | - | |
-| 69.1.3 | [Scroll compte (69.3)](#t5) [mockup](#ecran-t5) | MDI | 1496x291 | |
-| 69.1.4 | [Reaffichage infos compte (69.4)](#t12) | MDI | - | |
-| **69.2** | [**Solde GM** (69.1.1)](#t3) | SDI | - | Traitement |
-| 69.2.1 | [SendMail (69.3.3)](#t8) | - | - | |
-| 69.2.2 | [Check recu detail (69.3.5)](#t10) | - | - | |
-| 69.2.3 | [PDF mobilité POS (69.3.6)](#t11) [mockup](#ecran-t11) | - | 123x195 | |
-| **69.3** | [**Choix Edition** (69.3.1)](#t6) [mockup](#ecran-t6) | - | 537x41 | Impression |
-| **69.4** | [**Zoom Listing** (69.3.2)](#t7) [mockup](#ecran-t7) | MDI | 818x0 | Consultation |
-| **69.5** | [**Vérif. Vente avec signature** (69.3.4)](#t9) | - | - | Saisie |
+| **69.1** | [**Extrait de compte** (T1)](#t1) [mockup](#ecran-t1) | MDI | 166x15 | Calcul |
+| 69.1.1 | [Recalcul solde (T2)](#t2) | SDI | - | |
+| 69.1.2 | [Reaffichage infos compte (T4)](#t4) | MDI | - | |
+| 69.1.3 | [Scroll compte (T5)](#t5) [mockup](#ecran-t5) | MDI | 1496x291 | |
+| 69.1.4 | [Reaffichage infos compte (T12)](#t12) | MDI | - | |
+| **69.2** | [**Solde GM** (T3)](#t3) | SDI | - | Traitement |
+| 69.2.1 | [SendMail (T8)](#t8) | - | - | |
+| 69.2.2 | [Check recu detail (T10)](#t10) | - | - | |
+| 69.2.3 | [PDF mobilité POS (T11)](#t11) [mockup](#ecran-t11) | - | 123x195 | |
+| **69.3** | [**Choix Edition** (T6)](#t6) [mockup](#ecran-t6) | - | 537x41 | Impression |
+| **69.4** | [**Zoom Listing** (T7)](#t7) [mockup](#ecran-t7) | MDI | 818x0 | Consultation |
+| **69.5** | [**Vérif. Vente avec signature** (T9)](#t9) | - | - | Saisie |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    INIT[Init controles]
-    SAISIE[scroll sur compte]
-    DECISION{societe}
-    PROCESS[Traitement]
-    UPDATE[MAJ 4 tables]
-    ENDOK([END OK])
-    ENDKO([END KO])
+    START([Appel depuis menu GM])
+    CHKSOC{Societe renseignee}
+    LOADCPT[Charger compte GM]
+    RECALC[Recalculer solde]
+    SCROLL[Afficher scroll operations]
+    CHOIX{Action utilisateur}
+    EDDATE[Edition par Date]
+    EDNOM[Edition par Nom]
+    EDCUM[Edition par Cumule]
+    EDIMP[Edition par Imputation]
+    ZOOM[Zoom listing detail]
+    CHKPDF{Format PDF}
+    GENPDF[Generer PDF mobilite]
+    PRINT[Impression directe]
+    MAIL{Email existe}
+    SEND[Envoyer par email]
+    MAJCPT[MAJ compte GM + logs]
+    ENDOK([Fin OK])
+    ENDKO([Fin KO societe vide])
 
-    START --> INIT --> SAISIE --> DECISION
-    DECISION -->|OUI| PROCESS
-    DECISION -->|NON| ENDKO
-    PROCESS --> UPDATE --> ENDOK
+    START --> CHKSOC
+    CHKSOC -->|NON| ENDKO
+    CHKSOC -->|OUI| LOADCPT
+    LOADCPT --> RECALC
+    RECALC --> SCROLL
+    SCROLL --> CHOIX
+    CHOIX -->|C| EDCUM
+    CHOIX -->|D| EDDATE
+    CHOIX -->|N| EDNOM
+    CHOIX -->|I| EDIMP
+    CHOIX -->|L| ZOOM
+    EDCUM --> CHKPDF
+    EDDATE --> CHKPDF
+    EDNOM --> CHKPDF
+    EDIMP --> CHKPDF
+    ZOOM --> MAIL
+    CHKPDF -->|OUI| GENPDF
+    CHKPDF -->|NON| PRINT
+    GENPDF --> MAIL
+    PRINT --> MAIL
+    MAIL -->|OUI| SEND
+    MAIL -->|NON| MAJCPT
+    SEND --> MAJCPT
+    MAJCPT --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
     style ENDKO fill:#f85149,color:#fff
-    style DECISION fill:#58a6ff,color:#000
+    style CHKSOC fill:#58a6ff,color:#000
+    style CHOIX fill:#58a6ff,color:#000
+    style CHKPDF fill:#58a6ff,color:#000
+    style MAIL fill:#58a6ff,color:#000
+    style RECALC fill:#ffeb3b,color:#000
+    style SCROLL fill:#ffeb3b,color:#000
+    style MAJCPT fill:#ffeb3b,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Jaune = Flux extrait compte | Bleu = Decisions
+
+| Noeud | Source | Justification |
+|-------|--------|---------------|
+| CHKSOC | Expression 1 | Si societe [A] est vide, le programme s'arrete immediatement |
+| LOADCPT | Tache 69 | Lecture compte_gm (cafil025_dat) pour charger donnees adherent |
+| RECALC | Tache 69.1 | Somme debits/credits depuis comptable________cte, recalcul solde |
+| SCROLL | Tache 69.3 | Ecran principal : liste operations avec tri date decroissant |
+| CHOIX | Tache 69.3.1 | 7 boutons (C/D/I/N/O/L/S) declenchent 6 formats d'edition differents |
+| EDDATE | CallTask vers IDE 71 | Print extrait compte par Date |
+| EDNOM | CallTask vers IDE 70 | Print extrait compte par Nom |
+| EDCUM | CallTask vers IDE 72 | Print extrait compte par Cumule |
+| EDIMP | CallTask vers IDE 73 | Print extrait compte par Imputation |
+| ZOOM | Tache 69.3.2 | Zoom sur une ligne : detail operation via IDE 226 |
+| CHKPDF | Expression 6 | NOT P_FormatPDF [K] : aiguillage impression vs PDF |
+| GENPDF | Tache 69.3.6 | Generation PDF mobilite POS pour tablette/mobile |
+| MAIL | Variable O | W0 Mail Existe : si email present, proposer envoi |
+| MAJCPT | Taches ecriture | MAJ compte_gm + comptable + pms_print_param_default + log_booker |
 
 <!-- TAB:Donnees -->
 
@@ -1687,4 +1740,4 @@ graph LR
 | [Appel programme (IDE 44)](ADH-IDE-44.md) | Sous-programme | 1x | Normale - Sous-programme |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:06*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-25 12:29*

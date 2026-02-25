@@ -360,33 +360,89 @@ function Invoke-ClaudeEnrichment {
         $calleesText = "Appelle: $calleesList"
     }
 
-    # Build tables text
-    $tablesText = ""
+    # Build tables WRITE text
+    $tablesWriteText = ""
     if ($Discovery.tables.by_access.WRITE -and $Discovery.tables.by_access.WRITE.Count -gt 0) {
         $tablesList = ($Discovery.tables.by_access.WRITE | ForEach-Object { $_.logical_name }) -join ", "
-        $tablesText = "Tables modifiees: $tablesList"
+        $tablesWriteText = "Tables modifiees (WRITE): $tablesList"
     }
 
-    # Build task names for context
+    # Build tables READ text
+    $tablesReadText = ""
+    if ($Discovery.tables.by_access.READ -and $Discovery.tables.by_access.READ.Count -gt 0) {
+        $readList = ($Discovery.tables.by_access.READ | ForEach-Object { $_.logical_name }) -join ", "
+        $tablesReadText = "Tables lues (READ): $readList"
+    }
+
+    # Build task names for context (all tasks, not just 5)
     $taskNames = @()
     if ($UiForms -and $UiForms.forms) {
-        $taskNames = @($UiForms.forms | ForEach-Object { $_.name } | Where-Object { $_ -and $_.Trim() })
+        $taskNames = @($UiForms.forms | ForEach-Object {
+            $screenTag = if ($_.dimensions.width -gt 0) { " [ECRAN]" } else { "" }
+            "$($_.name)$screenTag"
+        } | Where-Object { $_ -and $_.Trim() })
     }
-    $taskNamesText = if ($taskNames.Count -gt 0) { "Taches: " + ($taskNames[0..([Math]::Min(5, $taskNames.Count-1))] -join ", ") } else { "" }
+    $taskNamesText = if ($taskNames.Count -gt 0) { "Taches: " + ($taskNames -join ", ") } else { "" }
 
-    # Build the prompt - ultra specific to THIS program
+    # Build parameters text (P0 variables)
+    $paramsText = ""
+    if ($Mapping -and $Mapping.variables -and $Mapping.variables.local) {
+        $params = @($Mapping.variables.local | Where-Object { $_.name -match '^P[0O][\.\s]|^[Pp][Ii]?[\.\s]' })
+        if ($params.Count -gt 0) {
+            $paramsList = ($params | ForEach-Object { "$($_.letter) ($($_.name))" }) -join ", "
+            $paramsText = "Parametres entrants: $paramsList"
+        }
+    }
+
+    # Build business rules summary
+    $rulesText = ""
+    if ($BusinessRules -and $BusinessRules.Count -gt 0) {
+        $rulesSample = @($BusinessRules | Select-Object -First 5 | ForEach-Object {
+            if ($_.condition) { "- Si $($_.condition) alors action" }
+            elseif ($_.decoded) { "- $($_.decoded)" }
+        } | Where-Object { $_ })
+        if ($rulesSample.Count -gt 0) {
+            $rulesText = "Regles metier ($($BusinessRules.Count) total):`n" + ($rulesSample -join "`n")
+        }
+    }
+
+    # Build screens text
+    $screensText = ""
+    if ($UiForms -and $UiForms.forms) {
+        $screens = @($UiForms.forms | Where-Object { $_.dimensions.width -gt 0 })
+        if ($screens.Count -gt 0) {
+            $screensText = "Ecrans visibles: $($screens.Count)"
+        }
+    }
+
+    # Complexity level
+    $complexityText = "BASSE"
+    if ($Discovery.statistics.task_count -gt 15) { $complexityText = "MOYENNE" }
+    if ($Discovery.statistics.task_count -gt 30 -or $Discovery.statistics.expression_count -gt 50) { $complexityText = "HAUTE" }
+
+    # Build enriched prompt: DATA first, then INSTRUCTIONS (focused for single-turn LLM)
+    # Reference: prompts/section2-enrichment.md (quality criteria and examples)
     $prompt = @"
-PROGRAMME: $Project IDE $IdePosition - $ProgramName
+DONNEES DU PROGRAMME A DOCUMENTER:
+Programme: $Project IDE $IdePosition - $ProgramName
+Taches: $($Discovery.statistics.task_count) | Complexite: $complexityText
 $callersText
 $calleesText
-$tablesText
+$tablesWriteText
+$tablesReadText
 $taskNamesText
+$paramsText
+$screensText
+$rulesText
 
-Ecris 2-3 paragraphes courts decrivant ce programme Magic.
-Commence DIRECTEMENT par le contenu, sans intro comme "Voici" ou "Je vais".
-Utilise UNIQUEMENT les informations ci-dessus, ne rien inventer.
-Pas de titre markdown (###), pas de separateur (---).
-Maximum 150 mots.
+CONSIGNE: Ecris la section Description Fonctionnelle de ce programme Magic Unipaas pour une spec de migration.
+
+FORMAT:
+1. Commence par **$ProgramName** puis un paragraphe de synthese (2-3 lignes): objectif, types operations, nombre taches.
+2. Puis des sous-sections par domaine fonctionnel (min 2). Chaque domaine commence par ### titre.
+3. Chaque domaine = paragraphe 3-6 lignes qui explique QUOI (objectif metier), POURQUOI (raison metier, securite, obligation), COMMENT (tables, modes Read/Write), CONSEQUENCES si echec.
+4. Mentionne les tables par leur nom, les variables cles, les liens vers programmes appeles au format [Nom (IDE N)]($Project-IDE-N.md).
+5. Minimum 200 mots. Pas de questions, pas de template vide. Ecris DIRECTEMENT le contenu.
 "@
 
     try {
@@ -397,7 +453,8 @@ Maximum 150 mots.
         [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
         # Call claude CLI with prompt directly (--print mode)
-        $result = & claude -p $prompt --output-format json --model haiku 2>&1
+        # Sonnet required: Haiku cannot follow structured enrichment instructions
+        $result = & claude -p $prompt --output-format json --model sonnet 2>&1
 
         # Restore encoding
         [Console]::OutputEncoding = $prevOutputEncoding
@@ -433,6 +490,22 @@ Maximum 150 mots.
         $enrichedContent = $enrichedContent -replace '(?s)^.*?(Voici|Je vais|Voici ma|Bien sur|D.accord).*?\n+', ''
         $enrichedContent = $enrichedContent -replace '^---\s*\n', ''
         $enrichedContent = $enrichedContent.Trim()
+
+        # Guard: reject responses that ask questions instead of producing content
+        $invalidPatterns = @('Pourriez-vous', 'Pouvez-vous', 'clarifier', 'votre message est incomplet', 'je remarque que', 'manquante', 'je ne peux pas')
+        $isInvalid = $false
+        foreach ($pattern in $invalidPatterns) {
+            if ($enrichedContent -match [regex]::Escape($pattern)) {
+                $isInvalid = $true
+                Write-Host "  [LLM] Response rejected (invalid: contains '$pattern')" -ForegroundColor Red
+                break
+            }
+        }
+
+        if ($isInvalid -or $enrichedContent.Length -lt 100) {
+            Write-Host "  [LLM] Invalid response ($($enrichedContent.Length) chars), falling back to template" -ForegroundColor Red
+            return $null
+        }
 
         Write-Host "  [LLM] Enrichment received ($($enrichedContent.Length) chars)" -ForegroundColor Green
         return $enrichedContent
@@ -3122,6 +3195,83 @@ if ($rawEcran -eq 0) {
     $auditResults += @{ check = "NR_ECRAN_LINKS"; status = "WARN"; detail = "$rawEcran raw [ECRAN] without links" }
 }
 
+# ============================================================
+# SECTION 2 QUALITY CHECKS (S2_*)
+# ============================================================
+
+# Extract section 2 content for analysis
+$section2Content = ""
+if ($specContent -match '(?s)## 2\. DESCRIPTION FONCTIONNELLE\s*\n(.+?)(?=\n## 3\.)') {
+    $section2Content = $Matches[1].Trim()
+}
+
+# S2 CHECK 1: Minimum word count (200 words for medium+, 100 for simple)
+$s2Words = @($section2Content -split '\s+' | Where-Object { $_.Length -gt 1 }).Count
+$s2MinWords = if ($taskCount -gt 10) { 200 } elseif ($taskCount -gt 5) { 150 } else { 80 }
+if ($s2Words -ge $s2MinWords) {
+    $auditResults += @{ check = "S2_MIN_WORDS"; status = "PASS"; detail = "$s2Words mots (min $s2MinWords)" }
+} else {
+    $auditResults += @{ check = "S2_MIN_WORDS"; status = "WARN"; detail = "$s2Words mots seulement (min $s2MinWords pour $taskCount taches)" }
+}
+
+# S2 CHECK 2: Business depth - subsection headers for complex programs
+$s2Subsections = ([regex]::Matches($section2Content, '(?m)^### ')).Count
+$s2MinSubs = if ($taskCount -gt 10) { 3 } elseif ($taskCount -gt 5) { 2 } else { 0 }
+if ($s2Subsections -ge $s2MinSubs) {
+    $auditResults += @{ check = "S2_DEPTH"; status = "PASS"; detail = "$s2Subsections domaines fonctionnels (min $s2MinSubs)" }
+} elseif ($s2MinSubs -eq 0) {
+    $auditResults += @{ check = "S2_DEPTH"; status = "PASS"; detail = "N/A (programme simple: $taskCount taches)" }
+} else {
+    $auditResults += @{ check = "S2_DEPTH"; status = "WARN"; detail = "$s2Subsections domaines (min $s2MinSubs pour $taskCount taches)" }
+}
+
+# S2 CHECK 3: WRITE tables mentioned in section 2
+$writeTables = @($discovery.tables.by_access.WRITE | ForEach-Object { $_.logical_name } | Select-Object -Unique)
+$s2TablesFound = 0
+$s2TablesMissing = @()
+foreach ($tbl in $writeTables) {
+    # Normalize: remove underscores and trailing abbreviations for fuzzy match
+    $tblClean = ($tbl -replace '_+', ' ').Trim()
+    $tblShort = ($tbl -split '_' | Where-Object { $_.Length -gt 2 } | Select-Object -First 1)
+    if ($section2Content -match [regex]::Escape($tbl) -or
+        ($tblShort -and $section2Content -match [regex]::Escape($tblShort))) {
+        $s2TablesFound++
+    } else {
+        $s2TablesMissing += $tbl
+    }
+}
+if ($writeTables.Count -eq 0) {
+    $auditResults += @{ check = "S2_TABLES_MENTIONED"; status = "PASS"; detail = "N/A (pas de tables WRITE)" }
+} elseif ($s2TablesFound -ge [math]::Ceiling($writeTables.Count * 0.5)) {
+    $auditResults += @{ check = "S2_TABLES_MENTIONED"; status = "PASS"; detail = "$s2TablesFound/$($writeTables.Count) tables WRITE mentionnees" }
+} else {
+    $auditResults += @{ check = "S2_TABLES_MENTIONED"; status = "WARN"; detail = "$s2TablesFound/$($writeTables.Count) tables WRITE mentionnees (manquent: $($s2TablesMissing -join ', '))" }
+}
+
+# S2 CHECK 4: Business WHY keywords present (reasons, consequences, impact)
+$whyKeywords = @('pourquoi', 'consequence', 'sinon', 'empeche', 'evite', 'securite', 'obligatoire', 'garantit', 'permet de', 'afin de', 'necessaire', 'indispensable', 'provoque', 'impact', 'bloque', 'interdit', 'critique', 'sans cette', 'si cette etape')
+$s2Lower = $section2Content.ToLower()
+$whyFound = @($whyKeywords | Where-Object { $s2Lower.Contains($_) })
+$s2MinWhy = if ($taskCount -gt 10) { 3 } elseif ($taskCount -gt 5) { 2 } else { 1 }
+if ($whyFound.Count -ge $s2MinWhy) {
+    $auditResults += @{ check = "S2_BUSINESS_WHY"; status = "PASS"; detail = "$($whyFound.Count) mots-cles metier trouves ($($whyFound[0..2] -join ', ')...)" }
+} elseif ($whyFound.Count -gt 0) {
+    $auditResults += @{ check = "S2_BUSINESS_WHY"; status = "WARN"; detail = "$($whyFound.Count) mot-cle metier seulement (min $s2MinWhy): $($whyFound -join ', ')" }
+} else {
+    $auditResults += @{ check = "S2_BUSINESS_WHY"; status = "WARN"; detail = "Aucun mot-cle metier (pourquoi/consequence/empeche/securite) - description probablement superficielle" }
+}
+
+# S2 CHECK 5: <details> collapsible blocks for complex programs
+$s2DetailsCount = ([regex]::Matches($section2Content, '<details>')).Count
+$s2NeedDetails = $taskCount -gt 10
+if (-not $s2NeedDetails) {
+    $auditResults += @{ check = "S2_DETAILS_COMPLEX"; status = "PASS"; detail = "N/A (programme simple: $taskCount taches)" }
+} elseif ($s2DetailsCount -gt 0) {
+    $auditResults += @{ check = "S2_DETAILS_COMPLEX"; status = "PASS"; detail = "$s2DetailsCount blocs depliables" }
+} else {
+    $auditResults += @{ check = "S2_DETAILS_COMPLEX"; status = "WARN"; detail = "Pas de blocs <details> (programme complexe: $taskCount taches)" }
+}
+
 # AUDIT 18: Enriched sections preserved across pipeline re-run
 if ($preservedSection2 -or $preservedSection94) {
     $preserved = @()
@@ -3190,6 +3340,14 @@ $quality = @{
         form_data_blocks = $formDataCount
         variable_roles = $roleHeaders
         precise_expr_types = $preciseTypes
+    }
+    section2_quality = @{
+        word_count = $s2Words
+        subsection_count = $s2Subsections
+        tables_mentioned = $s2TablesFound
+        tables_total_write = $writeTables.Count
+        why_keywords_found = $whyFound.Count
+        details_blocks = $s2DetailsCount
     }
     complexity = @{ score = $complexity.score; level = $complexity.level; details = $complexity.details }
     files_generated = @($summaryFileName, $detailedFileName)

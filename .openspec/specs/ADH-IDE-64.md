@@ -1,6 +1,6 @@
 ﻿# ADH IDE 64 - Solde Easy Check Out
 
-> **Analyse**: Phases 1-4 2026-02-07 03:43 -> 01:59 (22h16min) | Assemblage 01:59
+> **Analyse**: Phases 1-4 2026-02-23 18:22 -> 18:22 (1s) | Assemblage 13:02
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,83 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 64 - **Solde Easy Check Out** est le programme central de clôture des transactions Easy Check-Out. Il recalcule le solde de chaque compte Club Med après les opérations de paiement ou de crédits appliqués, en consolidant les mouvements depuis les tables de ventes (ccpartyp, resort_credit, etc.). Le programme met à jour les lignes de solde et génère les écritures comptables correspondantes pour la réconciliation des comptes.
+**Solde Easy Check Out** gere la cloture du compte d'un adherent Club Med lors du depart (Easy Check-Out). Il consolide toutes les operations effectuees durant le sejour (ventes, paiements, ajustements), calcule le solde final, genere les ecritures comptables, desactive les cartes et Club Med Pass, puis lance l'impression du recapitulatif. Programme complexe (26 taches, 1 ecran principal + lignes de solde, 22 tables dont 13 en ecriture), appele depuis [ECO principal (IDE 55)](ADH-IDE-55.md), [IDE 283](ADH-IDE-283.md) et [Lancement soldes (IDE 66)](ADH-IDE-66.md).
 
-Le flux de traitement enchaîne plusieurs sous-tâches critiques : d'abord le **Recalcul solde** qui agrège tous les débits/crédits par service et devise, puis **Solde GM** pour les adhérents Club Med Pass, suivi de la création des **Lignes de solde** (table sld) et des écritures **Creation comptable** pour la comptabilité analytique. Un mécanisme de récupération des compteurs (versements/retraits) alimenté par les lignes téléphone (lgn) permet de vérifier la cohérence avec les caissons.
+### Recalcul du solde et chargement compte
 
-Le programme s'intègre dans la chaîne Easy Check-Out en aval (appelé par IDE 55, 66, 283) et en amont avec les éditions/impressions (appelle IDE 54, 65, 71) et les utilitaires d'impression (IDE 179, 181). Les multiples tables modifiées (cte, cgm, sld, lgn, cpt, cot, aut, sda, etc.) montrent son impact transversal sur la gestion caisse et la comptabilité, d'où l'importance critique du bon fonctionnement des calculs de solde et de la génération des écritures.
+Avant toute operation de cloture, le programme recalcule le solde du compte en agregeant l'ensemble des mouvements comptables de la table comptable________cte (cafil018_dat). La tache "Recalcul solde" (64.2) lit les debits et credits pour recalculer le montant exact, en tenant compte de la date et heure du solde (variables EV, EW). La tache "Solde GM" (64.3) charge les donnees du compte depuis compte_gm________cgm (cafil025_dat) et verifie la coherence entre le solde recalcule (variable FJ) et le solde enregistre. Cette verification evite les ecarts comptables qui bloqueraient la cloture.
+
+<details>
+<summary>3 taches : 64.1, 64.2, 64.3</summary>
+
+- **64.1** - Solde Easy Check Out (racine, orchestrateur, **[ECRAN]** 458x195 DLU)
+- **64.2** - Recalcul solde (lit comptable________cte, variables EV/EW/EZ/FJ)
+- **64.3** - Solde GM (charge compte_gm, verifie coherence solde)
+
+</details>
+
+### Lignes de solde et ecritures comptables
+
+L'ecran "Lignes de solde" (64.4) **[ECRAN]** affiche le detail des debits/credits du compte en mode consultation (640x110 DLU). Pour chaque ligne, le programme cree une ecriture comptable de consolidation (taches 64.5 et 64.7, **[ECRAN]** 426x98 DLU) qui ecrit dans la table comptable en mode Create. Les compteurs de versements et retraits sont recuperes (64.6, 64.8) pour maintenir la tracabilite des flux financiers. Si le compte a un depot de garantie, la tache "MAJ compte et depot garantie" (64.9) met a jour le statut du depot dans la base (variable FB = MajCompte).
+
+<details>
+<summary>7 taches : 64.4, 64.5, 64.6, 64.7, 64.8, 64.9, 64.10</summary>
+
+- **64.4** - Lignes de solde **[ECRAN]** (consultation debits/credits, 640x110 DLU)
+- **64.5** - Creation comptable **[ECRAN]** (ecrit comptable, mode Create)
+- **64.6** - Recup compteur verst/retrait (maintien tracabilite flux)
+- **64.7** - Creation comptable **[ECRAN]** (ecrit comptable, deuxieme passe)
+- **64.8** - Recup compteur verst/retrait (deuxieme passe)
+- **64.9** - MAJ compte et depot garantie (variable EQ = Num Compte Test, FB = MajCompte)
+- **64.10** - Traitement interne (consolidation)
+
+</details>
+
+### Securisation cartes et Club Med Pass
+
+Apres le solde, le programme met en opposition les cartes CAM (Club Access Module) pour empecher toute nouvelle utilisation. Deux taches "Mise opposition des CAM" (64.11, 64.16) ecrivent dans la table ez_card pour invalider les cartes. Les taches de liberation (64.14, 64.15, 64.20, 64.21, 64.22) liberent les lignes et postes associes dans les tables de reservation. La desactivation du Club Med Pass (64.23) complete la securisation en empechant tout acces numerique post-depart. Ces operations sont irreversibles et garantissent qu'aucune transaction ne peut etre passee apres le check-out.
+
+<details>
+<summary>8 taches : 64.11, 64.14, 64.15, 64.16, 64.20, 64.21, 64.22, 64.23</summary>
+
+- **64.11** - Mise opposition des CAM (ecrit ez_card, invalide cartes)
+- **64.14** - Liberation Ligne (variable EZ = Ligne_Solde)
+- **64.15** - Liberation Poste
+- **64.16** - Mise opposition des CAM (deuxieme passe)
+- **64.20** - Liberation Ligne (deuxieme passe)
+- **64.21** - Liberation Ligne (troisieme passe)
+- **64.22** - Liberation Poste (deuxieme passe)
+- **64.23** - Desactiver Club Med Pass
+
+</details>
+
+### Creation commandes et decrementation compteurs
+
+Le programme cree des commandes de regularisation (64.12, 64.17, 64.18) pour les ajustements comptables post-solde. La decrementation des compteurs telephone (64.13, 64.19) met a jour les credits telephoniques restants, assurant que les compteurs sont remis a zero au depart du client. Ces operations evitent les fuites de credits entre sejours.
+
+<details>
+<summary>5 taches : 64.12, 64.13, 64.17, 64.18, 64.19</summary>
+
+- **64.12** - Creation commande (regularisation comptable)
+- **64.13** - Decrementation Compteur Tel (RAZ credits telephone)
+- **64.17** - Creation commande (deuxieme passe)
+- **64.18** - Creation commande (troisieme passe)
+- **64.19** - Decrementation Compteur Tel (deuxieme passe)
+
+</details>
+
+### Facturation, email et logs
+
+La tache "Log Facture" (64.24) enregistre la trace de la facturation dans log_booker pour audit. Si des factures PDF existent (condition RM-001 : Trim(NomFact_PDF_OD)&Trim(NomFact_PDF_Autres) <> ''), elles sont jointes. La tache "Mail" (64.25, variable FF = Envoi_mail, FK = MailAtachedFiles) envoie le recapitulatif ECO par email au client si une adresse est renseignee. La "Creation Ligne Log" (64.26, **[ECRAN]**) finalise la trace d'audit. Le programme delegue ensuite a [Factures Check Out (IDE 54)](ADH-IDE-54.md) pour la verification, [Edition Easy Check Out (IDE 65)](ADH-IDE-65.md) pour le recapitulatif, et [Print extrait compte par Date (IDE 71)](ADH-IDE-71.md) pour l'impression.
+
+<details>
+<summary>3 taches : 64.24, 64.25, 64.26</summary>
+
+- **64.24** - Log Facture (ecrit log_booker, trace audit)
+- **64.25** - Mail (envoi recapitulatif ECO, variables FF/FK)
+- **64.26** - Creation Ligne Log **[ECRAN]** (315x0 DLU, finalisation audit)
+
+</details>
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,7 +108,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>64 - Solde Easy Check Out [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Solde Easy Check Out [ECRAN]
 
 **Role** : Tache d'orchestration : point d'entree du programme (15 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 458 x 195 DLU | [Voir mockup](#ecran-t1)
@@ -46,34 +118,34 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [64.1.1](#t3) | Solde GM | Traitement |
-| [64.2](#t4) | Lignes de solde **[[ECRAN]](#ecran-t4)** | Traitement |
-| [64.6](#t10) | (sans nom) | Traitement |
-| [64.6.1](#t11) | Mise opposition des CAM | Traitement |
-| [64.6.1.3](#t14) | Liberation Ligne | Traitement |
-| [64.6.1.4](#t15) | Liberation Poste | Traitement |
-| [64.7](#t16) | Mise opposition des CAM | Traitement |
-| [64.7.4](#t20) | Liberation Ligne | Traitement |
-| [64.7.5](#t21) | Liberation Ligne | Traitement |
-| [64.7.6](#t22) | Liberation Poste | Traitement |
-| [64.8](#t23) | Désactiver Club Med Pass | Traitement |
-| [64.9](#t24) | Log Facture | Traitement |
-| [64.10](#t25) | Mail | Traitement |
-| [64.11](#t26) | Création Ligne Log **[[ECRAN]](#ecran-t26)** | Traitement |
+| [T3](#t3) | Solde GM | Traitement |
+| [T4](#t4) | Lignes de solde **[ECRAN]** | Traitement |
+| [T10](#t10) | (sans nom) | Traitement |
+| [T11](#t11) | Mise opposition des CAM | Traitement |
+| [T14](#t14) | Liberation Ligne | Traitement |
+| [T15](#t15) | Liberation Poste | Traitement |
+| [T16](#t16) | Mise opposition des CAM | Traitement |
+| [T20](#t20) | Liberation Ligne | Traitement |
+| [T21](#t21) | Liberation Ligne | Traitement |
+| [T22](#t22) | Liberation Poste | Traitement |
+| [T23](#t23) | Désactiver Club Med Pass | Traitement |
+| [T24](#t24) | Log Facture | Traitement |
+| [T25](#t25) | Mail | Traitement |
+| [T26](#t26) | Création Ligne Log **[ECRAN]** | Traitement |
 
 </details>
 **Variables liees** : EV (v.Date_Solde), EW (v.Heure-Solde), EZ (v.Ligne_Solde), FJ (v.Solde du compte)
 
 ---
 
-#### <a id="t3"></a>64.1.1 - Solde GM
+#### <a id="t3"></a>T3 - Solde GM
 
 **Role** : Consultation/chargement : Solde GM.
 **Variables liees** : EV (v.Date_Solde), EW (v.Heure-Solde), EZ (v.Ligne_Solde), FJ (v.Solde du compte)
 
 ---
 
-#### <a id="t4"></a>64.2 - Lignes de solde [[ECRAN]](#ecran-t4)
+#### <a id="t4"></a>T4 - Lignes de solde [ECRAN]
 
 **Role** : Consultation/chargement : Lignes de solde.
 **Ecran** : 640 x 110 DLU (MDI) | [Voir mockup](#ecran-t4)
@@ -81,77 +153,77 @@ Traitements internes.
 
 ---
 
-#### <a id="t10"></a>64.6 - (sans nom)
+#### <a id="t10"></a>T10 - (sans nom)
 
 **Role** : Traitement interne.
 
 ---
 
-#### <a id="t11"></a>64.6.1 - Mise opposition des CAM
+#### <a id="t11"></a>T11 - Mise opposition des CAM
 
 **Role** : Traitement : Mise opposition des CAM.
 
 ---
 
-#### <a id="t14"></a>64.6.1.3 - Liberation Ligne
+#### <a id="t14"></a>T14 - Liberation Ligne
 
 **Role** : Traitement : Liberation Ligne.
 **Variables liees** : EZ (v.Ligne_Solde)
 
 ---
 
-#### <a id="t15"></a>64.6.1.4 - Liberation Poste
+#### <a id="t15"></a>T15 - Liberation Poste
 
 **Role** : Traitement : Liberation Poste.
 
 ---
 
-#### <a id="t16"></a>64.7 - Mise opposition des CAM
+#### <a id="t16"></a>T16 - Mise opposition des CAM
 
 **Role** : Traitement : Mise opposition des CAM.
 
 ---
 
-#### <a id="t20"></a>64.7.4 - Liberation Ligne
+#### <a id="t20"></a>T20 - Liberation Ligne
 
 **Role** : Traitement : Liberation Ligne.
 **Variables liees** : EZ (v.Ligne_Solde)
 
 ---
 
-#### <a id="t21"></a>64.7.5 - Liberation Ligne
+#### <a id="t21"></a>T21 - Liberation Ligne
 
 **Role** : Traitement : Liberation Ligne.
 **Variables liees** : EZ (v.Ligne_Solde)
 
 ---
 
-#### <a id="t22"></a>64.7.6 - Liberation Poste
+#### <a id="t22"></a>T22 - Liberation Poste
 
 **Role** : Traitement : Liberation Poste.
 
 ---
 
-#### <a id="t23"></a>64.8 - Désactiver Club Med Pass
+#### <a id="t23"></a>T23 - Désactiver Club Med Pass
 
 **Role** : Traitement : Désactiver Club Med Pass.
 
 ---
 
-#### <a id="t24"></a>64.9 - Log Facture
+#### <a id="t24"></a>T24 - Log Facture
 
 **Role** : Traitement : Log Facture.
 
 ---
 
-#### <a id="t25"></a>64.10 - Mail
+#### <a id="t25"></a>T25 - Mail
 
 **Role** : Traitement : Mail.
 **Variables liees** : FF (v.Evoi_mail), FK (v.MailAtachedFiles)
 
 ---
 
-#### <a id="t26"></a>64.11 - Création Ligne Log [[ECRAN]](#ecran-t26)
+#### <a id="t26"></a>T26 - Création Ligne Log [ECRAN]
 
 **Role** : Traitement : Création Ligne Log.
 **Ecran** : 315 x 0 DLU | [Voir mockup](#ecran-t26)
@@ -164,53 +236,53 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t2"></a>64.1 - Recalcul solde
+#### <a id="t2"></a>T2 - Recalcul solde
 
 **Role** : Calcul : Recalcul solde.
 **Variables liees** : EV (v.Date_Solde), EW (v.Heure-Solde), EZ (v.Ligne_Solde), FJ (v.Solde du compte)
 
 ---
 
-#### <a id="t5"></a>64.3 - Creation comptable [[ECRAN]](#ecran-t5)
+#### <a id="t5"></a>T5 - Creation comptable [ECRAN]
 
 **Role** : Creation d'enregistrement : Creation comptable.
 **Ecran** : 426 x 98 DLU (MDI) | [Voir mockup](#ecran-t5)
 
 ---
 
-#### <a id="t6"></a>64.3.1 - Recup compteur verst/retrait
+#### <a id="t6"></a>T6 - Recup compteur verst/retrait
 
 **Role** : Calcul : Recup compteur verst/retrait.
 
 ---
 
-#### <a id="t7"></a>64.4 - Creation comptable [[ECRAN]](#ecran-t7)
+#### <a id="t7"></a>T7 - Creation comptable [ECRAN]
 
 **Role** : Creation d'enregistrement : Creation comptable.
 **Ecran** : 426 x 98 DLU (MDI) | [Voir mockup](#ecran-t7)
 
 ---
 
-#### <a id="t8"></a>64.4.1 - Recup compteur verst/retrait
+#### <a id="t8"></a>T8 - Recup compteur verst/retrait
 
 **Role** : Calcul : Recup compteur verst/retrait.
 
 ---
 
-#### <a id="t9"></a>64.5 - MàJ compte et depôt garantie
+#### <a id="t9"></a>T9 - MàJ compte et depôt garantie
 
 **Role** : Traitement : MàJ compte et depôt garantie.
 **Variables liees** : EQ (P.i.Num Compte Test), FB (v.MajCompte), FJ (v.Solde du compte)
 
 ---
 
-#### <a id="t13"></a>64.6.1.2 - Decrementation Compteur Tel
+#### <a id="t13"></a>T13 - Decrementation Compteur Tel
 
 **Role** : Calcul : Decrementation Compteur Tel.
 
 ---
 
-#### <a id="t19"></a>64.7.3 - Decrementation Compteur Tel
+#### <a id="t19"></a>T19 - Decrementation Compteur Tel
 
 **Role** : Calcul : Decrementation Compteur Tel.
 
@@ -221,19 +293,19 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t12"></a>64.6.1.1 - Creation commande
+#### <a id="t12"></a>T12 - Creation commande
 
 **Role** : Creation d'enregistrement : Creation commande.
 
 ---
 
-#### <a id="t17"></a>64.7.1 - Creation commande
+#### <a id="t17"></a>T17 - Creation commande
 
 **Role** : Creation d'enregistrement : Creation commande.
 
 ---
 
-#### <a id="t18"></a>64.7.2 - Creation commande
+#### <a id="t18"></a>T18 - Creation commande
 
 **Role** : Creation d'enregistrement : Creation commande.
 
@@ -345,14 +417,14 @@ Insertion de nouveaux enregistrements en base.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 64 | 64 | Solde Easy Check Out | Type0 | 458 | 195 | Traitement |
+| 1 | 64 | T1 | Solde Easy Check Out | Type0 | 458 | 195 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>64 - Solde Easy Check Out
-**Tache** : [64](#t1) | **Type** : Type0 | **Dimensions** : 458 x 195 DLU
+**Tache** : [T1](#t1) | **Type** : Type0 | **Dimensions** : 458 x 195 DLU
 **Bloc** : Traitement | **Titre IDE** : Solde Easy Check Out
 
 <!-- FORM-DATA:
@@ -478,62 +550,104 @@ Ecran unique: **Solde Easy Check Out**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **64.1** | [**Solde Easy Check Out** (64)](#t1) [mockup](#ecran-t1) | - | 458x195 | Traitement |
-| 64.1.1 | [Solde GM (64.1.1)](#t3) | SDI | - | |
-| 64.1.2 | [Lignes de solde (64.2)](#t4) [mockup](#ecran-t4) | MDI | 640x110 | |
-| 64.1.3 | [(sans nom) (64.6)](#t10) | MDI | - | |
-| 64.1.4 | [Mise opposition des CAM (64.6.1)](#t11) | MDI | - | |
-| 64.1.5 | [Liberation Ligne (64.6.1.3)](#t14) | MDI | - | |
-| 64.1.6 | [Liberation Poste (64.6.1.4)](#t15) | MDI | - | |
-| 64.1.7 | [Mise opposition des CAM (64.7)](#t16) | MDI | - | |
-| 64.1.8 | [Liberation Ligne (64.7.4)](#t20) | MDI | - | |
-| 64.1.9 | [Liberation Ligne (64.7.5)](#t21) | MDI | - | |
-| 64.1.10 | [Liberation Poste (64.7.6)](#t22) | MDI | - | |
-| 64.1.11 | [Désactiver Club Med Pass (64.8)](#t23) | MDI | - | |
-| 64.1.12 | [Log Facture (64.9)](#t24) | - | - | |
-| 64.1.13 | [Mail (64.10)](#t25) | - | - | |
-| 64.1.14 | [Création Ligne Log (64.11)](#t26) [mockup](#ecran-t26) | - | 315x0 | |
-| **64.2** | [**Recalcul solde** (64.1)](#t2) | SDI | - | Calcul |
-| 64.2.1 | [Creation comptable (64.3)](#t5) [mockup](#ecran-t5) | MDI | 426x98 | |
-| 64.2.2 | [Recup compteur verst/retrait (64.3.1)](#t6) | MDI | - | |
-| 64.2.3 | [Creation comptable (64.4)](#t7) [mockup](#ecran-t7) | MDI | 426x98 | |
-| 64.2.4 | [Recup compteur verst/retrait (64.4.1)](#t8) | MDI | - | |
-| 64.2.5 | [MàJ compte et depôt garantie (64.5)](#t9) | MDI | - | |
-| 64.2.6 | [Decrementation Compteur Tel (64.6.1.2)](#t13) | MDI | - | |
-| 64.2.7 | [Decrementation Compteur Tel (64.7.3)](#t19) | MDI | - | |
-| **64.3** | [**Creation commande** (64.6.1.1)](#t12) | MDI | - | Creation |
-| 64.3.1 | [Creation commande (64.7.1)](#t17) | MDI | - | |
-| 64.3.2 | [Creation commande (64.7.2)](#t18) | MDI | - | |
+| **64.1** | [**Solde Easy Check Out** (T1)](#t1) [mockup](#ecran-t1) | - | 458x195 | Traitement |
+| 64.1.1 | [Solde GM (T3)](#t3) | SDI | - | |
+| 64.1.2 | [Lignes de solde (T4)](#t4) [mockup](#ecran-t4) | MDI | 640x110 | |
+| 64.1.3 | [(sans nom) (T10)](#t10) | MDI | - | |
+| 64.1.4 | [Mise opposition des CAM (T11)](#t11) | MDI | - | |
+| 64.1.5 | [Liberation Ligne (T14)](#t14) | MDI | - | |
+| 64.1.6 | [Liberation Poste (T15)](#t15) | MDI | - | |
+| 64.1.7 | [Mise opposition des CAM (T16)](#t16) | MDI | - | |
+| 64.1.8 | [Liberation Ligne (T20)](#t20) | MDI | - | |
+| 64.1.9 | [Liberation Ligne (T21)](#t21) | MDI | - | |
+| 64.1.10 | [Liberation Poste (T22)](#t22) | MDI | - | |
+| 64.1.11 | [Désactiver Club Med Pass (T23)](#t23) | MDI | - | |
+| 64.1.12 | [Log Facture (T24)](#t24) | - | - | |
+| 64.1.13 | [Mail (T25)](#t25) | - | - | |
+| 64.1.14 | [Création Ligne Log (T26)](#t26) [mockup](#ecran-t26) | - | 315x0 | |
+| **64.2** | [**Recalcul solde** (T2)](#t2) | SDI | - | Calcul |
+| 64.2.1 | [Creation comptable (T5)](#t5) [mockup](#ecran-t5) | MDI | 426x98 | |
+| 64.2.2 | [Recup compteur verst/retrait (T6)](#t6) | MDI | - | |
+| 64.2.3 | [Creation comptable (T7)](#t7) [mockup](#ecran-t7) | MDI | 426x98 | |
+| 64.2.4 | [Recup compteur verst/retrait (T8)](#t8) | MDI | - | |
+| 64.2.5 | [MàJ compte et depôt garantie (T9)](#t9) | MDI | - | |
+| 64.2.6 | [Decrementation Compteur Tel (T13)](#t13) | MDI | - | |
+| 64.2.7 | [Decrementation Compteur Tel (T19)](#t19) | MDI | - | |
+| **64.3** | [**Creation commande** (T12)](#t12) | MDI | - | Creation |
+| 64.3.1 | [Creation commande (T17)](#t17) | MDI | - | |
+| 64.3.2 | [Creation commande (T18)](#t18) | MDI | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    DECISION{P.i.Edition Auto}
-    BR1[Traitement TRUE]
-    BR2[Traitement FALSE]
-    VALID[Validation]
-    UPDATE[MAJ 13 tables]
-    ENDOK([END OK])
-    ENDKO([END KO])
+    START([Appel depuis ECO])
+    RECALC[Recalcul solde compte]
+    SOLDEGM[Charger solde GM]
+    LIGNES[Afficher lignes solde]
+    ECRITURES[Creer ecritures comptables]
+    CHKGAR{Depot garantie}
+    MAJGAR[MAJ depot garantie]
+    OPPCAM[Opposition cartes CAM]
+    LIBLIG[Liberation lignes postes]
+    DESACT[Desactiver Club Med Pass]
+    DECTEL[RAZ compteurs telephone]
+    CHKFACT{Factures PDF}
+    LOGFACT[Enregistrer log facture]
+    CHKMAIL{Email existe}
+    SENDMAIL[Envoyer recapitulatif]
+    EDITION[Imprimer extrait compte]
+    ENDOK([Fin OK])
 
-    START --> INIT --> SAISIE --> DECISION
-    DECISION -->|TRUE| BR1 --> VALID
-    DECISION -->|FALSE| BR2 --> VALID
-    VALID --> UPDATE --> ENDOK
-    DECISION -->|KO| ENDKO
+    START --> RECALC
+    RECALC --> SOLDEGM
+    SOLDEGM --> LIGNES
+    LIGNES --> ECRITURES
+    ECRITURES --> CHKGAR
+    CHKGAR -->|OUI| MAJGAR
+    CHKGAR -->|NON| OPPCAM
+    MAJGAR --> OPPCAM
+    OPPCAM --> LIBLIG
+    LIBLIG --> DESACT
+    DESACT --> DECTEL
+    DECTEL --> CHKFACT
+    CHKFACT -->|OUI| LOGFACT
+    CHKFACT -->|NON| CHKMAIL
+    LOGFACT --> CHKMAIL
+    CHKMAIL -->|OUI| SENDMAIL
+    CHKMAIL -->|NON| EDITION
+    SENDMAIL --> EDITION
+    EDITION --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
-    style ENDKO fill:#f85149,color:#fff
-    style DECISION fill:#58a6ff,color:#000
+    style CHKGAR fill:#58a6ff,color:#000
+    style CHKFACT fill:#58a6ff,color:#000
+    style CHKMAIL fill:#58a6ff,color:#000
+    style RECALC fill:#ffeb3b,color:#000
+    style ECRITURES fill:#ffeb3b,color:#000
+    style OPPCAM fill:#ffeb3b,color:#000
+    style DESACT fill:#ffeb3b,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Jaune = Flux solde Easy Check Out | Bleu = Decisions
+
+| Noeud | Source | Justification |
+|-------|--------|---------------|
+| RECALC | Tache 64.2 | Agregation des mouvements comptables, recalcul solde exact |
+| SOLDEGM | Tache 64.3 | Verification coherence solde recalcule vs solde enregistre |
+| LIGNES | Tache 64.4 | Ecran consultation detail debits/credits du compte |
+| ECRITURES | Taches 64.5, 64.7 | Creation ecritures comptables de consolidation dans comptable |
+| CHKGAR | Tache 64.9 | Variable FB (MajCompte) : depot garantie a mettre a jour |
+| OPPCAM | Taches 64.11, 64.16 | Mise opposition cartes ez_card, empeche utilisation post-depart |
+| LIBLIG | Taches 64.14-64.22 | Liberation lignes et postes de reservation |
+| DESACT | Tache 64.23 | Desactivation Club Med Pass, securisation acces numerique |
+| DECTEL | Taches 64.13, 64.19 | RAZ credits telephoniques entre sejours |
+| CHKFACT | Expression 5 | Trim(NomFact_PDF_OD)&Trim(NomFact_PDF_Autres) <> vide |
+| LOGFACT | Tache 64.24 | Trace audit dans log_booker avec factures jointes |
+| SENDMAIL | Tache 64.25 | Envoi recapitulatif ECO par email (variables FF/FK) |
+| EDITION | CallTask IDE 65, 71 | Impression extrait compte + recapitulatif ECO |
+
 
 <!-- TAB:Donnees -->
 
@@ -738,7 +852,7 @@ Variables recues du programme appelant ([Easy Check-Out === V2.00 (IDE 55)](ADH-
 | EN | P.i.Date Fin Sejour | Date | 1x parametre entrant |
 | EO | P.i.Clause Where | Alpha | - |
 | EP | P.i.Edition Auto | Logical | 7x parametre entrant |
-| EQ | P.i.Num Compte Test | Numeric | [64.3.1](#t6), [64.4.1](#t8), [64.5](#t9) |
+| EQ | P.i.Num Compte Test | Numeric | [T6](#t6), [T8](#t8), [T9](#t9) |
 | ER | P.i.Test PES | Logical | 3x parametre entrant |
 
 ### 11.2 Variables de session (22)
@@ -1134,4 +1248,4 @@ graph LR
 | [Edition & Mail Easy Check Out (IDE 65)](ADH-IDE-65.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:00*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-25 13:02*

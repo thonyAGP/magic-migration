@@ -1,6 +1,6 @@
 ﻿# ADH IDE 77 - Club Med Pass menu
 
-> **Analyse**: Phases 1-4 2026-02-07 03:45 -> 02:14 (22h29min) | Assemblage 02:14
+> **Analyse**: Phases 1-4 2026-02-23 18:22 -> 18:22 (1s) | Assemblage 13:17
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,23 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**ADH IDE 77 - Club Med Pass Menu** est le programme de gestion centralisée des cartes Club Med Pass (CMP). Il offre une interface menu permettant aux caissiers de consulter et gérer les cartes de crédit prépayées des clients. Le programme accède à la table `ez_card` pour lire/modifier les informations de carte (soldes, statuts, oppositions).
+**Club Med Pass menu** est le programme central de gestion des cartes Club Med Pass (cartes de paiement prepayees) au guichet de caisse. Accessible depuis le [Menu caisse GM (IDE 163)](ADH-IDE-163.md), il orchestre 9 taches sur 5 ecrans pour permettre la consultation, la creation, l'opposition et la suppression des cartes Pass. Le programme modifie la table `ez_card` et consulte les donnees GM et transactions bar.
 
-Le flux principal comprend plusieurs fonctionnalités : consultation des transactions CMP via **ADH IDE 79** (balance crédit de conso), scan de carte via **ADH IDE 80**, création de nouvelle carte via **ADH IDE 81**, sélection d'affiliés via **ADH IDE 82**, gestion des limites de crédit via **ADH IDE 86**, et gestion des forfaits TAI locaux via **ADH IDE 173**. Chaque sous-programme est spécialisé dans une opération spécifique (lecture, création, opposition, suppression).
+### Scan et identification de la carte
 
-Le programme intègre également les services d'impression : récupération de l'imprimante via **ADH IDE 179**, sélection du modèle via **ADH IDE 180**, numérotation des tickets via **ADH IDE 181**, et réinitialisation via **ADH IDE 182**. Cela permet aux caissiers d'éditer les reçus CMP et les documents associés directement depuis le menu, offrant un workflow complet de gestion des cartes prépayées.
+Le programme debute par la lecture de la carte physique via [Card scan read (IDE 80)](ADH-IDE-80.md), qui identifie le porteur a partir du numero scanne. Cette identification est critique car elle conditionne toutes les operations suivantes : sans identification valide, aucune operation de modification n'est autorisee sur la carte. Le systeme lit la table `gm-complet` (compte GM du porteur) et `fichier_validation` pour verifier l'eligibilite. En cas d'echec de lecture ou de carte inconnue, le programme affiche un ecran "Processing..." (T2) le temps de la verification, evitant ainsi un blocage de l'interface utilisateur.
+
+### Consultation et operations carte
+
+L'ecran principal (T1/T9) presente un menu avec les operations disponibles : consultation du solde, historique des ventes, et gestion des affilies. La consultation du solde appelle [Balance Credit de conso (IDE 79)](ADH-IDE-79.md) pour recuperer le credit restant. L'historique des ventes est imprime via [Print Ventes Club Med Pass (IDE 78)](ADH-IDE-78.md). La selection des affilies ([Select affilies (IDE 82)](ADH-IDE-82.md)) permet de gerer les membres rattaches a la carte principale. Le programme lit aussi `transac_detail_bar` et `arc_cc_total` pour les donnees de consommation bar, ce qui permet une vue consolidee des depenses du porteur.
+
+### Opposition et suppression de carte
+
+La tache T5 (Opposition) permet de bloquer une carte perdue ou volee en ecrivant un flag dans `ez_card`. Cette operation est irreversible et empeche toute nouvelle transaction avec cette carte, protegant le solde du porteur contre une utilisation frauduleuse. La tache T6 (Delete) supprime definitivement une carte du systeme apres confirmation utilisateur (variable FQ). La consequence d'une suppression est la perte du lien entre le compte GM et la carte physique. Les deux operations necessitent un scan prealable de la carte via [Card scan read (IDE 80)](ADH-IDE-80.md) pour securiser l'identite.
+
+### Services complementaires et impression
+
+Le programme offre des services additionnels : gestion du forfait TAI LOCAL via [Gestion forfait TAI LOCAL (IDE 173)](ADH-IDE-173.md) et limite Bar via [Bar Limit (IDE 86)](ADH-IDE-86.md). La creation d'une nouvelle carte passe par [Card scan create (IDE 81)](ADH-IDE-81.md). Pour l'impression, le programme utilise une chaine de gestion d'imprimante : [Get Printer (IDE 179)](ADH-IDE-179.md), [Printer choice (IDE 180)](ADH-IDE-180.md), [Set Listing Number (IDE 181)](ADH-IDE-181.md), et [Raz Current Printer (IDE 182)](ADH-IDE-182.md). La table `qualite_avant_reprise` est lue pour verifier l'etat de qualite des donnees avant toute impression.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,7 +48,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>77 - Club Med Pass menu [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Club Med Pass menu [ECRAN]
 
 **Role** : Tache d'orchestration : point d'entree du programme (6 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 1056 x 256 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -46,11 +58,11 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [77.1](#t2) | Processing ... **[[ECRAN]](#ecran-t2)** | Traitement |
-| [77.3](#t5) | Opposition Club Med Pass | Traitement |
-| [77.4](#t6) | Delete Club Med Pass | Traitement |
-| [77.6](#t8) | paramètre | Traitement |
-| [77.7](#t9) | Club Med Pass menu **[[ECRAN]](#ecran-t9)** | Traitement |
+| [T2](#t2) | Processing ... **[ECRAN]** | Traitement |
+| [T5](#t5) | Opposition Club Med Pass | Traitement |
+| [T6](#t6) | Delete Club Med Pass | Traitement |
+| [T8](#t8) | paramètre | Traitement |
+| [T9](#t9) | Club Med Pass menu **[ECRAN]** | Traitement |
 
 </details>
 **Variables liees** : FL (v.Club Med Pass ID), FM (V.ID Club Med Pass scannee)
@@ -58,7 +70,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t2"></a>77.1 - Processing ... [[ECRAN]](#ecran-t2)
+#### <a id="t2"></a>T2 - Processing ... [ECRAN]
 
 **Role** : Traitement : Processing ....
 **Ecran** : 129 x 64 DLU (MDI) | [Voir mockup](#ecran-t2)
@@ -66,7 +78,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t5"></a>77.3 - Opposition Club Med Pass
+#### <a id="t5"></a>T5 - Opposition Club Med Pass
 
 **Role** : Traitement : Opposition Club Med Pass.
 **Variables liees** : FL (v.Club Med Pass ID), FM (V.ID Club Med Pass scannee)
@@ -74,7 +86,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t6"></a>77.4 - Delete Club Med Pass
+#### <a id="t6"></a>T6 - Delete Club Med Pass
 
 **Role** : Traitement : Delete Club Med Pass.
 **Variables liees** : FL (v.Club Med Pass ID), FM (V.ID Club Med Pass scannee), FQ (v.delete confirmation)
@@ -82,14 +94,14 @@ Traitements internes.
 
 ---
 
-#### <a id="t8"></a>77.6 - paramètre
+#### <a id="t8"></a>T8 - paramètre
 
 **Role** : Traitement : paramètre.
 **Delegue a** : [Appel programme (IDE 44)](ADH-IDE-44.md), [Balance Credit de conso (IDE 79)](ADH-IDE-79.md), [   Card scan read (IDE 80)](ADH-IDE-80.md)
 
 ---
 
-#### <a id="t9"></a>77.7 - Club Med Pass menu [[ECRAN]](#ecran-t9)
+#### <a id="t9"></a>T9 - Club Med Pass menu [ECRAN]
 
 **Role** : Traitement : Club Med Pass menu.
 **Ecran** : 1050 x 73 DLU (Modal) | [Voir mockup](#ecran-t9)
@@ -103,7 +115,7 @@ L'operateur saisit les donnees de la transaction via 2 ecrans (Detail des transa
 
 ---
 
-#### <a id="t3"></a>77.2 - Detail des transactions CMP [[ECRAN]](#ecran-t3)
+#### <a id="t3"></a>T3 - Detail des transactions CMP [ECRAN]
 
 **Role** : Saisie des donnees : Detail des transactions CMP.
 **Ecran** : 1190 x 294 DLU (MDI) | [Voir mockup](#ecran-t3)
@@ -112,7 +124,7 @@ L'operateur saisit les donnees de la transaction via 2 ecrans (Detail des transa
 
 ---
 
-#### <a id="t4"></a>77.2.1 - Transactions details [[ECRAN]](#ecran-t4)
+#### <a id="t4"></a>T4 - Transactions details [ECRAN]
 
 **Role** : Saisie des donnees : Transactions details.
 **Ecran** : 594 x 87 DLU (Modal) | [Voir mockup](#ecran-t4)
@@ -125,7 +137,7 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t7"></a>77.5 - Create Club Med Pass
+#### <a id="t7"></a>T7 - Create Club Med Pass
 
 **Role** : Traitement : Create Club Med Pass.
 **Variables liees** : FL (v.Club Med Pass ID), FM (V.ID Club Med Pass scannee), FS (v.ok to create)
@@ -147,7 +159,7 @@ Insertion de nouveaux enregistrements en base.
 | **Variables** | FL (v.Club Med Pass ID), FS (v.ok to create) |
 | **Expression source** | Expression 20 : `v.Club Med Pass ID [Y]>'' AND v.ok to create [BF]` |
 | **Exemple** | Si v.Club Med Pass ID [Y]>'' AND v.ok to create [BF] â†’ Action si vrai |
-| **Impact** | [77 - Club Med Pass menu](#t1) |
+| **Impact** | [T1 - Club Med Pass menu](#t1) |
 
 ### Autres (21 regles)
 
@@ -160,7 +172,7 @@ Insertion de nouveaux enregistrements en base.
 | **Variables** | EO (P.Code 8 chiffres), FZ (V.Compte scanne) |
 | **Expression source** | Expression 2 : `V.ID Club Med Pass sca... [Z]>'' AND V.Compte scanne [BM]<>P` |
 | **Exemple** | Si V.ID Club Med Pass sca... [Z]>'' AND V.Compte scanne [BM]<>P.Code 8 chiffres [B] â†’ Action si vrai |
-| **Impact** | [77 - Club Med Pass menu](#t1) |
+| **Impact** | [T1 - Club Med Pass menu](#t1) |
 
 #### <a id="rm-RM-002"></a>[RM-002] Si GetParam ('CODELANGUE')='FRA' alors 'Cette carte n''appartient pas a ce compte' sinon 'This card do not belong to this account')
 
@@ -250,7 +262,7 @@ Insertion de nouveaux enregistrements en base.
 | **Variables** | FQ (v.delete confirmation) |
 | **Expression source** | Expression 23 : `v.delete confirmation [BD]=6` |
 | **Exemple** | Si v.delete confirmation [BD]=6 â†’ Action si vrai |
-| **Impact** | [77.4 - Delete Club Med Pass](#t6) |
+| **Impact** | [T6 - Delete Club Med Pass](#t6) |
 
 #### <a id="rm-RM-012"></a>[RM-012] Condition: V.Action [BG]='E' OR V.Action [BG] egale 'B'
 
@@ -338,7 +350,7 @@ Insertion de nouveaux enregistrements en base.
 | **Variables** | FL (v.Club Med Pass ID) |
 | **Expression source** | Expression 40 : `v.Club Med Pass ID [Y]<>''` |
 | **Exemple** | Si v.Club Med Pass ID [Y]<>'' â†’ Action si vrai |
-| **Impact** | [77 - Club Med Pass menu](#t1) |
+| **Impact** | [T1 - Club Med Pass menu](#t1) |
 
 #### <a id="rm-RM-021"></a>[RM-021] Condition composite: V.Choix action [BH]>'' AND (InStr ('ABEFGHPZ',V.Choix action [BH])>0 OR V.Status card [BA]='O' AND NOT (V.Other card valid [BB]) AND [BQ]<>'S' AND [BP]='O' AND V.Choix action [BH]='D' OR V.Status card [BA]='V' AND V.Choix action [BH]='C' OR V.Status card [BA]='O' AND NOT (V.Other card valid [BB]) AND [BR]<=p.TAI.date fin sejour [M] AND [BP]='O' AND V.Choix action [BH]='D')
 
@@ -372,18 +384,18 @@ Insertion de nouveaux enregistrements en base.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 77 | 77 | Club Med Pass menu | MDI | 1056 | 256 | Traitement |
-| 2 | 77.1 | 77.1 | Processing ... | MDI | 129 | 64 | Traitement |
-| 3 | 77.2 | 77.2 | Detail des transactions CMP | MDI | 1190 | 294 | Saisie |
-| 4 | 77.2.1 | 77.2.1 | Transactions details | Modal | 594 | 87 | Saisie |
-| 5 | 77.7 | 77.7 | Club Med Pass menu | Modal | 1050 | 73 | Traitement |
+| 1 | 77 | T1 | Club Med Pass menu | MDI | 1056 | 256 | Traitement |
+| 2 | 77.1 | T2 | Processing ... | MDI | 129 | 64 | Traitement |
+| 3 | 77.2 | T3 | Detail des transactions CMP | MDI | 1190 | 294 | Saisie |
+| 4 | 77.2.1 | T4 | Transactions details | Modal | 594 | 87 | Saisie |
+| 5 | 77.7 | T9 | Club Med Pass menu | Modal | 1050 | 73 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>77 - Club Med Pass menu
-**Tache** : [77](#t1) | **Type** : MDI | **Dimensions** : 1056 x 256 DLU
+**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 1056 x 256 DLU
 **Bloc** : Traitement | **Titre IDE** : Club Med Pass menu
 
 <!-- FORM-DATA:
@@ -938,7 +950,7 @@ Insertion de nouveaux enregistrements en base.
 ---
 
 #### <a id="ecran-t2"></a>77.1 - Processing ...
-**Tache** : [77.1](#t2) | **Type** : MDI | **Dimensions** : 129 x 64 DLU
+**Tache** : [T2](#t2) | **Type** : MDI | **Dimensions** : 129 x 64 DLU
 **Bloc** : Traitement | **Titre IDE** : Processing ...
 
 <!-- FORM-DATA:
@@ -979,7 +991,7 @@ Insertion de nouveaux enregistrements en base.
 ---
 
 #### <a id="ecran-t3"></a>77.2 - Detail des transactions CMP
-**Tache** : [77.2](#t3) | **Type** : MDI | **Dimensions** : 1190 x 294 DLU
+**Tache** : [T3](#t3) | **Type** : MDI | **Dimensions** : 1190 x 294 DLU
 **Bloc** : Saisie | **Titre IDE** : Detail des transactions CMP
 
 <!-- FORM-DATA:
@@ -1330,7 +1342,7 @@ Insertion de nouveaux enregistrements en base.
 ---
 
 #### <a id="ecran-t4"></a>77.2.1 - Transactions details
-**Tache** : [77.2.1](#t4) | **Type** : Modal | **Dimensions** : 594 x 87 DLU
+**Tache** : [T4](#t4) | **Type** : Modal | **Dimensions** : 594 x 87 DLU
 **Bloc** : Saisie | **Titre IDE** : Transactions details
 
 <!-- FORM-DATA:
@@ -1489,7 +1501,7 @@ Insertion de nouveaux enregistrements en base.
 ---
 
 #### <a id="ecran-t9"></a>77.7 - Club Med Pass menu
-**Tache** : [77.7](#t9) | **Type** : Modal | **Dimensions** : 1050 x 73 DLU
+**Tache** : [T9](#t9) | **Type** : Modal | **Dimensions** : 1050 x 73 DLU
 **Bloc** : Traitement | **Titre IDE** : Club Med Pass menu
 
 <!-- FORM-DATA:
@@ -1670,15 +1682,15 @@ Insertion de nouveaux enregistrements en base.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF1[77 Club Med Pass menu]
+    VF1[T1 Club Med Pass menu]
     style VF1 fill:#58a6ff
-    VF2[77.1 Processing ...]
+    VF2[T2 Processing ...]
     style VF2 fill:#58a6ff
-    VF3[77.2 Detail des transact...]
+    VF3[T3 Detail des transact...]
     style VF3 fill:#58a6ff
-    VF4[77.2.1 Transactions details]
+    VF4[T4 Transactions details]
     style VF4 fill:#58a6ff
-    VF9[77.7 Club Med Pass menu]
+    VF9[T9 Club Med Pass menu]
     style VF9 fill:#58a6ff
     EXT44[IDE 44 Appel programme]
     style EXT44 fill:#3fb950
@@ -1739,42 +1751,76 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **77.1** | [**Club Med Pass menu** (77)](#t1) [mockup](#ecran-t1) | MDI | 1056x256 | Traitement |
-| 77.1.1 | [Processing ... (77.1)](#t2) [mockup](#ecran-t2) | MDI | 129x64 | |
-| 77.1.2 | [Opposition Club Med Pass (77.3)](#t5) | MDI | - | |
-| 77.1.3 | [Delete Club Med Pass (77.4)](#t6) | MDI | - | |
-| 77.1.4 | [paramètre (77.6)](#t8) | MDI | - | |
-| 77.1.5 | [Club Med Pass menu (77.7)](#t9) [mockup](#ecran-t9) | Modal | 1050x73 | |
-| **77.2** | [**Detail des transactions CMP** (77.2)](#t3) [mockup](#ecran-t3) | MDI | 1190x294 | Saisie |
-| 77.2.1 | [Transactions details (77.2.1)](#t4) [mockup](#ecran-t4) | Modal | 594x87 | |
-| **77.3** | [**Create Club Med Pass** (77.5)](#t7) | MDI | - | Creation |
+| **77.1** | [**Club Med Pass menu** (T1)](#t1) [mockup](#ecran-t1) | MDI | 1056x256 | Traitement |
+| 77.1.1 | [Processing ... (T2)](#t2) [mockup](#ecran-t2) | MDI | 129x64 | |
+| 77.1.2 | [Opposition Club Med Pass (T5)](#t5) | MDI | - | |
+| 77.1.3 | [Delete Club Med Pass (T6)](#t6) | MDI | - | |
+| 77.1.4 | [paramètre (T8)](#t8) | MDI | - | |
+| 77.1.5 | [Club Med Pass menu (T9)](#t9) [mockup](#ecran-t9) | Modal | 1050x73 | |
+| **77.2** | [**Detail des transactions CMP** (T3)](#t3) [mockup](#ecran-t3) | MDI | 1190x294 | Saisie |
+| 77.2.1 | [Transactions details (T4)](#t4) [mockup](#ecran-t4) | Modal | 594x87 | |
+| **77.3** | [**Create Club Med Pass** (T7)](#t7) | MDI | - | Creation |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[CR lecture carte]
-    DECISION{V.Action}
-    PROCESS[Traitement]
-    UPDATE[MAJ 1 tables]
+    SCAN[Scan carte CMP]
+    IDCHECK{Carte identifiee}
+    MENU[Menu principal CMP]
+    ACTION{Action utilisateur}
+    CONSULT[Consultation solde]
+    OPPOSIT[Opposition carte]
+    DELETE[Suppression carte]
+    PRINT[Impression historique]
+    FORFAIT[Forfait TAI LOCAL]
+    EZWRITE[MAJ ez_card]
     ENDOK([END OK])
     ENDKO([END KO])
 
-    START --> INIT --> SAISIE --> DECISION
-    DECISION -->|OUI| PROCESS
-    DECISION -->|NON| ENDKO
-    PROCESS --> UPDATE --> ENDOK
+    START --> SCAN
+    SCAN --> IDCHECK
+    IDCHECK -->|OUI| MENU
+    IDCHECK -->|NON| ENDKO
+    MENU --> ACTION
+    ACTION -->|Consulter| CONSULT
+    ACTION -->|Opposer| OPPOSIT
+    ACTION -->|Supprimer| DELETE
+    ACTION -->|Imprimer| PRINT
+    ACTION -->|Forfait| FORFAIT
+    CONSULT --> ENDOK
+    OPPOSIT --> EZWRITE
+    DELETE --> EZWRITE
+    PRINT --> ENDOK
+    FORFAIT --> ENDOK
+    EZWRITE --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
     style ENDKO fill:#f85149,color:#fff
-    style DECISION fill:#58a6ff,color:#000
+    style IDCHECK fill:#58a6ff,color:#000
+    style ACTION fill:#58a6ff,color:#000
+    style OPPOSIT fill:#ffeb3b,color:#000
+    style DELETE fill:#ffeb3b,color:#000
+    style EZWRITE fill:#ffeb3b,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Jaune = Flux carte CMP | Bleu = Decisions
+
+| Noeud | Source | Justification |
+|-------|--------|---------------|
+| SCAN | Tache T2 / IDE 80 | Lecture physique de la carte Club Med Pass |
+| IDCHECK | Expression condition T2 | Verification identite porteur via gm-complet |
+| MENU | Tache T1/T9 | Ecran principal avec menu operations |
+| ACTION | Boutons ecran T1 | Choix utilisateur parmi 5 operations |
+| CONSULT | IDE 79 | Balance Credit de conso |
+| OPPOSIT | Tache T5 | Blocage carte dans ez_card |
+| DELETE | Tache T6 | Suppression definitive carte |
+| PRINT | IDE 78 | Impression historique ventes CMP |
+| FORFAIT | IDE 173 | Gestion forfait TAI LOCAL |
+| EZWRITE | Table ez_card WRITE | Ecriture flag opposition ou suppression |
+
 
 <!-- TAB:Donnees -->
 
@@ -1924,16 +1970,16 @@ Variables persistantes pendant toute la session.
 | FI | V.TAI Obligatoire | Alpha | - |
 | FJ | V.Nom complet | Alpha | - |
 | FK | V.Prenom complet | Alpha | - |
-| FL | v.Club Med Pass ID | Alpha | [77](#t1), [77.3](#t5), [77.4](#t6) |
+| FL | v.Club Med Pass ID | Alpha | [T1](#t1), [T5](#t5), [T6](#t6) |
 | FM | V.ID Club Med Pass scannee | Alpha | - |
 | FN | V.Status card | Alpha | 3x session |
 | FO | V.Other card valid | Logical | 3x session |
 | FP | V.Date de naissance | Date | 1x session |
 | FQ | v.delete confirmation | Numeric | 1x session |
-| FR | v.ez detail empty | Logical | [77.2](#t3), [77.2.1](#t4) |
-| FS | v.ok to create | Logical | [77.5](#t7) |
+| FR | v.ez detail empty | Logical | [T3](#t3), [T4](#t4) |
+| FS | v.ok to create | Logical | [T7](#t7) |
 | FT | V.Action | Alpha | 9x session |
-| FU | V.Choix action | Alpha | [77.2](#t3), [77.2.1](#t4) |
+| FU | V.Choix action | Alpha | [T3](#t3), [T4](#t4) |
 | FV | V.Age mineur | Numeric | - |
 | FW | v.Activation Bar Limit | Alpha | 2x session |
 | FX | v.Age Bar Limit | Numeric | 2x session |
@@ -2289,4 +2335,4 @@ graph LR
 | [   Select affilies (IDE 82)](ADH-IDE-82.md) | Sous-programme | 1x | Normale - Selection/consultation |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:14*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-25 13:17*

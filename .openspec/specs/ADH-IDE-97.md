@@ -1,6 +1,6 @@
 ﻿# ADH IDE 97 - Factures (Tble Compta&Vent) V3
 
-> **Analyse**: Phases 1-4 2026-02-07 03:47 -> 02:36 (22h48min) | Assemblage 02:36
+> **Analyse**: Phases 1-4 2026-02-23 18:22 -> 18:22 (1s) | Assemblage 13:17
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,68 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 97 gère la création et la modification complète des factures (comptables et ventes) pour les clients. Le programme orchestre un workflow multi-étapes : vérification des données initiales, création de l'en-tête facture, ajout des lignes de vente (hébergement, boutique, gift pass), calcul des montants avec TVA, et génération du pied de facture. Il interagit avec une chaîne de 13 programmes spécialisés couvrant l'incrémentation des numéros, la vérification des droits boutique, et les mises à jour en base.
+**Factures (Tble Compta&Vent) V3** gere la creation et l'edition complete des factures en mode Comptabilite et Ventes. Appele depuis trois contextes ([Menu caisse GM (IDE 163)](ADH-IDE-163.md), [Menu solde d'un compte (IDE 190)](ADH-IDE-190.md), et [Solde compte fin sejour (IDE 193)](ADH-IDE-193.md)), il orchestre 21 taches sur 8 ecrans pour produire des factures consolidant hebergement, ventes boutique et services. Le programme modifie 5 tables et delegue a 14 sous-programmes.
 
-Le cœur du programme traite quatre domaines transversaux : (1) **Hébergement** - récupération des séjours et valorisation via les tarifs applicables, (2) **Ventes** - lignes boutique avec vérification des stocks et droits d'accès, (3) **Gift Pass** - affectations Club Med à facturer, (4) **Comptabilité** - totaux par rayons, calcul TVA, et archivage temporaire. Les tables `comptable________cte` et `maj_appli_tpe` sont modifiées directement pour mettre à jour les soldes clients et l'historique des opérations.
+### Edition et assemblage de la facture
 
-Le programme gère également les états temporaires (flag ligne boutique, archivage séjour) et assure la traçabilité via la table `log_booker`. Il s'intègre au flux caisse principal (appelé depuis les menus IDE 163, 190, 193) et supporte les éditions factures (IDE 98) et les recherches d'adresses email (IDE 226) pour envois clients.
+L'ecran principal (T1 - Edition de Facture, 881x427 DLU) orchestre l'assemblage complet du document. L'en-tete est cree via [Creation entete facture (IDE 60)](ADH-IDE-60.md), le corps (lignes TVA) via [EditFactureTva V3 (IDE 98)](ADH-IDE-98.md), et le pied via [Creation Pied Facture V3 (IDE 101)](ADH-IDE-101.md). Le numero de facture est incremente atomiquement via [Incremente N de Facture (IDE 58)](ADH-IDE-58.md), appele 2 fois (facture + avoir potentiel). Cette separation en sous-programmes garantit la coherence : si l'un echoue, la facture n'est pas numerotee, evitant des trous dans la sequence comptable qui provoqueraient un rejet lors de l'audit fiscal.
+
+<details>
+<summary>3 taches : T1, T2, T20</summary>
+
+- **T1** - Edition de Facture [ECRAN] (assemblage principal, variables FF=No Facture, EV=Existe facture?)
+- **T2** - Raz tempo facture (reinitialisation des variables temporaires avant nouvelle facture)
+- **T20** - Traitement final (finalisation et validation)
+
+</details>
+
+### Verification et validation boutique
+
+Quatre taches de verification (T3, T7, T11, T13) controlent la coherence des donnees avant ecriture. La verification "non flaguee" via [Verif boutique (IDE 91)](ADH-IDE-91.md) s'assure que les lignes de vente boutique ne sont pas deja flaguees (marquees pour un traitement anterieur). Le [flag ligne boutique (IDE 92)](ADH-IDE-92.md) marque les lignes traitees pour empecher un double comptage. Le controle TTC (T7) verifie que les montants hors taxes + taxes correspondent au total TTC. Sans cette verification, une erreur d'arrondi TVA pourrait generer un ecart comptable signale par le rapprochement de fin de journee, bloquant la cloture.
+
+<details>
+<summary>4 taches : T3, T7, T11, T13</summary>
+
+- **T3** - verif non flaguee (lit FU = V.Existe flaguee?, appelle IDE 91)
+- **T7** - Controle ttc (verification coherence montants TVA)
+- **T11** - verif boutique (controle des lignes boutique)
+- **T13** - verif non flaguee (verification post-archivage)
+
+</details>
+
+### Traitement hebergement et sejour
+
+Le volet hebergement (T4) gere les factures liees aux chambres et prestations sejour. [Factures_Sejour (IDE 57)](ADH-IDE-57.md) charge les donnees de sejour courant, tandis que [Facture - Sejour archive (IDE 95)](ADH-IDE-95.md) traite les sejours passes. La mise a jour temporaire est effectuee via [Maj Hebergement Tempo V3 (IDE 104)](ADH-IDE-104.md), qui ecrit dans une table temporaire avant synchronisation. Ce pattern "tempo" est central dans l'architecture V3 : les modifications sont d'abord enregistrees dans des tables temporaires, puis validees et synchronisees vers les tables de production, minimisant les verrous sur les tables partagees et permettant un rollback transparent en cas d'erreur.
+
+<details>
+<summary>4 taches : T4, T5, T14, T15</summary>
+
+- **T4** - Hebergement [ECRAN] (affichage et selection des prestations sejour)
+- **T5** - Sejour (chargement donnees sejour courant via IDE 57)
+- **T14** - Hebergement [ECRAN] (ecran archivage)
+- **T15** - Sejour archive (traitement sejour archive via IDE 95)
+
+</details>
+
+### Lignes de vente et boutique
+
+Les lignes de vente sont mises a jour par deux sous-programmes jumeles : [Maj des lignes saisies V3 (IDE 105)](ADH-IDE-105.md) pour les ventes courantes et [Maj lignes saisies archive V3 (IDE 106)](ADH-IDE-106.md) pour les archives, chacun appele 2 fois. La table `Rayons_Boutique` (Read/Write, 7 usages) structure les lignes par rayon de vente. `Affectation_Gift_Pass` gere l'affectation des Gift Pass aux lignes de facture. Le chargement initial des donnees boutique est effectue par [Facture - chargement boutique (IDE 59)](ADH-IDE-59.md). Le [Zoom Pays Vente (IDE 278)](ADH-IDE-278.md) (appele 2 fois) permet de selectionner le pays de vente pour appliquer les regles TVA specifiques, car les taux different selon la zone fiscale.
+
+<details>
+<summary>6 taches : T6, T8, T9, T10, T16, T17</summary>
+
+- **T6** - Vente [ECRAN] (saisie des lignes de vente courantes)
+- **T8** - Boutique (chargement boutique via IDE 59)
+- **T9** - Lignes saisies (mise a jour via IDE 105)
+- **T10** - Lignes archive (mise a jour archive via IDE 106)
+- **T16** - Vente [ECRAN] (ecran vente archivee)
+- **T17** - Lignes archive (mise a jour archive alternative)
+
+</details>
+
+### Tracabilite et audit
+
+Le programme ecrit dans `comptable` (en-tetes comptables), `maj_appli_tpe` (6 ecritures Write, tracabilite des modifications applicatives TPE), et `log_booker` (journal d'audit). La table `log_maj_tpe` est lue pour verifier l'historique des modifications precedentes. La [Recherche Adresse Mail (IDE 226)](ADH-IDE-226.md) recupere l'email du client pour l'envoi electronique de la facture. L'absence de tracabilite dans `log_booker` empeche la reconstruction de l'historique des operations en cas de contestation client ou d'audit comptable.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,7 +93,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t1"></a>97 - Edition de Facture [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Edition de Facture [ECRAN]
 
 **Role** : Generation du document : Edition de Facture.
 **Ecran** : 881 x 427 DLU | [Voir mockup](#ecran-t1)
@@ -49,7 +106,7 @@ Reinitialisation d'etats et variables de travail.
 
 ---
 
-#### <a id="t2"></a>97.1 - Raz tempo facture
+#### <a id="t2"></a>T2 - Raz tempo facture
 
 **Role** : Reinitialisation : Raz tempo facture.
 **Variables liees** : EU (V.Lien Pied de facture), EV (V.Existe facture ?), FC (V.Facture Sans Nom), FD (V.Facture Sans Adresse), FF (V.No Facture)
@@ -61,7 +118,7 @@ Controles de coherence : 4 taches verifient les donnees et conditions.
 
 ---
 
-#### <a id="t3"></a>97.2 - verif non flaguee
+#### <a id="t3"></a>T3 - verif non flaguee
 
 **Role** : Verification : verif non flaguee.
 **Variables liees** : FU (V.Existe flaguee ?)
@@ -69,21 +126,21 @@ Controles de coherence : 4 taches verifient les donnees et conditions.
 
 ---
 
-#### <a id="t7"></a>97.3.1.1.1 - Controle ttc
+#### <a id="t7"></a>T7 - Controle ttc
 
 **Role** : Verification : Controle ttc.
 **Delegue a** : [Verif boutique (IDE 91)](ADH-IDE-91.md)
 
 ---
 
-#### <a id="t11"></a>97.3.4 - verif boutique
+#### <a id="t11"></a>T11 - verif boutique
 
 **Role** : Verification : verif boutique.
 **Delegue a** : [Verif boutique (IDE 91)](ADH-IDE-91.md)
 
 ---
 
-#### <a id="t13"></a>97.5 - verif non flaguee
+#### <a id="t13"></a>T13 - verif non flaguee
 
 **Role** : Verification : verif non flaguee.
 **Variables liees** : FU (V.Existe flaguee ?)
@@ -96,7 +153,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t4"></a>97.3 - Hebergement [[ECRAN]](#ecran-t4)
+#### <a id="t4"></a>T4 - Hebergement [ECRAN]
 
 **Role** : Traitement : Hebergement.
 **Ecran** : 866 x 250 DLU | [Voir mockup](#ecran-t4)
@@ -104,21 +161,21 @@ Traitements internes.
 
 ---
 
-#### <a id="t6"></a>97.3.1.1 - Lignes boutique [[ECRAN]](#ecran-t6)
+#### <a id="t6"></a>T6 - Lignes boutique [ECRAN]
 
 **Role** : Traitement : Lignes boutique.
 **Ecran** : 704 x 239 DLU | [Voir mockup](#ecran-t6)
 
 ---
 
-#### <a id="t8"></a>97.3.1.1.2 - Suppr fact pro boutique
+#### <a id="t8"></a>T8 - Suppr fact pro boutique
 
 **Role** : Traitement : Suppr fact pro boutique.
 **Variables liees** : EU (V.Lien Pied de facture), EV (V.Existe facture ?), FC (V.Facture Sans Nom), FD (V.Facture Sans Adresse), FF (V.No Facture)
 
 ---
 
-#### <a id="t9"></a>97.3.2 - Flag All [[ECRAN]](#ecran-t9)
+#### <a id="t9"></a>T9 - Flag All [ECRAN]
 
 **Role** : Traitement : Flag All.
 **Ecran** : 541 x 291 DLU | [Voir mockup](#ecran-t9)
@@ -126,7 +183,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t10"></a>97.3.3 - Pied de Facture [[ECRAN]](#ecran-t10)
+#### <a id="t10"></a>T10 - Pied de Facture [ECRAN]
 
 **Role** : Traitement : Pied de Facture.
 **Ecran** : 207 x 102 DLU | [Voir mockup](#ecran-t10)
@@ -134,7 +191,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t14"></a>97.6 - SQL parcourt facture [[ECRAN]](#ecran-t14)
+#### <a id="t14"></a>T14 - SQL parcourt facture [ECRAN]
 
 **Role** : Traitement : SQL parcourt facture.
 **Ecran** : 609 x 195 DLU | [Voir mockup](#ecran-t14)
@@ -142,13 +199,13 @@ Traitements internes.
 
 ---
 
-#### <a id="t15"></a>97.6.1 - SendMail
+#### <a id="t15"></a>T15 - SendMail
 
 **Role** : Traitement : SendMail.
 
 ---
 
-#### <a id="t16"></a>97.6.2 - Saisir un email [[ECRAN]](#ecran-t16)
+#### <a id="t16"></a>T16 - Saisir un email [ECRAN]
 
 **Role** : Traitement : Saisir un email.
 **Ecran** : 320 x 55 DLU | [Voir mockup](#ecran-t16)
@@ -156,20 +213,20 @@ Traitements internes.
 
 ---
 
-#### <a id="t17"></a>97.7 - VisuHebergement tempo
+#### <a id="t17"></a>T17 - VisuHebergement tempo
 
 **Role** : Traitement : VisuHebergement tempo.
 
 ---
 
-#### <a id="t18"></a>97.8 - visu Fac_tva [[ECRAN]](#ecran-t18)
+#### <a id="t18"></a>T18 - visu Fac_tva [ECRAN]
 
 **Role** : Traitement : visu Fac_tva.
 **Ecran** : 457 x 200 DLU | [Voir mockup](#ecran-t18)
 
 ---
 
-#### <a id="t19"></a>97.9 - Confirmation [[ECRAN]](#ecran-t19)
+#### <a id="t19"></a>T19 - Confirmation [ECRAN]
 
 **Role** : Traitement : Confirmation.
 **Ecran** : 397 x 110 DLU (Type6) | [Voir mockup](#ecran-t19)
@@ -181,7 +238,7 @@ L'operateur saisit les donnees de la transaction via 3 ecrans (Ventes, Maj des l
 
 ---
 
-#### <a id="t5"></a>97.3.1 - Ventes [[ECRAN]](#ecran-t5)
+#### <a id="t5"></a>T5 - Ventes [ECRAN]
 
 **Role** : Saisie des donnees : Ventes.
 **Ecran** : 650 x 233 DLU | [Voir mockup](#ecran-t5)
@@ -189,7 +246,7 @@ L'operateur saisit les donnees de la transaction via 3 ecrans (Ventes, Maj des l
 
 ---
 
-#### <a id="t20"></a>97.10 - Maj des lignes saisies [[ECRAN]](#ecran-t20)
+#### <a id="t20"></a>T20 - Maj des lignes saisies [ECRAN]
 
 **Role** : Saisie des donnees : Maj des lignes saisies.
 **Ecran** : 562 x 0 DLU | [Voir mockup](#ecran-t20)
@@ -197,7 +254,7 @@ L'operateur saisit les donnees de la transaction via 3 ecrans (Ventes, Maj des l
 
 ---
 
-#### <a id="t21"></a>97.11 - Abondonner lignes saisies V3 [[ECRAN]](#ecran-t21)
+#### <a id="t21"></a>T21 - Abondonner lignes saisies V3 [ECRAN]
 
 **Role** : Saisie des donnees : Abondonner lignes saisies V3.
 **Ecran** : 562 x 0 DLU | [Voir mockup](#ecran-t21)
@@ -210,7 +267,7 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t12"></a>97.4 - Recherche si Fact déjà éditée
+#### <a id="t12"></a>T12 - Recherche si Fact déjà éditée
 
 **Role** : Traitement : Recherche si Fact déjà éditée.
 **Variables liees** : EU (V.Lien Pied de facture), EV (V.Existe facture ?), FC (V.Facture Sans Nom), FD (V.Facture Sans Adresse), FF (V.No Facture)
@@ -457,7 +514,7 @@ Ecrans de recherche et consultation.
 | **Variables** | ER (P.i.Archive), FH (V.Pos ,), FI (V.Service), FJ (V.Fact déjà editée), FT (V.Existe non facturee ?), FU (V.Existe flaguee ?), FV (V.Erreur addresse ?) |
 | **Expression source** | Expression 79 : `IF([CF],[CH],IF(P.i.Archive [E],Trim(V.Fact déjà editée [W])` |
 | **Exemple** | Si [CF] â†’ [CH] |
-| **Impact** | [97.3.2 - Flag All](#t9) |
+| **Impact** | [T9 - Flag All](#t9) |
 
 ## 6. CONTEXTE
 
@@ -472,21 +529,21 @@ Ecrans de recherche et consultation.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 97 | 97 | Edition de Facture | Type0 | 881 | 427 | Impression |
-| 2 | 97.3 | 97.3 | Hebergement | Type0 | 866 | 250 | Traitement |
-| 3 | 97.3.1 | 97.3.1 | Ventes | Type0 | 650 | 233 | Saisie |
-| 4 | 97.3.1.1 | 97.3.1.1 | Lignes boutique | Type0 | 704 | 239 | Traitement |
-| 5 | 97.3.3 | 97.3.3 | Pied de Facture | Type0 | 207 | 102 | Traitement |
-| 6 | 97.6.2 | 97.6.2 | Saisir un email | Type0 | 320 | 55 | Traitement |
-| 7 | 97.8 | 97.8 | visu Fac_tva | Type0 | 457 | 200 | Traitement |
-| 8 | 97.9 | 97.9 | Confirmation | Type6 | 397 | 110 | Traitement |
+| 1 | 97 | T1 | Edition de Facture | Type0 | 881 | 427 | Impression |
+| 2 | 97.3 | T4 | Hebergement | Type0 | 866 | 250 | Traitement |
+| 3 | 97.3.1 | T5 | Ventes | Type0 | 650 | 233 | Saisie |
+| 4 | 97.3.1.1 | T6 | Lignes boutique | Type0 | 704 | 239 | Traitement |
+| 5 | 97.3.3 | T10 | Pied de Facture | Type0 | 207 | 102 | Traitement |
+| 6 | 97.6.2 | T16 | Saisir un email | Type0 | 320 | 55 | Traitement |
+| 7 | 97.8 | T18 | visu Fac_tva | Type0 | 457 | 200 | Traitement |
+| 8 | 97.9 | T19 | Confirmation | Type6 | 397 | 110 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>97 - Edition de Facture
-**Tache** : [97](#t1) | **Type** : Type0 | **Dimensions** : 881 x 427 DLU
+**Tache** : [T1](#t1) | **Type** : Type0 | **Dimensions** : 881 x 427 DLU
 **Bloc** : Impression | **Titre IDE** : Edition de Facture
 
 <!-- FORM-DATA:
@@ -1083,7 +1140,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t4"></a>97.3 - Hebergement
-**Tache** : [97.3](#t4) | **Type** : Type0 | **Dimensions** : 866 x 250 DLU
+**Tache** : [T4](#t4) | **Type** : Type0 | **Dimensions** : 866 x 250 DLU
 **Bloc** : Traitement | **Titre IDE** : Hebergement
 
 <!-- FORM-DATA:
@@ -1203,7 +1260,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t5"></a>97.3.1 - Ventes
-**Tache** : [97.3.1](#t5) | **Type** : Type0 | **Dimensions** : 650 x 233 DLU
+**Tache** : [T5](#t5) | **Type** : Type0 | **Dimensions** : 650 x 233 DLU
 **Bloc** : Saisie | **Titre IDE** : Ventes
 
 <!-- FORM-DATA:
@@ -1479,7 +1536,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t6"></a>97.3.1.1 - Lignes boutique
-**Tache** : [97.3.1.1](#t6) | **Type** : Type0 | **Dimensions** : 704 x 239 DLU
+**Tache** : [T6](#t6) | **Type** : Type0 | **Dimensions** : 704 x 239 DLU
 **Bloc** : Traitement | **Titre IDE** : Lignes boutique
 
 <!-- FORM-DATA:
@@ -1813,7 +1870,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t10"></a>97.3.3 - Pied de Facture
-**Tache** : [97.3.3](#t10) | **Type** : Type0 | **Dimensions** : 207 x 102 DLU
+**Tache** : [T10](#t10) | **Type** : Type0 | **Dimensions** : 207 x 102 DLU
 **Bloc** : Traitement | **Titre IDE** : Pied de Facture
 
 <!-- FORM-DATA:
@@ -1947,7 +2004,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t16"></a>97.6.2 - Saisir un email
-**Tache** : [97.6.2](#t16) | **Type** : Type0 | **Dimensions** : 320 x 55 DLU
+**Tache** : [T16](#t16) | **Type** : Type0 | **Dimensions** : 320 x 55 DLU
 **Bloc** : Traitement | **Titre IDE** : Saisir un email
 
 <!-- FORM-DATA:
@@ -2023,7 +2080,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t18"></a>97.8 - visu Fac_tva
-**Tache** : [97.8](#t18) | **Type** : Type0 | **Dimensions** : 457 x 200 DLU
+**Tache** : [T18](#t18) | **Type** : Type0 | **Dimensions** : 457 x 200 DLU
 **Bloc** : Traitement | **Titre IDE** : visu Fac_tva
 
 <!-- FORM-DATA:
@@ -2163,7 +2220,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t19"></a>97.9 - Confirmation
-**Tache** : [97.9](#t19) | **Type** : Type6 | **Dimensions** : 397 x 110 DLU
+**Tache** : [T19](#t19) | **Type** : Type6 | **Dimensions** : 397 x 110 DLU
 **Bloc** : Traitement | **Titre IDE** : Confirmation
 
 <!-- FORM-DATA:
@@ -2250,21 +2307,21 @@ Ecrans de recherche et consultation.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF1[97 Edition de Facture]
+    VF1[T1 Edition de Facture]
     style VF1 fill:#58a6ff
-    VF4[97.3 Hebergement]
+    VF4[T4 Hebergement]
     style VF4 fill:#58a6ff
-    VF5[97.3.1 Ventes]
+    VF5[T5 Ventes]
     style VF5 fill:#58a6ff
-    VF6[97.3.1.1 Lignes boutique]
+    VF6[T6 Lignes boutique]
     style VF6 fill:#58a6ff
-    VF10[97.3.3 Pied de Facture]
+    VF10[T10 Pied de Facture]
     style VF10 fill:#58a6ff
-    VF16[97.6.2 Saisir un email]
+    VF16[T16 Saisir un email]
     style VF16 fill:#58a6ff
-    VF18[97.8 visu Fac_tva]
+    VF18[T18 visu Fac_tva]
     style VF18 fill:#58a6ff
-    VF19[97.9 Confirmation]
+    VF19[T19 Confirmation]
     style VF19 fill:#58a6ff
     EXT58[IDE 58 Incremente N° d...]
     style EXT58 fill:#3fb950
@@ -2331,54 +2388,95 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **97.1** | [**Edition de Facture** (97)](#t1) [mockup](#ecran-t1) | - | 881x427 | Impression |
-| **97.2** | [**Raz tempo facture** (97.1)](#t2) | - | - | Initialisation |
-| **97.3** | [**verif non flaguee** (97.2)](#t3) | - | - | Validation |
-| 97.3.1 | [Controle ttc (97.3.1.1.1)](#t7) | - | - | |
-| 97.3.2 | [verif boutique (97.3.4)](#t11) | - | - | |
-| 97.3.3 | [verif non flaguee (97.5)](#t13) | - | - | |
-| **97.4** | [**Hebergement** (97.3)](#t4) [mockup](#ecran-t4) | - | 866x250 | Traitement |
-| 97.4.1 | [Lignes boutique (97.3.1.1)](#t6) [mockup](#ecran-t6) | - | 704x239 | |
-| 97.4.2 | [Suppr fact pro boutique (97.3.1.1.2)](#t8) | - | - | |
-| 97.4.3 | [Flag All (97.3.2)](#t9) [mockup](#ecran-t9) | - | 541x291 | |
-| 97.4.4 | [Pied de Facture (97.3.3)](#t10) [mockup](#ecran-t10) | - | 207x102 | |
-| 97.4.5 | [SQL parcourt facture (97.6)](#t14) [mockup](#ecran-t14) | - | 609x195 | |
-| 97.4.6 | [SendMail (97.6.1)](#t15) | - | - | |
-| 97.4.7 | [Saisir un email (97.6.2)](#t16) [mockup](#ecran-t16) | - | 320x55 | |
-| 97.4.8 | [VisuHebergement tempo (97.7)](#t17) | - | - | |
-| 97.4.9 | [visu Fac_tva (97.8)](#t18) [mockup](#ecran-t18) | - | 457x200 | |
-| 97.4.10 | [Confirmation (97.9)](#t19) [mockup](#ecran-t19) | Type6 | 397x110 | |
-| **97.5** | [**Ventes** (97.3.1)](#t5) [mockup](#ecran-t5) | - | 650x233 | Saisie |
-| 97.5.1 | [Maj des lignes saisies (97.10)](#t20) [mockup](#ecran-t20) | - | 562x0 | |
-| 97.5.2 | [Abondonner lignes saisies V3 (97.11)](#t21) [mockup](#ecran-t21) | - | 562x0 | |
-| **97.6** | [**Recherche si Fact déjà éditée** (97.4)](#t12) | - | - | Consultation |
+| **97.1** | [**Edition de Facture** (T1)](#t1) [mockup](#ecran-t1) | - | 881x427 | Impression |
+| **97.2** | [**Raz tempo facture** (T2)](#t2) | - | - | Initialisation |
+| **97.3** | [**verif non flaguee** (T3)](#t3) | - | - | Validation |
+| 97.3.1 | [Controle ttc (T7)](#t7) | - | - | |
+| 97.3.2 | [verif boutique (T11)](#t11) | - | - | |
+| 97.3.3 | [verif non flaguee (T13)](#t13) | - | - | |
+| **97.4** | [**Hebergement** (T4)](#t4) [mockup](#ecran-t4) | - | 866x250 | Traitement |
+| 97.4.1 | [Lignes boutique (T6)](#t6) [mockup](#ecran-t6) | - | 704x239 | |
+| 97.4.2 | [Suppr fact pro boutique (T8)](#t8) | - | - | |
+| 97.4.3 | [Flag All (T9)](#t9) [mockup](#ecran-t9) | - | 541x291 | |
+| 97.4.4 | [Pied de Facture (T10)](#t10) [mockup](#ecran-t10) | - | 207x102 | |
+| 97.4.5 | [SQL parcourt facture (T14)](#t14) [mockup](#ecran-t14) | - | 609x195 | |
+| 97.4.6 | [SendMail (T15)](#t15) | - | - | |
+| 97.4.7 | [Saisir un email (T16)](#t16) [mockup](#ecran-t16) | - | 320x55 | |
+| 97.4.8 | [VisuHebergement tempo (T17)](#t17) | - | - | |
+| 97.4.9 | [visu Fac_tva (T18)](#t18) [mockup](#ecran-t18) | - | 457x200 | |
+| 97.4.10 | [Confirmation (T19)](#t19) [mockup](#ecran-t19) | Type6 | 397x110 | |
+| **97.5** | [**Ventes** (T5)](#t5) [mockup](#ecran-t5) | - | 650x233 | Saisie |
+| 97.5.1 | [Maj des lignes saisies (T20)](#t20) [mockup](#ecran-t20) | - | 562x0 | |
+| 97.5.2 | [Abondonner lignes saisies V3 (T21)](#t21) [mockup](#ecran-t21) | - | 562x0 | |
+| **97.6** | [**Recherche si Fact déjà éditée** (T12)](#t12) | - | - | Consultation |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Hebergement]
-    DECISION{P.i.Archive}
-    PROCESS[Traitement]
-    UPDATE[MAJ 5 tables]
+    RAZ[RAZ tempo facture]
+    ENTETE[Creation entete]
+    NUMFACT[Increm N facture]
+    ARCHIV{Mode archive}
+    HEBERG[Hebergement tempo]
+    SEJARCH[Sejour archive]
+    VERIFBT[Verif boutique]
+    MAJLIG[MAJ lignes saisies]
+    ZOOMTVA[Zoom pays TVA]
+    EDITFACT[Edition facture TVA]
+    PIED[Creation pied facture]
+    CTRLTTC{Controle TTC}
+    WRITE[MAJ 5 tables]
     ENDOK([END OK])
     ENDKO([END KO])
 
-    START --> INIT --> SAISIE --> DECISION
-    DECISION -->|OUI| PROCESS
-    DECISION -->|NON| ENDKO
-    PROCESS --> UPDATE --> ENDOK
+    START --> RAZ
+    RAZ --> ENTETE
+    ENTETE --> NUMFACT
+    NUMFACT --> ARCHIV
+    ARCHIV -->|Courant| HEBERG
+    ARCHIV -->|Archive| SEJARCH
+    HEBERG --> VERIFBT
+    SEJARCH --> VERIFBT
+    VERIFBT --> MAJLIG
+    MAJLIG --> ZOOMTVA
+    ZOOMTVA --> EDITFACT
+    EDITFACT --> PIED
+    PIED --> CTRLTTC
+    CTRLTTC -->|OK| WRITE
+    CTRLTTC -->|Ecart| ENDKO
+    WRITE --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
     style ENDKO fill:#f85149,color:#fff
-    style DECISION fill:#58a6ff,color:#000
+    style ARCHIV fill:#58a6ff,color:#000
+    style CTRLTTC fill:#58a6ff,color:#000
+    style ENTETE fill:#ffeb3b,color:#000
+    style NUMFACT fill:#ffeb3b,color:#000
+    style EDITFACT fill:#ffeb3b,color:#000
+    style WRITE fill:#ffeb3b,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Jaune = Flux facturation | Bleu = Decisions
+
+| Noeud | Source | Justification |
+|-------|--------|---------------|
+| RAZ | Tache T2 | Reinitialisation variables temporaires |
+| ENTETE | IDE 60 | Creation entete facture |
+| NUMFACT | IDE 58 (x2) | Incrementation atomique numero facture |
+| ARCHIV | Variable P.i.Archive | Aiguillage sejour courant vs archive |
+| HEBERG | IDE 104 | Maj hebergement tempo V3 |
+| SEJARCH | IDE 95 | Facture sejour archive |
+| VERIFBT | IDE 91 (x4) / IDE 92 | Verification et flag lignes boutique |
+| MAJLIG | IDE 105/106 (x2) | MAJ lignes saisies courantes et archives |
+| ZOOMTVA | IDE 278 (x2) | Selection pays vente pour regles TVA |
+| EDITFACT | IDE 98 | Edition facture TVA Compta et Ventes |
+| PIED | IDE 101 | Creation pied de facture V3 |
+| CTRLTTC | Tache T7 | Controle coherence HT + TVA = TTC |
+| WRITE | 5 tables | comptable, maj_appli_tpe, Affectation_Gift_Pass, Rayons_Boutique, log_booker |
+
 
 <!-- TAB:Donnees -->
 
@@ -2543,8 +2641,8 @@ Variables persistantes pendant toute la session.
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
 | ET | V.Lien Gm_Complet | Logical | - |
-| EU | V.Lien Pied de facture | Logical | [97](#t1), [97.1](#t2), [97.3.3](#t10) |
-| EV | V.Existe facture ? | Logical | [97](#t1), [97.1](#t2), [97.3.3](#t10) |
+| EU | V.Lien Pied de facture | Logical | [T1](#t1), [T2](#t2), [T10](#t10) |
+| EV | V.Existe facture ? | Logical | [T1](#t1), [T2](#t2), [T10](#t10) |
 | EW | V.Nom | Alpha | - |
 | EX | V.Adresse | Alpha | - |
 | EY | V.CP | Alpha | 1x session |
@@ -2554,21 +2652,21 @@ Variables persistantes pendant toute la session.
 | FC | V.Facture Sans Nom | Logical | 1x session |
 | FD | V.Facture Sans Adresse | Logical | - |
 | FE | V.Reponse Imprimer | Numeric | - |
-| FF | V.No Facture | Numeric | [97](#t1), [97.1](#t2), [97.3.3](#t10) |
+| FF | V.No Facture | Numeric | [T1](#t1), [T2](#t2), [T10](#t10) |
 | FG | V.Nom Fichier PDF | Alpha | - |
 | FH | V.Pos , | Numeric | 1x session |
 | FI | V.Service | Alpha | 1x session |
-| FJ | V.Fact déjà editée | Logical | [97.4](#t12) |
-| FK | V.Date Début Hebergement | Date | [97.3](#t4), [97.7](#t17) |
-| FL | V.Date Fin Hebergement | Date | [97.3](#t4), [97.7](#t17) |
+| FJ | V.Fact déjà editée | Logical | [T12](#t12) |
+| FK | V.Date Début Hebergement | Date | [T4](#t4), [T17](#t17) |
+| FL | V.Date Fin Hebergement | Date | [T4](#t4), [T17](#t17) |
 | FM | v.MessageValidationIdentite | Unicode | - |
 | FN | v.NbrChampsVides | Numeric | 1x session |
 | FO | v.PaysLibelle | Unicode | 1x session |
 | FP | v.CompteSpecial ? | Logical | - |
 | FT | V.Existe non facturee ? | Logical | 1x session |
-| FU | V.Existe flaguee ? | Logical | [97.2](#t3), [97.5](#t13) |
+| FU | V.Existe flaguee ? | Logical | [T3](#t3), [T13](#t13) |
 | FV | V.Erreur addresse ? | Logical | 1x session |
-| FW | V.Au moins une facture ? | Logical | [97](#t1), [97.1](#t2), [97.3.3](#t10) |
+| FW | V.Au moins une facture ? | Logical | [T1](#t1), [T2](#t2), [T10](#t10) |
 | FX | V.ConfirmEnvoieMail? | Numeric | 1x session |
 
 ### 11.3 Autres (4)
@@ -3074,4 +3172,4 @@ graph LR
 | [Facture - Sejour archive (IDE 95)](ADH-IDE-95.md) | Sous-programme | 1x | Normale - Sous-programme |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:37*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-25 13:17*

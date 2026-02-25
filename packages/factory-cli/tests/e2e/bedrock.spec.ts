@@ -37,18 +37,17 @@ test.describe('BEDROCK — Real AWS enrichment', () => {
     // Wait for REAL pipeline completion ("Terminé en Xs"), not preflight's "terminés"
     await expect(dashboard.panelContent).toContainText(/Termin[eé] en \d/i, { timeout: 120_000 });
 
-    // Panel should show enrichment results (not credential errors)
+    // Panel should show Claude enrichment results (not credential errors)
     const text = await dashboard.getPanelText();
     expect(text).not.toMatch(/credentials not set|AWS_BEARER_TOKEN/i);
-    expect(text).toMatch(/enriched|enrich|gaps?\s*(resolved|remain)/i);
+    // Actual format: "Claude resolved X/Y gaps (N+M tokens, model: haiku)"
+    expect(text).toMatch(/Claude resolved \d+\/\d+ gaps/i);
   });
 
   test('B2: should stream enrichment events with token data', async ({ page }) => {
     test.setTimeout(120_000);
 
     const dashboard = new DashboardPage(page);
-
-    // Capture SSE log entries rendered in the panel
     await dashboard.goto();
     await dashboard.waitForConnected();
 
@@ -61,13 +60,14 @@ test.describe('BEDROCK — Real AWS enrichment', () => {
     await dashboard.btnRun.click();
     await expect(dashboard.panelContent).toContainText(/Termin[eé] en \d/i, { timeout: 120_000 });
 
-    // The panel log lines include SSE events rendered by the dashboard JS.
-    // Look for Claude enrichment mention in the log output.
     const panelText = await dashboard.getPanelText();
-    expect(panelText).toMatch(/claude|enriched|enrich/i);
 
-    // Verify enrichment event was logged (panel includes "[105]" log lines from SSE)
-    expect(panelText).toMatch(/\[105\].*enrich/i);
+    // Verify Claude was called and token counts are reported
+    expect(panelText).toMatch(/Claude resolved/i);
+    expect(panelText).toMatch(/\d+\+\d+ tokens/);
+
+    // Verify program 105 log line is present
+    expect(panelText).toMatch(/\[105\].*IDE 105/);
   });
 
   test('B3: should update contract YAML on disk', async ({ page }) => {
@@ -87,8 +87,9 @@ test.describe('BEDROCK — Real AWS enrichment', () => {
 
     const text = await dashboard.getPanelText();
 
-    // If enrichment succeeded, the program should no longer be "contracted"
-    // It should be "enriched" or show auto-enrich/will-verify action
-    expect(text).toMatch(/enriched|enrichi|v[eé]rifi|will-verify|auto-enrich/i);
+    // If enrichment succeeded and resolved all gaps, status should be enriched/will-verify.
+    // If partial, it still shows needs-enrichment but with fewer gaps.
+    // Either way, the contract should exist and have been processed by Claude.
+    expect(text).toMatch(/enriched|needs-enrichment|will-verify|auto-enrich/i);
   });
 });

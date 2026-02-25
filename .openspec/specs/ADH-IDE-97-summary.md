@@ -1,6 +1,6 @@
 ﻿# ADH IDE 97 - Factures (Tble Compta&Vent) V3
 
-> **Analyse**: 2026-02-08 02:36
+> **Analyse**: 2026-02-25 13:17
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF

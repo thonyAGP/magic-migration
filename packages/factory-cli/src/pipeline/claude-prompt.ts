@@ -117,23 +117,25 @@ export const findRelevantCodeFiles = (
   const allFiles = walkFiles(codebaseDir, /\.(ts|tsx)$/, 200);
   if (allFiles.length === 0) return [];
 
+  const escRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
   // Build search terms from gap items
   const terms: string[] = [];
   for (const r of contract.rules) {
     if (r.status !== 'IMPL' && r.status !== 'N/A') {
-      terms.push(r.id.replace('-', '[-_]?'));
+      terms.push(escRe(r.id).replace('-', '[-_]?'));
       const words = r.description.split(/\s+/).filter(w => w.length > 4).slice(0, 3);
-      terms.push(...words);
+      terms.push(...words.map(escRe));
     }
   }
   for (const t of contract.tables) {
     if (t.status !== 'IMPL' && t.status !== 'N/A') {
-      terms.push(t.name.replace(/_+\w{3}$/, ''));
+      terms.push(escRe(t.name.replace(/_+\w{3}$/, '')));
     }
   }
   for (const c of contract.callees) {
     if (c.status !== 'IMPL' && c.status !== 'N/A') {
-      terms.push(c.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/[^a-zA-Z0-9\\]/g, '\\s*').slice(0, 30));
+      terms.push(escRe(c.name).replace(/[^a-zA-Z0-9\\]/g, '\\s*').slice(0, 30));
     }
   }
 

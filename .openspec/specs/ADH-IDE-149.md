@@ -1,6 +1,6 @@
 ﻿# ADH IDE 149 - Calcul stock produit WS
 
-> **Analyse**: Phases 1-4 2026-02-23 18:22 -> 18:22 (1s) | Assemblage 12:22
+> **Analyse**: Phases 1-4 2026-02-23 18:22 -> 18:22 (1s) | Assemblage 13:02
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -183,6 +183,7 @@ flowchart TD
 | VENTES | Tache 149.5 | Soustraction ventes Gift Pass/Resort Credit realisees |
 | OD | Tache 149.6 | Soustraction ordres de depot saisis |
 | STOCKNET | Expression 1 | Resultat net : brut - ventes - OD = stock disponible |
+
 
 <!-- TAB:Donnees -->
 
@@ -440,4 +441,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-25 12:22*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-25 13:02*
