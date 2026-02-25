@@ -124,7 +124,7 @@ export const getLatestLogs = (
   count = 100,
   level?: LogEntry['level'],
 ): LogEntry[] => {
-  const { logs } = readLogs(logDir, batchId, { level });
+  const { logs } = readLogs(logDir, batchId, { limit: Number.MAX_SAFE_INTEGER, level });
   return logs.slice(-count).reverse();
 };
 

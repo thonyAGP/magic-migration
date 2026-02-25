@@ -1,6 +1,11 @@
 /**
  * Token Tracker - Persistent token usage tracking for cost monitoring.
  * Aggregates tokens at global, batch, phase, and program levels.
+ *
+ * TODO(thony): Unify with SWARM SQLite token tracking (swarm_sessions.total_tokens_cost_usd,
+ * agent_analyses.tokens_cost_usd). Currently SWARM votes and Pipeline/Migration tokens are
+ * tracked separately — the dashboard should show the total cost per program across both systems.
+ * Short-term: aggregate both sources in the Tokens tab. Long-term: single storage (SQLite).
  */
 
 import fs from 'node:fs';
@@ -74,7 +79,7 @@ export const updateTokens = (
   }
   data.programs[progKey].input += tokens.input;
   data.programs[progKey].output += tokens.output;
-  data.programs[progKey].costUsd += estimateCost({ input: data.programs[progKey].input, output: data.programs[progKey].output }, model);
+  data.programs[progKey].costUsd += costUsd;
 
   // Save
   fs.writeFileSync(tokensFile, JSON.stringify(data, null, 2), 'utf8');

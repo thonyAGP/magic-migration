@@ -34,7 +34,7 @@ export const resolvePipelineConfig = (input: PipelineConfigInput): PipelineConfi
     autoVerify: !input.noVerify,
     dryRun: input.dryRun ?? false,
     generateReport: input.report ?? false,
-    enrichmentMode: input.enrich === 'claude' ? EnrichmentMode.CLAUDE : EnrichmentMode.MANUAL,
+    enrichmentMode: (input.enrich === 'claude' || input.enrich === 'claude-cli' || input.enrich === 'claude-bedrock') ? EnrichmentMode.CLAUDE : EnrichmentMode.MANUAL,
     claudeModel: input.model,
   };
 };

@@ -448,31 +448,33 @@ const processProgram = async (
           };
         }
       } else {
-        // Hook can't enrich (no API key or no spec)
+        const specExists = fs.existsSync(specFile(config, programId));
+        const hasApiKey = !!process.env.ANTHROPIC_API_KEY;
+        const reason = !hasApiKey ? 'ANTHROPIC_API_KEY not set' : !specExists ? 'spec file missing' : 'hook rejected';
         emitter.emit(createEvent(PipelineEventType.PROGRAM_NEEDS_ENRICHMENT,
-          `IDE ${programId} needs enrichment: ${gaps} gaps`,
-          { batchId: batch.id, programId, data: { gaps } }));
+          `IDE ${programId} needs enrichment: ${gaps} gaps (${reason})`,
+          { batchId: batch.id, programId, data: { gaps, reason } }));
 
         return {
           programId, programName: contract.program.name,
           action: PA.NEEDS_ENRICHMENT,
           previousStatus: PipelineStatus.CONTRACTED, newStatus: PipelineStatus.CONTRACTED,
           coveragePct: contract.overall.coveragePct, gaps,
-          message: `${gaps} items need enrichment`,
+          message: `${gaps} items need enrichment (${reason})`,
         };
       }
     } else {
-      // No hook or dry-run → report gaps
+      const reason = config.dryRun ? 'dry-run mode' : `enrichment mode: ${config.enrichmentMode}`;
       emitter.emit(createEvent(PipelineEventType.PROGRAM_NEEDS_ENRICHMENT,
-        `IDE ${programId} needs enrichment: ${gaps} gaps`,
-        { batchId: batch.id, programId, data: { gaps } }));
+        `IDE ${programId} needs enrichment: ${gaps} gaps (${reason})`,
+        { batchId: batch.id, programId, data: { gaps, reason } }));
 
       return {
         programId, programName: contract.program.name,
         action: PA.NEEDS_ENRICHMENT,
         previousStatus: PipelineStatus.CONTRACTED, newStatus: PipelineStatus.CONTRACTED,
         coveragePct: contract.overall.coveragePct, gaps,
-        message: `${gaps} items need enrichment`,
+        message: `${gaps} items need enrichment (${reason})`,
       };
     }
   }

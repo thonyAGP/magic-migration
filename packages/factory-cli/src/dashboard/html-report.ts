@@ -512,6 +512,7 @@ ${MULTI_CSS}
 <nav class="project-tabs-bar">
   <button class="project-tab active" data-project="global"><span class="tab-dot tab-dot-global"></span>Vue Globale</button>
   ${projectTabs}
+  <button class="project-tab" data-project="tokens"><span class="tab-dot" style="background:var(--yellow)"></span>Tokens &amp; Co\u00fbts</button>
 </nav>
 
 <div class="action-bar" id="action-bar">
@@ -799,6 +800,15 @@ migration-factory analyze --dir ADH                # Analyser les modules</pre>
 
 ${projectContents}
 
+<div class="tab-content" data-tab="tokens">
+  <div class="card" id="tokens-card">
+    <h2>Tokens &amp; Co\u00fbts</h2>
+    <div id="tokens-content" style="color:var(--text-dim);padding:20px 0">
+      <p>Chargement...</p>
+    </div>
+  </div>
+</div>
+
 ${renderDocumentationSection()}
 
 <footer>
@@ -947,6 +957,7 @@ const CSS = `
   --orange: #f0883e;
   --red: #f85149;
   --gray: #484f58;
+  --cyan: #56d4dd;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -2186,6 +2197,123 @@ document.querySelectorAll('.project-tab').forEach(tab => {
   }
 })();
 
+// ─── Tokens Tab ──────────────────────────────────────────────────
+(function() {
+  var tokensLoaded = false;
+  var observer = new MutationObserver(function() {
+    var tokensTab = document.querySelector('.tab-content[data-tab="tokens"]');
+    if (tokensTab && tokensTab.classList.contains('active') && !tokensLoaded) {
+      tokensLoaded = true;
+      loadTokens();
+    }
+  });
+  document.querySelectorAll('.tab-content').forEach(function(el) {
+    observer.observe(el, { attributes: true, attributeFilter: ['class'] });
+  });
+
+  function fmt(n) {
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+    if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+    return String(n);
+  }
+
+  function costFmt(n) { return '$' + (n || 0).toFixed(2); }
+
+  function loadTokens() {
+    var el = document.getElementById('tokens-content');
+    if (!window.__MF_SERVER__) {
+      el.innerHTML = '<p style="color:var(--text-dim)">Connectez le serveur pour voir les tokens.</p>';
+      return;
+    }
+    fetch('/api/tokens').then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function(data) {
+      var g = data && data.global ? data.global : null;
+
+      // Empty state: no data or zero calls
+      if (!g || g.totalCalls === 0) {
+        el.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--text-dim)">'
+          + '<p style="font-size:48px;margin:0">0</p>'
+          + '<p>Aucun token utilis\\u00e9</p>'
+          + '<p style="font-size:13px;margin-top:8px">Les tokens seront track\\u00e9s automatiquement lors de la premi\\u00e8re migration.</p>'
+          + '</div>';
+        return;
+      }
+
+      var html = '';
+
+      // Section 1: Global KPIs
+      html += '<h3 style="margin:0 0 16px;color:var(--text)">Total ' + (data.project || 'projet') + '</h3>';
+      html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px">';
+      html += '<div class="kpi-card"><div class="kpi-value" style="color:var(--orange)">' + costFmt(g.costUsd) + '</div><div class="kpi-label">Co\\u00fbt total</div></div>';
+      html += '<div class="kpi-card"><div class="kpi-value" style="color:var(--yellow)">' + fmt(g.input + g.output) + '</div><div class="kpi-label">Tokens total</div></div>';
+      html += '<div class="kpi-card"><div class="kpi-value" style="color:var(--cyan)">' + fmt(g.input) + '</div><div class="kpi-label">Input</div></div>';
+      html += '<div class="kpi-card"><div class="kpi-value" style="color:var(--green)">' + fmt(g.output) + '</div><div class="kpi-label">Output</div></div>';
+      html += '</div>';
+      html += '<div style="color:var(--text-dim);font-size:13px;margin-bottom:24px">Appels API : ' + (g.totalCalls || 0) + '</div>';
+
+      // Section 2: Par batch (avec phases)
+      var batches = data.batches || {};
+      var batchKeys = Object.keys(batches);
+      if (batchKeys.length > 0) {
+        html += '<h3 style="margin:20px 0 12px;color:var(--text)">Par batch</h3>';
+        html += '<table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr>'
+          + '<th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-dim)">Batch</th>'
+          + '<th style="text-align:right;padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-dim)">Input</th>'
+          + '<th style="text-align:right;padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-dim)">Output</th>'
+          + '<th style="text-align:right;padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-dim)">Co\\u00fbt</th>'
+          + '<th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-dim)">Phases</th>'
+          + '</tr></thead><tbody>';
+        batchKeys.forEach(function(k) {
+          var b = batches[k];
+          var phases = Object.keys(b.perPhase || {}).join(', ') || '-';
+          html += '<tr>'
+            + '<td style="padding:6px 12px;border-bottom:1px solid var(--border)">' + k + '</td>'
+            + '<td style="padding:6px 12px;border-bottom:1px solid var(--border);text-align:right">' + fmt(b.input) + '</td>'
+            + '<td style="padding:6px 12px;border-bottom:1px solid var(--border);text-align:right">' + fmt(b.output) + '</td>'
+            + '<td style="padding:6px 12px;border-bottom:1px solid var(--border);text-align:right;color:var(--orange)">' + costFmt(b.costUsd) + '</td>'
+            + '<td style="padding:6px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);font-size:12px">' + phases + '</td>'
+            + '</tr>';
+        });
+        html += '</tbody></table>';
+      }
+
+      // Section 3: Par programme (tous, tri par cout desc)
+      var progs = data.programs || {};
+      var progKeys = Object.keys(progs);
+      if (progKeys.length > 0) {
+        progKeys.sort(function(a, b) { return (progs[b].costUsd || 0) - (progs[a].costUsd || 0); });
+        html += '<h3 style="margin:24px 0 12px;color:var(--text)">Par programme (' + progKeys.length + ' total)</h3>';
+        html += '<table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr>'
+          + '<th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-dim)">IDE</th>'
+          + '<th style="text-align:right;padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-dim)">Input</th>'
+          + '<th style="text-align:right;padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-dim)">Output</th>'
+          + '<th style="text-align:right;padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-dim)">Co\\u00fbt</th>'
+          + '<th style="text-align:right;padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-dim)">% total</th>'
+          + '</tr></thead><tbody>';
+        var totalCost = g.costUsd || 1;
+        progKeys.forEach(function(k) {
+          var p = progs[k];
+          var pct = ((p.costUsd || 0) / totalCost * 100).toFixed(1);
+          html += '<tr>'
+            + '<td style="padding:6px 12px;border-bottom:1px solid var(--border)">IDE ' + k + '</td>'
+            + '<td style="padding:6px 12px;border-bottom:1px solid var(--border);text-align:right">' + fmt(p.input) + '</td>'
+            + '<td style="padding:6px 12px;border-bottom:1px solid var(--border);text-align:right">' + fmt(p.output) + '</td>'
+            + '<td style="padding:6px 12px;border-bottom:1px solid var(--border);text-align:right;color:var(--orange)">' + costFmt(p.costUsd) + '</td>'
+            + '<td style="padding:6px 12px;border-bottom:1px solid var(--border);text-align:right;color:var(--text-dim)">' + pct + '%</td>'
+            + '</tr>';
+        });
+        html += '</tbody></table>';
+      }
+
+      el.innerHTML = html;
+    }).catch(function(err) {
+      el.innerHTML = '<p style="color:var(--red)">Erreur : ' + err.message + '</p>';
+    });
+  }
+})();
+
 // Click on project card -> switch to that tab
 document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   card.addEventListener('click', () => {
@@ -2302,7 +2430,8 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     if (!batch) { showPanel('Erreur', 'S\\u00e9lectionnez un batch d\\'abord'); return; }
     setLoading(btnRun, true);
     var dryRun = chkDry.checked;
-    var url = '/api/pipeline/stream?batch=' + encodeURIComponent(batch) + '&dryRun=' + dryRun;
+    var enrichMode = document.getElementById('sel-enrich').value || 'none';
+    var url = '/api/pipeline/stream?batch=' + encodeURIComponent(batch) + '&dryRun=' + dryRun + '&enrich=' + enrichMode;
 
     panelTitle.textContent = 'Pipeline: ' + batch + (dryRun ? ' (DRY-RUN)' : '');
     panelContent.innerHTML = '<div class="pipeline-progress">'
