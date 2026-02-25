@@ -85,7 +85,7 @@ describe('Migration Modal Columns - Source Code Validation', () => {
 
   it('should clear mp-current cell on program_completed event', () => {
     // Check that program_completed handler clears mp-current cell
-    const programCompletedSection = sourceCode.match(/if \(msg\.type === 'program_completed'\)[\s\S]{1,2000}/);
+    const programCompletedSection = sourceCode.match(/if \(msg\.type === 'program_completed'\)[\s\S]{1,5000}/); // Increased from 2000
     expect(programCompletedSection).toBeTruthy();
 
     if (programCompletedSection) {

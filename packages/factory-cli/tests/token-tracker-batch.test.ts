@@ -69,11 +69,13 @@ describe('TokenTracker batch & robustness', () => {
     expect(batch!.output).toBe(1600);
   });
 
-  it('should throw on corrupted JSON in getTokensData', () => {
+  it('should return null on corrupted JSON in getTokensData (R6 fixed)', () => {
     const tokensFile = path.join(TEST_MIG_DIR, 'tokens.json');
     fs.writeFileSync(tokensFile, '{corrupt json!!!', 'utf8');
 
-    expect(() => getTokensData(TEST_MIG_DIR)).toThrow();
+    // After R6 fix: returns null instead of crashing
+    const result = getTokensData(TEST_MIG_DIR);
+    expect(result).toBeNull();
   });
 
   it('should return null for missing tokens.json in getTokensData', () => {

@@ -52,10 +52,13 @@ describe('LogStorage edge cases', () => {
 
     fs.writeFileSync(logsFile, `${validEntry}\n${corruptLine}\n${validEntry2}\n`, 'utf8');
 
-    // readLogs parses lines with JSON.parse - corrupted line will throw
-    // Current implementation does not skip corrupted lines (it will throw)
-    // This test documents the current behavior
-    expect(() => readLogs(TEST_LOG_DIR, 'B2')).toThrow();
+    // readLogs now skips corrupted lines instead of throwing (R5 fixed)
+    const result = readLogs(TEST_LOG_DIR, 'B2');
+
+    // Should return only valid entries (2 in this case), skip corrupted one
+    expect(result.logs.length).toBe(2); // Two valid JSON lines
+    expect(result.logs[0].message).toBe('Valid entry');
+    expect(result.logs[1].message).toBe('Second valid');
   });
 
   it('should return empty for non-existent batch in readLogs', () => {
