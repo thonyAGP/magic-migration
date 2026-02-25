@@ -2837,6 +2837,19 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     var bar = document.getElementById('mp-module-bar');
     if (bar) { bar.style.background = '#f85149'; }
 
+    // Clear "En cours" columns for all programs
+    var currentCells = document.querySelectorAll('[id^="mp-current-"]');
+    for (var i = 0; i < currentCells.length; i++) {
+      currentCells[i].textContent = '';
+    }
+
+    // Stop all active/pulsing dots (freeze UI state)
+    var activeDots = document.querySelectorAll('.mp-dot.active');
+    for (var i = 0; i < activeDots.length; i++) {
+      activeDots[i].classList.remove('active');
+      activeDots[i].classList.add('aborted');
+    }
+
     // Notify backend (fire-and-forget)
     fetch('/api/migrate/abort', { method: 'POST' }).catch(function() {});
   });
