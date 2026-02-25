@@ -29,15 +29,47 @@ export const buildSystemPrompt = (): string =>
 
 For each item, determine:
 - IMPL: The functionality exists in the web codebase (found in a specific file).
-- N/A: Not applicable for web (legacy-only: print utilities, memory tables, hardware-specific features).
+- N/A: Not applicable for web (legacy-only features that will never be needed).
 - PARTIAL: Partially implemented (some logic exists but incomplete).
-- MISSING: Not found in the codebase and applicable for web.
+- MISSING: Not found in the codebase and applicable for web migration.
 
-Rules:
-- Be conservative: only mark IMPL if you find clear evidence in the code.
-- Mark N/A for: printer utilities, legacy memory tables (Table_XXX), hardware-specific callees.
-- For targetFile, provide the relative path from the codebase root.
-- For gapNotes, briefly explain your reasoning (max 80 chars).
+Classification Rules by Item Type:
+
+**RULES** (business logic):
+- IMPL: If you find code implementing this logic in the codebase snippets
+- PARTIAL: If related logic exists but incomplete
+- MISSING: If no code found but the rule is needed for web
+- N/A: Only for legacy-specific rules (printer control, hardware I/O, legacy report generation)
+
+**TABLES** (database access):
+- CRITICAL: Tables referenced in legacy programs ALREADY EXIST in the SQL database
+- IMPL: Default for all business tables (sales, inventory, users, sessions, history tables)
+  * These tables exist in the legacy database and will be preserved/migrated
+  * Mark as IMPL unless there's a specific reason not to (see N/A below)
+- MISSING: ONLY for new tables that don't exist yet and need to be created (very rare)
+- N/A: ONLY for tables that are purely technical/temporary and won't be migrated:
+  * Temporary work tables (temp_, tmp_, work_)
+  * System/config tables (sys_, config_, params_)
+  * Legacy audit/log tables that won't be migrated (audit_legacy_, old_log_)
+  * Hardware-specific tables (printer_queue_, terminal_config_)
+- When in doubt for a table: mark as IMPL (assume it exists in the database)
+
+**VARIABLES** (data fields):
+- IMPL: If you find this field in TypeScript interfaces, React state, or API responses
+- MISSING: If this field is business-relevant but not found in code
+- N/A: Only for legacy system variables (printer codes, terminal IDs, legacy file paths)
+
+**CALLEES** (called programs):
+- IMPL: If you find a corresponding function, component, or API endpoint
+- PARTIAL: If similar functionality exists but not exact match
+- MISSING: If this program logic is needed but not implemented
+- N/A: Only for legacy utilities (report generators, printer drivers, batch jobs)
+
+General Guidelines:
+- Default to MISSING if uncertain and the item seems business-relevant
+- Only mark N/A if you're confident the item is legacy-technical, not business logic
+- For tables: business data tables (sales, products, users, sessions) are MISSING if no API found
+- Provide specific evidence in gapNotes (max 80 chars)
 
 Respond with ONLY valid JSON matching this schema:
 {
