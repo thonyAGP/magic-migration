@@ -1,0 +1,209 @@
+{
+  "domain": "articleZoom",
+  "domainPascal": "ArticleZoom",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "Article",
+      "fields": [
+        {
+          "name": "serviceVillage",
+          "type": "string",
+          "source": "articles_________art.service_village",
+          "nullable": true
+        },
+        {
+          "name": "codeArticle",
+          "type": "number",
+          "source": "articles_________art.code_article",
+          "nullable": false
+        },
+        {
+          "name": "libelleArticle",
+          "type": "string",
+          "source": "articles_________art.libelle_article",
+          "nullable": false
+        },
+        {
+          "name": "imputation",
+          "type": "number",
+          "source": "articles_________art.imputation",
+          "nullable": true
+        },
+        {
+          "name": "sousImputation",
+          "type": "number",
+          "source": "articles_________art.sous_imputation",
+          "nullable": true
+        },
+        {
+          "name": "prixUnitaire",
+          "type": "number",
+          "source": "articles_________art.prix_unitaire",
+          "nullable": false
+        },
+        {
+          "name": "masqueMontant",
+          "type": "string",
+          "source": "articles_________art.masque_montant",
+          "nullable": true
+        },
+        {
+          "name": "passage",
+          "type": "boolean",
+          "source": "articles_________art.passage",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "articles",
+      "type": "Article[]",
+      "default": "[]"
+    },
+    {
+      "name": "isLoading",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "selectedArticle",
+      "type": "Article | null",
+      "default": "null"
+    },
+    {
+      "name": "titreEcran",
+      "type": "string",
+      "default": "''"
+    },
+    {
+      "name": "searchFilter",
+      "type": "string",
+      "default": "''"
+    }
+  ],
+  "actions": [
+    {
+      "name": "validateServiceVillage",
+      "params": [
+        "serviceVillage: string"
+      ],
+      "businessRules": [
+        "Si > service village [A]>'' alors > service village [A] sinon '')"
+      ],
+      "returns": "string"
+    },
+    {
+      "name": "checkPassageCondition",
+      "params": [
+        "passage: boolean"
+      ],
+      "businessRules": [
+        "Negation de (v. passage [H]) (condition inversee)"
+      ],
+      "returns": "boolean"
+    },
+    {
+      "name": "validateCompositeCondition",
+      "params": [
+        "imputation: string",
+        "sousImputation: string"
+      ],
+      "businessRules": [
+        "Condition composite: (([Q]='VRL' OR [Q]='VSL') AND [P]<>'X') OR ([Q]<>'VRL' AND [Q]<>'VSL')"
+      ],
+      "returns": "boolean"
+    },
+    {
+      "name": "loadArticles",
+      "params": [],
+      "businessRules": [
+        "Retrieve all articles from database with filtering capabilities"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "selectArticle",
+      "params": [
+        "article: Article"
+      ],
+      "businessRules": [
+        "Set selected article and return to calling context"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "loadTitle",
+      "params": [],
+      "businessRules": [
+        "Retrieve screen title from title service"
+      ],
+      "returns": "Promise<void>"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/articleZoom/articles",
+      "queryParams": [
+        "search?",
+        "serviceVillage?"
+      ],
+      "response": "Article[]"
+    },
+    {
+      "method": "GET",
+      "path": "/api/articleZoom/title",
+      "queryParams": [],
+      "response": "{ title: string }"
+    }
+  ],
+  "uiLayout": {
+    "type": "modal-grid",
+    "sections": [
+      {
+        "name": "header",
+        "controls": [
+          "titleDisplay",
+          "searchInput"
+        ]
+      },
+      {
+        "name": "articleGrid",
+        "controls": [
+          "dataGrid",
+          "scrollContainer"
+        ]
+      },
+      {
+        "name": "footer",
+        "controls": [
+          "selectButton",
+          "quitButton"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 5,
+    "description": "Sample articles with various service villages, price ranges, and different imputation types for testing the zoom functionality"
+  },
+  "dependencies": {
+    "stores": [
+      "useArticleZoomStore"
+    ],
+    "sharedTypes": [
+      "Article"
+    ],
+    "externalApis": [
+      "titleService"
+    ]
+  }
+}

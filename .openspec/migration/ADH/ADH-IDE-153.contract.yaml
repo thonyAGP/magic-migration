@@ -1,0 +1,68 @@
+program:
+  id: 25
+  name: ""
+  complexity: MEDIUM
+  callers: []
+  callees: []
+  tasks_count: 7
+  tables_count: 0
+  expressions_count: 2
+rules: []
+variables: []
+tables:
+  - id: 232
+    name: gestion_devise_session
+    mode: R
+    status: IMPL
+    target_file: database/schema.sql
+    gap_notes: Session currency management table exists in DB
+  - id: 249
+    name: histo_sessions_caisse_detail
+    mode: R
+    status: IMPL
+    target_file: database/schema.sql
+    gap_notes: Cash register session details table present
+  - id: 147
+    name: change_vente_____chg
+    mode: R
+    status: IMPL
+    target_file: database/schema.sql
+    gap_notes: Sales change data table in database
+  - id: 246
+    name: histo_sessions_caisse
+    mode: R
+    status: IMPL
+    target_file: database/schema.sql
+    gap_notes: Cash register sessions history table exists
+  - id: 44
+    name: change___________chg
+    mode: R
+    status: IMPL
+    target_file: database/schema.sql
+    gap_notes: Change table present in database
+  - id: 250
+    name: histo_sessions_caisse_devise
+    mode: R
+    status: IMPL
+    target_file: database/schema.sql
+    gap_notes: Cash register session currency table exists
+callees: []
+overall:
+  rules_total: 0
+  rules_impl: 0
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 0
+  variables_key_count: 0
+  callees_total: 0
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 100
+  status: verified
+  generated: 2026-02-24T23:19:03.648Z
+  notes: Auto-generated from ADH-IDE-153.md
+  effort:
+    contracted_at: 2026-02-24T23:19:03.648Z
+    enriched_at: 2026-02-25T14:16:20.013Z
+    verified_at: 2026-02-25T14:16:20.016Z
+    actual_hours: 15

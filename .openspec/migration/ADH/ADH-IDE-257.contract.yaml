@@ -1,0 +1,77 @@
+program:
+  id: 43
+  name: ""
+  complexity: MEDIUM
+  callers: []
+  callees: []
+  tasks_count: 1
+  tables_count: 0
+  expressions_count: 17
+rules:
+  - id: RM-001
+    description: Si > service village [A]>'' alors > service village [A] sinon '')
+    condition: "> service village [A]>''"
+    variables:
+      - EN
+    status: PARTIAL
+    target_file: src/utils/stringUtils.ts
+    gap_notes: Basic null/empty string check logic exists
+  - id: RM-002
+    description: Negation de (v. passage [H]) (condition inversee)
+    condition: NOT (v. passage [H])
+    variables:
+      - EU
+    status: MISSING
+    target_file: ""
+    gap_notes: No boolean negation logic found
+  - id: RM-003
+    description: "Condition composite: (([Q]='VRL' OR [Q]='VSL') AND [P]<>'X') OR ([Q]<>'VRL' AND [Q]<>'VSL')"
+    condition: (([Q]='VRL' OR [Q]='VSL') AND [P]<>'X') OR ([Q]<>'VRL' AND [Q]<>'VSL')
+    variables: []
+    status: PARTIAL
+    target_file: src/utils/businessRules.ts
+    gap_notes: Partial condition matching, full logic needs implementation
+variables:
+  - local_id: EN
+    name: "> service village"
+    type: Real
+    status: IMPL
+    target_file: src/interfaces/articleInterface.ts
+    gap_notes: Service village field found in article interface
+  - local_id: EU
+    name: v. passage
+    type: Real
+    status: PARTIAL
+    target_file: src/types/passageTypes.ts
+    gap_notes: Passage-related type detected but incomplete
+tables:
+  - id: 77
+    name: articles_________art
+    mode: R
+    status: N/A
+    target_file: ""
+    gap_notes: Legacy database table, not applicable in web architecture
+callees:
+  - id: 43
+    name: Recuperation du titre
+    calls: 1
+    context: Recuperation donnees
+    status: IMPL
+    target: src/services/titleService.ts
+    gap_notes: Title retrieval function exists
+overall:
+  rules_total: 3
+  rules_impl: 0
+  rules_partial: 2
+  rules_missing: 1
+  rules_na: 0
+  variables_key_count: 2
+  callees_total: 1
+  callees_impl: 1
+  callees_missing: 0
+  coverage_pct: 58
+  status: enriched
+  generated: 2026-02-24T23:19:03.644Z
+  notes: Auto-generated from ADH-IDE-257.md
+  effort:
+    contracted_at: 2026-02-24T23:19:03.644Z
