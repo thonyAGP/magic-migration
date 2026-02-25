@@ -33,10 +33,19 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: `npx tsx src/cli.ts serve --port ${E2E_PORT} --project ./tests/e2e/fixtures`,
+    command: process.env.AWS_BEARER_TOKEN_BEDROCK
+      ? `npx tsx src/cli.ts serve --port ${E2E_PORT} --project ./tests/e2e/fixtures`
+      : `node --env-file=../../.env.clubmed.local node_modules/tsx/dist/cli.mjs src/cli.ts serve --port ${E2E_PORT} --project ./tests/e2e/fixtures`,
     port: E2E_PORT,
     timeout: 15_000,
     reuseExistingServer: !process.env.CI,
-    env: { NODE_ENV: 'test' },
+    env: {
+      NODE_ENV: 'test',
+      // Pass credentials from parent if available
+      ...(process.env.AWS_BEARER_TOKEN_BEDROCK ? {
+        AWS_BEARER_TOKEN_BEDROCK: process.env.AWS_BEARER_TOKEN_BEDROCK,
+        AWS_REGION: process.env.AWS_REGION,
+      } : {}),
+    },
   },
 });
