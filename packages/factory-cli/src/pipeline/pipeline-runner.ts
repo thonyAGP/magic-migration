@@ -562,40 +562,47 @@ export const getBatchesStatus = (config: PipelineConfig): BatchStatusView[] => {
   const views: BatchStatusView[] = [];
 
   for (const batch of tracker.batches) {
-    let pending = 0, contracted = 0, enriched = 0, verified = 0;
-    let coverageSum = 0;
-    let estimatedHoursSum = 0;
-    let lastActivity: string | undefined;
+    const total = batch.priorityOrder.length;
 
-    for (const programId of batch.priorityOrder) {
-      const contract = contracts.get(programId) ?? contracts.get(Number(programId)) ?? contracts.get(String(programId));
+    // Use batch.stats from tracker if available (post-migration stats)
+    // Otherwise fallback to scanning contracts (pre-migration)
+    let pending = total, contracted = 0, enriched = 0, verified = 0;
+    let coverageAvg = 0;
+    const estimatedHours = batch.estimatedHours ?? 0;
+    const lastActivity: string | undefined = batch.enrichedDate ?? batch.verifiedDate ?? batch.contractedDate;
 
-      if (!contract) {
-        pending++;
-        continue;
-      }
+    if (batch.stats) {
+      // Post-migration: use stats from tracker (written by migrate-runner)
+      // Map tracker stats format (snake_case JSON) to API format
+      const stats = batch.stats as Record<string, any>;
+      const fullyImpl = stats['fully_impl'] ?? stats.fullyImpl ?? 0;
+      const frontendEnrich = stats['frontend_enrich'] ?? stats.frontendEnrich ?? 0;
 
-      switch (contract.overall.status) {
-        case PipelineStatus.PENDING: pending++; break;
-        case PipelineStatus.CONTRACTED: contracted++; break;
-        case PipelineStatus.ENRICHED: enriched++; break;
-        case PipelineStatus.VERIFIED: verified++; break;
-      }
+      verified = fullyImpl; // fully_impl means verified (100% coverage)
+      enriched = frontendEnrich; // frontend_enrich means enriched (partial)
+      pending = Math.max(0, total - verified - enriched);
+      coverageAvg = stats['coverage_avg_frontend'] ?? stats.coverageAvgFrontend ?? 0;
+    } else {
+      // Pre-migration: scan contracts to compute stats
+      for (const programId of batch.priorityOrder) {
+        const contract = contracts.get(programId) ?? contracts.get(Number(programId)) ?? contracts.get(String(programId));
 
-      coverageSum += contract.overall.coveragePct;
-      if (contract.overall.effort?.estimatedHours) {
-        estimatedHoursSum += contract.overall.effort.estimatedHours;
-      }
+        if (!contract) {
+          continue; // Already counted in pending
+        }
 
-      const activity = contract.overall.effort?.verifiedAt
-        ?? contract.overall.effort?.enrichedAt
-        ?? contract.overall.effort?.contractedAt;
-      if (activity && (!lastActivity || activity > lastActivity)) {
-        lastActivity = activity;
+        // If contract has overall.status, use it
+        if (contract.overall.status) {
+          pending--; // Remove from pending
+          switch (contract.overall.status) {
+            case PipelineStatus.CONTRACTED: contracted++; break;
+            case PipelineStatus.ENRICHED: enriched++; break;
+            case PipelineStatus.VERIFIED: verified++; break;
+          }
+        }
       }
     }
 
-    const total = batch.priorityOrder.length;
     views.push({
       id: batch.id,
       name: batch.name,
@@ -605,8 +612,8 @@ export const getBatchesStatus = (config: PipelineConfig): BatchStatusView[] => {
       contracted,
       enriched,
       verified,
-      coverageAvg: total > 0 ? Math.round(coverageSum / total) : 0,
-      estimatedHours: estimatedHoursSum,
+      coverageAvg,
+      estimatedHours,
       lastActivity,
     });
   }
