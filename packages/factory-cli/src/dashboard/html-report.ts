@@ -2399,6 +2399,22 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   fetch('/api/status').then(function(r) { return r.json(); }).then(function(batches) {
     if (!Array.isArray(batches)) return;
     batches.forEach(function(b) {
+      // Update batch card stats from API (sync with dropdown)
+      var card = document.querySelector('.batch-card[data-batch="' + b.id + '"]');
+      if (card) {
+        var statsEl = card.querySelector('.batch-stats');
+        if (statsEl) {
+          statsEl.innerHTML = '<span class="stat-verified">' + b.verified + ' vérifiés</span>, '
+            + '<span class="stat-enriched">' + b.enriched + ' enrichis</span>, '
+            + '<span class="stat-analyzed">0 analysés</span>, '
+            + '<span class="stat-pending">' + b.pending + ' en attente</span>';
+        }
+        var coverageEl = card.querySelector('.batch-coverage');
+        if (coverageEl && b.coverageAvg > 0) {
+          coverageEl.textContent = b.coverageAvg + '%';
+        }
+      }
+
       if (b.status === 'verified') return; // Skip completed batches
       var opt = document.createElement('option');
       opt.value = b.id;
