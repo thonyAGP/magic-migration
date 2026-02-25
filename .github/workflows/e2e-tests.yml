@@ -1,0 +1,68 @@
+name: E2E Tests
+
+on:
+  pull_request:
+    paths:
+      - 'packages/factory-cli/src/**'
+      - 'packages/factory-cli/tests/e2e/**'
+      - 'packages/factory-cli/playwright.config.ts'
+  push:
+    branches:
+      - master
+    paths:
+      - 'packages/factory-cli/src/**'
+      - 'packages/factory-cli/tests/e2e/**'
+
+jobs:
+  e2e:
+    name: Playwright E2E Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install Playwright browsers
+        working-directory: packages/factory-cli
+        run: npx playwright install chromium --with-deps
+
+      - name: Run unit tests
+        working-directory: packages/factory-cli
+        run: pnpm test
+
+      - name: Run E2E tests
+        working-directory: packages/factory-cli
+        run: pnpm test:e2e
+        env:
+          CI: true
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: packages/factory-cli/playwright-report/
+          retention-days: 7
+
+      - name: Upload test traces
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-traces
+          path: packages/factory-cli/test-results/
+          retention-days: 7

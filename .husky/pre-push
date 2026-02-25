@@ -1,0 +1,14 @@
+# Run E2E tests before push if factory-cli src or e2e tests changed
+CHANGED=$(git diff --name-only HEAD @{push} 2>/dev/null || git diff --name-only HEAD~1 HEAD)
+
+if echo "$CHANGED" | grep -qE "^packages/factory-cli/(src/|tests/e2e/|playwright.config.ts)"; then
+  echo "[pre-push] factory-cli changes detected — running E2E smoke tests..."
+  cd packages/factory-cli && npx playwright test
+  E2E_EXIT=$?
+  cd ../..
+  if [ $E2E_EXIT -ne 0 ]; then
+    echo "[pre-push] E2E tests FAILED. Push aborted."
+    exit 1
+  fi
+  echo "[pre-push] E2E tests passed."
+fi
