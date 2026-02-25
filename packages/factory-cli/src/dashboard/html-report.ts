@@ -1759,6 +1759,13 @@ document.querySelectorAll('th[data-sort]').forEach(th => {
 
   if (logsBtn) {
     logsBtn.addEventListener('click', function() {
+      // Set currentBatch from dropdown if not already set
+      if (!currentBatch) {
+        const batchSelect = document.getElementById('batch-select');
+        if (batchSelect && batchSelect.value) {
+          currentBatch = batchSelect.value;
+        }
+      }
       if (logsModal) logsModal.classList.add('show');
       loadLogs();
     });
