@@ -2864,15 +2864,28 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
 
     var completed = Object.keys(ps.completedPhases).length;
     var total = ALL_PHASES.length;
-    if (completed === 0) return; // No data yet
+    var remaining = total - completed;
+    if (remaining <= 0) return; // All phases done
 
-    var elapsed = Date.now() - migrateState.programStartTimes[progId];
-    var avgPerPhase = elapsed / completed;
-    var remaining = (total - completed) * avgPerPhase;
+    // Use average real duration from completed programs
+    var avgRealMs = 0;
+    if (migrateState.programDurations.length > 0) {
+      var sum = 0;
+      for (var i = 0; i < migrateState.programDurations.length; i++) {
+        sum += migrateState.programDurations[i];
+      }
+      avgRealMs = sum / migrateState.programDurations.length;
+    } else if (migrateState.estimatedDurationMs > 0 && migrateState.totalProgs > 0) {
+      // Fallback: use initial estimate divided by total programs
+      avgRealMs = migrateState.estimatedDurationMs / migrateState.totalProgs;
+    }
 
-    var etaEl = document.getElementById('mp-eta-' + progId);
-    if (etaEl) {
-      etaEl.textContent = '~' + formatElapsed(remaining);
+    if (avgRealMs > 0) {
+      var etaProgramMs = avgRealMs * (remaining / total);
+      var etaEl = document.getElementById('mp-eta-' + progId);
+      if (etaEl) {
+        etaEl.textContent = '~' + formatElapsed(etaProgramMs);
+      }
     }
   }
 
@@ -2915,7 +2928,6 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       var dotsHtml = '';
       for (var j = 0; j < ALL_PHASES.length; j++) {
         dotsHtml += '<div class="mp-phase-item">'
-          + '<span class="mp-phase-label" data-prog="' + escAttr(p.id) + '" data-phase="' + ALL_PHASES[j] + '"></span>'
           + '<span class="mp-dot" data-prog="' + escAttr(p.id) + '" data-phase="' + ALL_PHASES[j] + '" title="' + ALL_PHASES[j] + '"></span>'
           + '</div>';
       }
@@ -3348,16 +3360,14 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     }
 
     if (msg.type === 'phase_progress') {
-      // Phase label display next to progress dots
+      // Display phase progress label in "En cours" column (not in dots)
       var pid = msg.programId;
       var phase = msg.phase;
-      var label = msg.label || msg.message || '';
-      if (pid && phase && label) {
-        var labelEl = document.querySelector('.mp-phase-label[data-prog="' + pid + '"][data-phase="' + phase + '"]');
-        if (labelEl) {
-          labelEl.textContent = label;
-          labelEl.classList.add('active');
-        }
+      var label = (msg.data && msg.data.label) || msg.label || msg.message || '';
+      if (pid && label) {
+        // Update "En cours" column with progress label
+        var currentCell = document.getElementById('mp-current-' + pid);
+        if (currentCell) currentCell.textContent = label;
       }
       return;
     }
