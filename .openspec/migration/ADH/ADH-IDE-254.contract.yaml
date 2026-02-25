@@ -35,6 +35,6 @@ overall:
   callees_impl: 0
   callees_missing: 0
   coverage_pct: 100
-  status: enriched
+  status: verified
   generated: 2026-02-22T05:12:48.910Z
   notes: Auto-generated from ADH-IDE-254.md

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const BASE = '/mnt/d/Projects/Lecteur_Magic/.openspec';
+const BASE = '/mnt/d/Projects/ClubMed/LecteurMagic/.openspec';
 
 // Build master data from index
 const idx = JSON.parse(fs.readFileSync(path.join(BASE, 'index.json'), 'utf8'));

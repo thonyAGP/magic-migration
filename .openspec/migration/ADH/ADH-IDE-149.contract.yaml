@@ -1,0 +1,68 @@
+program:
+  id: 125
+  name: ""
+  complexity: MEDIUM
+  callers: []
+  callees: []
+  tasks_count: 6
+  tables_count: 0
+  expressions_count: 1
+rules: []
+variables: []
+tables:
+  - id: 222
+    name: comptage_caisse_histo
+    mode: R
+    status: IMPL
+    target_file: src/database/schema.sql
+    gap_notes: Existing table in database schema
+  - id: 263
+    name: vente
+    mode: R
+    status: IMPL
+    target_file: src/database/schema.sql
+    gap_notes: Existing table in database schema
+  - id: 249
+    name: histo_sessions_caisse_detail
+    mode: R
+    status: IMPL
+    target_file: src/database/schema.sql
+    gap_notes: Existing table in database schema
+  - id: 40
+    name: comptable________cte
+    mode: R
+    status: IMPL
+    target_file: src/database/schema.sql
+    gap_notes: Existing table in database schema
+  - id: 246
+    name: histo_sessions_caisse
+    mode: R
+    status: IMPL
+    target_file: src/database/schema.sql
+    gap_notes: Existing table in database schema
+  - id: 247
+    name: histo_sessions_caisse_article
+    mode: R
+    status: IMPL
+    target_file: src/database/schema.sql
+    gap_notes: Existing table in database schema
+callees: []
+overall:
+  rules_total: 0
+  rules_impl: 0
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 0
+  variables_key_count: 0
+  callees_total: 0
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 100
+  status: verified
+  generated: 2026-02-24T23:19:03.626Z
+  notes: Auto-generated from ADH-IDE-149.md
+  effort:
+    contracted_at: 2026-02-24T23:19:03.626Z
+    enriched_at: 2026-02-25T14:15:58.294Z
+    verified_at: 2026-02-25T14:15:58.302Z
+    actual_hours: 14.9
