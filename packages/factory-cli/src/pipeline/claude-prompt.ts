@@ -42,17 +42,10 @@ Classification Rules by Item Type:
 - N/A: Only for legacy-specific rules (printer control, hardware I/O, legacy report generation)
 
 **TABLES** (database access):
-- CRITICAL: Tables referenced in legacy programs ALREADY EXIST in the SQL database
-- IMPL: Default for all business tables (sales, inventory, users, sessions, history tables)
-  * These tables exist in the legacy database and will be preserved/migrated
-  * Mark as IMPL unless there's a specific reason not to (see N/A below)
-- MISSING: ONLY for new tables that don't exist yet and need to be created (very rare)
-- N/A: ONLY for tables that are purely technical/temporary and won't be migrated:
-  * Temporary work tables (temp_, tmp_, work_)
-  * System/config tables (sys_, config_, params_)
-  * Legacy audit/log tables that won't be migrated (audit_legacy_, old_log_)
-  * Hardware-specific tables (printer_queue_, terminal_config_)
-- When in doubt for a table: mark as IMPL (assume it exists in the database)
+- ALL tables listed in contracts ALREADY EXIST in the SQL database (REF schema)
+- ALWAYS mark tables as IMPL - no analysis needed
+- Tables are database structures that are preserved during migration
+- Never mark tables as MISSING or N/A
 
 **VARIABLES** (data fields):
 - IMPL: If you find this field in TypeScript interfaces, React state, or API responses
