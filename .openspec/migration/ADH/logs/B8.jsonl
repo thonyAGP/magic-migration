@@ -141,3 +141,65 @@
 {"timestamp":"2026-02-25T14:29:32.996Z","level":"info","type":"migration_completed","message":"Migration terminee : 1/3 programmes, 10 fichiers en 3m 11s (190559ms), tokens: 24K in / 15K out (~$0.30)"}
 {"timestamp":"2026-02-25T14:29:33.000Z","level":"info","type":"phase_completed","message":"Tracker updated: B8 → enriched (1/3 impl, 65% coverage)"}
 {"timestamp":"2026-02-25T14:29:33.229Z","level":"info","type":"git_started","message":"Auto-commit: staging files..."}
+{"timestamp":"2026-02-25T14:29:36.822Z","level":"info","type":"git_completed","message":"Committed 6a7e3083 and pushed to master"}
+{"timestamp":"2026-02-25T14:29:36.823Z","level":"info","type":"migrate_result","message":"migrate_result","data":{"batchId":"B8","batchName":"Stock","started":"2026-02-25T14:26:22.437Z","completed":"2026-02-25T14:29:36.823Z","dryRun":false,"programs":[{"programId":149,"programName":"IDE-149","status":"skipped","filesGenerated":0,"phasesCompleted":10,"phasesTotal":10,"duration":0,"errors":[]},{"programId":257,"programName":"ArticleZoom","status":"completed","filesGenerated":10,"phasesCompleted":10,"phasesTotal":10,"duration":136010,"errors":[],"tokens":{"input":24420,"output":14909}},{"programId":153,"programName":"IDE-153","status":"skipped","filesGenerated":0,"phasesCompleted":10,"phasesTotal":10,"duration":0,"errors":[]}],"summary":{"total":3,"completed":1,"failed":0,"skipped":2,"totalFiles":10,"tscClean":true,"testsPass":false,"reviewAvgCoverage":65,"totalTokens":{"input":24420,"output":14909},"estimatedCostUsd":0.296895},"git":{"commitSha":"6a7e3083","pushed":true,"branch":"master"}}}
+{"timestamp":"2026-02-25T14:46:08.316Z","level":"info","type":"migrate_started","message":"migrate_started"}
+{"timestamp":"2026-02-25T14:46:08.317Z","level":"info","type":"migration_started","message":"Starting migration for batch B8 (3 programs)"}
+{"timestamp":"2026-02-25T14:46:08.318Z","level":"info","type":"phase_started","message":"Decision log: D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\.migration-log\\B8"}
+{"timestamp":"2026-02-25T14:46:08.325Z","level":"info","type":"parallel_resolved","message":"Auto-parallel: 2 agents (22 CPUs, 3 programs)","data":{"requested":0,"resolved":2,"cpus":22}}
+{"timestamp":"2026-02-25T14:46:08.327Z","level":"info","type":"program_started","programId":149,"message":"Starting IDE 149"}
+{"timestamp":"2026-02-25T14:46:08.331Z","level":"info","type":"phase_completed","programId":149,"phase":"spec","message":"IDE 149: spec (verified)"}
+{"timestamp":"2026-02-25T14:46:08.332Z","level":"info","type":"phase_completed","programId":149,"phase":"contract","message":"IDE 149: contract (verified)"}
+{"timestamp":"2026-02-25T14:46:08.332Z","level":"info","type":"phase_completed","programId":149,"phase":"analyze","message":"IDE 149: analyze (verified)"}
+{"timestamp":"2026-02-25T14:46:08.333Z","level":"info","type":"phase_completed","programId":149,"phase":"types","message":"IDE 149: types (verified)"}
+{"timestamp":"2026-02-25T14:46:08.333Z","level":"info","type":"phase_completed","programId":149,"phase":"store","message":"IDE 149: store (verified)"}
+{"timestamp":"2026-02-25T14:46:08.334Z","level":"info","type":"phase_completed","programId":149,"phase":"api","message":"IDE 149: api (verified)"}
+{"timestamp":"2026-02-25T14:46:08.334Z","level":"info","type":"phase_completed","programId":149,"phase":"page","message":"IDE 149: page (verified)"}
+{"timestamp":"2026-02-25T14:46:08.335Z","level":"info","type":"phase_completed","programId":149,"phase":"components","message":"IDE 149: components (verified)"}
+{"timestamp":"2026-02-25T14:46:08.335Z","level":"info","type":"phase_completed","programId":149,"phase":"tests-unit","message":"IDE 149: tests-unit (verified)"}
+{"timestamp":"2026-02-25T14:46:08.335Z","level":"info","type":"phase_completed","programId":149,"phase":"tests-ui","message":"IDE 149: tests-ui (verified)"}
+{"timestamp":"2026-02-25T14:46:08.336Z","level":"info","type":"program_completed","programId":149,"message":"IDE 149: déjà migré","data":{"skipped":true}}
+{"timestamp":"2026-02-25T14:46:08.337Z","level":"info","type":"program_started","programId":257,"message":"Starting IDE 257"}
+{"timestamp":"2026-02-25T14:46:08.340Z","level":"info","type":"phase_completed","programId":257,"phase":"spec","message":"IDE 257: spec (reprise)"}
+{"timestamp":"2026-02-25T14:46:08.340Z","level":"info","type":"phase_completed","programId":257,"phase":"contract","message":"IDE 257: contract (reprise)"}
+{"timestamp":"2026-02-25T14:46:08.341Z","level":"info","type":"phase_completed","programId":257,"phase":"analyze","message":"IDE 257: analyze (reprise)"}
+{"timestamp":"2026-02-25T14:46:08.341Z","level":"info","type":"phase_completed","programId":257,"phase":"types","message":"IDE 257: types (reprise)"}
+{"timestamp":"2026-02-25T14:46:08.341Z","level":"info","type":"phase_completed","programId":257,"phase":"store","message":"IDE 257: store (reprise)"}
+{"timestamp":"2026-02-25T14:46:08.342Z","level":"info","type":"phase_completed","programId":257,"phase":"api","message":"IDE 257: api (reprise)"}
+{"timestamp":"2026-02-25T14:46:08.342Z","level":"info","type":"phase_completed","programId":257,"phase":"page","message":"IDE 257: page (reprise)"}
+{"timestamp":"2026-02-25T14:46:08.343Z","level":"info","type":"phase_completed","programId":257,"phase":"components","message":"IDE 257: components (reprise)"}
+{"timestamp":"2026-02-25T14:46:08.343Z","level":"info","type":"phase_completed","programId":257,"phase":"tests-unit","message":"IDE 257: tests-unit (reprise)"}
+{"timestamp":"2026-02-25T14:46:08.343Z","level":"info","type":"phase_completed","programId":257,"phase":"tests-ui","message":"IDE 257: tests-ui (reprise)"}
+{"timestamp":"2026-02-25T14:46:08.344Z","level":"info","type":"program_completed","programId":257,"message":"IDE 257: déjà généré (reprise)","data":{"resumed":true,"duration":0}}
+{"timestamp":"2026-02-25T14:46:08.346Z","level":"info","type":"program_started","programId":153,"message":"Starting IDE 153"}
+{"timestamp":"2026-02-25T14:46:08.348Z","level":"info","type":"phase_completed","programId":153,"phase":"spec","message":"IDE 153: spec (verified)"}
+{"timestamp":"2026-02-25T14:46:08.348Z","level":"info","type":"phase_completed","programId":153,"phase":"contract","message":"IDE 153: contract (verified)"}
+{"timestamp":"2026-02-25T14:46:08.349Z","level":"info","type":"phase_completed","programId":153,"phase":"analyze","message":"IDE 153: analyze (verified)"}
+{"timestamp":"2026-02-25T14:46:08.350Z","level":"info","type":"phase_completed","programId":153,"phase":"types","message":"IDE 153: types (verified)"}
+{"timestamp":"2026-02-25T14:46:08.351Z","level":"info","type":"phase_completed","programId":153,"phase":"store","message":"IDE 153: store (verified)"}
+{"timestamp":"2026-02-25T14:46:08.352Z","level":"info","type":"phase_completed","programId":153,"phase":"api","message":"IDE 153: api (verified)"}
+{"timestamp":"2026-02-25T14:46:08.353Z","level":"info","type":"phase_completed","programId":153,"phase":"page","message":"IDE 153: page (verified)"}
+{"timestamp":"2026-02-25T14:46:08.354Z","level":"info","type":"phase_completed","programId":153,"phase":"components","message":"IDE 153: components (verified)"}
+{"timestamp":"2026-02-25T14:46:08.355Z","level":"info","type":"phase_completed","programId":153,"phase":"tests-unit","message":"IDE 153: tests-unit (verified)"}
+{"timestamp":"2026-02-25T14:46:08.356Z","level":"info","type":"phase_completed","programId":153,"phase":"tests-ui","message":"IDE 153: tests-ui (verified)"}
+{"timestamp":"2026-02-25T14:46:08.357Z","level":"info","type":"program_completed","programId":153,"message":"IDE 153: déjà migré","data":{"skipped":true}}
+{"timestamp":"2026-02-25T14:46:08.357Z","level":"info","type":"phase_started","phase":"verify-tsc","message":"Starting verification loop"}
+{"timestamp":"2026-02-25T14:46:08.358Z","level":"info","type":"phase_started","phase":"verify-tsc","message":"TSC pass 1/5: running tsc --noEmit","data":{"pass":1,"maxPasses":5,"verifyProgress":0}}
+{"timestamp":"2026-02-25T14:46:09.528Z","level":"info","type":"phase_started","phase":"verify-tsc","message":"TSC pass 1: CLEAN","data":{"pass":1,"maxPasses":5,"errors":0,"clean":true,"verifyProgress":0.7}}
+{"timestamp":"2026-02-25T14:46:09.528Z","level":"info","type":"phase_started","phase":"verify-tests","message":"Tests pass 1/3: running vitest","data":{"pass":1,"maxPasses":3,"verifyProgress":0.7}}
+{"timestamp":"2026-02-25T14:46:13.479Z","level":"info","type":"phase_started","phase":"fix-tests","message":"Tests pass 1: 1 failures","data":{"pass":1,"maxPasses":3,"failures":1,"verifyProgress":0.75}}
+{"timestamp":"2026-02-25T14:46:13.481Z","level":"info","type":"phase_started","phase":"fix-tests","message":"Fix tests pass 1: done","data":{"pass":1,"maxPasses":3,"verifyProgress":0.7999999999999999}}
+{"timestamp":"2026-02-25T14:46:13.481Z","level":"info","type":"phase_started","phase":"verify-tests","message":"Tests pass 2/3: running vitest","data":{"pass":2,"maxPasses":3,"verifyProgress":0.7999999999999999}}
+{"timestamp":"2026-02-25T14:46:17.491Z","level":"info","type":"phase_started","phase":"fix-tests","message":"Tests pass 2: 1 failures","data":{"pass":2,"maxPasses":3,"failures":1,"verifyProgress":0.85}}
+{"timestamp":"2026-02-25T14:46:17.493Z","level":"info","type":"phase_started","phase":"fix-tests","message":"Fix tests pass 2: done","data":{"pass":2,"maxPasses":3,"verifyProgress":0.8999999999999999}}
+{"timestamp":"2026-02-25T14:46:17.494Z","level":"info","type":"phase_started","phase":"verify-tests","message":"Tests pass 3/3: running vitest","data":{"pass":3,"maxPasses":3,"verifyProgress":0.8999999999999999}}
+{"timestamp":"2026-02-25T14:46:20.930Z","level":"info","type":"phase_started","phase":"fix-tests","message":"Tests pass 3: 1 failures","data":{"pass":3,"maxPasses":3,"failures":1,"verifyProgress":0.95}}
+{"timestamp":"2026-02-25T14:46:20.930Z","level":"info","type":"verify_pass","message":"TSC: CLEAN (1 passes), Tests: FAIL (3 passes)"}
+{"timestamp":"2026-02-25T14:46:20.931Z","level":"info","type":"phase_started","phase":"integrate","message":"Starting integration"}
+{"timestamp":"2026-02-25T14:46:20.932Z","level":"info","type":"phase_completed","phase":"integrate","message":"Integration: 0 files modified"}
+{"timestamp":"2026-02-25T14:46:20.932Z","level":"info","type":"phase_started","programId":257,"phase":"review","message":"Reviewing IDE 257"}
+{"timestamp":"2026-02-25T14:46:20.932Z","level":"info","type":"phase_progress","programId":257,"phase":"review","message":"Reviewing coverage...","data":{"label":"Reviewing coverage..."}}
+{"timestamp":"2026-02-25T14:46:33.927Z","level":"info","type":"phase_completed","programId":257,"phase":"review","message":"Review IDE 257: 65% coverage","data":{"programId":257,"programName":"ArticleZoom","coveragePct":65,"rulesImplemented":1,"rulesTotal":3,"missingRules":["RM-002: Negation de (v. passage [H]) (condition inversee) - Boolean negation logic not fully implemented","RM-003: Condition composite with VRL/VSL logic - Complex conditional logic incomplete"],"recommendations":["Complete implementation of RM-002 boolean negation logic in validatePassageCondition method","Implement full RM-003 composite condition logic with VRL/VSL string matching","Add comprehensive error handling for API failures in articleZoomService","Implement proper session variable handling for EU (v. passage) persistence","Add validation for all Article entity fields according to table schema","Complete the truncated store implementation (validateCompositeCondition method)","Add proper loading states and error boundaries for UI components","Implement proper data source switching between mock and real API","Add unit tests for business rule implementations","Ensure all table columns (A-K) are properly mapped to Article interface"]}}
+{"timestamp":"2026-02-25T14:46:33.928Z","level":"info","type":"migration_completed","message":"Migration terminee : 1/3 programmes, 0 fichiers en 26s (25611ms)"}
+{"timestamp":"2026-02-25T14:46:33.932Z","level":"info","type":"phase_completed","message":"Tracker updated: B8 → enriched (1/3 impl, 65% coverage)"}
+{"timestamp":"2026-02-25T14:46:34.098Z","level":"info","type":"git_started","message":"Auto-commit: staging files..."}
