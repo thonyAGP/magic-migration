@@ -129,7 +129,16 @@ export const updateBatchTokens = (
 export const getTokensData = (migrationDir: string): TokensData | null => {
   const tokensFile = path.join(migrationDir, 'tokens.json');
   if (!fs.existsSync(tokensFile)) return null;
-  return JSON.parse(fs.readFileSync(tokensFile, 'utf8'));
+
+  try {
+    return JSON.parse(fs.readFileSync(tokensFile, 'utf8'));
+  } catch (err) {
+    console.error('[TOKENS CORRUPTED] Failed to parse tokens.json, starting fresh', {
+      migrationDir,
+      error: err instanceof Error ? err.message : String(err),
+    });
+    return null; // Start fresh instead of crashing
+  }
 };
 
 /**

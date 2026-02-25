@@ -232,6 +232,143 @@ describe('BLOC A1 - Migration Critical Failures', () => {
     });
   });
 
+  describe('[R1-bis] Event Emission Verification', () => {
+    it('should emit migration_started event with batch info', async () => {
+      // Arrange
+      const trackerFile = path.join(tmpDir, '.openspec', 'migration', 'ADH', 'tracker.json');
+      const contractFile = path.join(tmpDir, '.openspec', 'migration', 'ADH', 'ADH-IDE-100.contract.yaml');
+      const specFile = path.join(tmpDir, '.openspec', 'specs', 'ADH-IDE-100.md');
+      const migrateTrackerFile = path.join(tmpDir, '.openspec', 'migration', 'ADH', 'migrate-tracker.json');
+
+      createMinimalTracker(trackerFile, 'B1');
+      createMinimalContract(contractFile, 100);
+      createMinimalSpec(specFile, 100);
+      writeMigrateTracker(migrateTrackerFile, {});
+
+      const config = makeConfig({ dryRun: true });
+
+      // Act
+      await runMigration([100], 'B1', 'Test Batch', config);
+
+      // Assert: migration_started event must be emitted
+      const startEvent = capturedEvents.find(e => e.type === 'migration_started');
+      expect(startEvent).toBeDefined();
+      expect(startEvent?.message).toContain('B1');
+      expect(startEvent?.message).toContain('1 programs');
+    });
+
+    it('should emit migration_completed event with summary', async () => {
+      // Arrange
+      const trackerFile = path.join(tmpDir, '.openspec', 'migration', 'ADH', 'tracker.json');
+      const contractFile = path.join(tmpDir, '.openspec', 'migration', 'ADH', 'ADH-IDE-100.contract.yaml');
+      const specFile = path.join(tmpDir, '.openspec', 'specs', 'ADH-IDE-100.md');
+      const migrateTrackerFile = path.join(tmpDir, '.openspec', 'migration', 'ADH', 'migrate-tracker.json');
+
+      createMinimalTracker(trackerFile, 'B1');
+      createMinimalContract(contractFile, 100);
+      createMinimalSpec(specFile, 100);
+      writeMigrateTracker(migrateTrackerFile, {});
+
+      const config = makeConfig({ dryRun: true });
+
+      // Act
+      await runMigration([100], 'B1', 'Test Batch', config);
+
+      // Assert: migration_completed event must be emitted
+      const completedEvent = capturedEvents.find(e => e.type === 'migration_completed');
+      expect(completedEvent).toBeDefined();
+      expect(completedEvent?.message).toMatch(/Migration terminee|programmes/);
+    });
+
+    it('should emit phase events for each migration phase', async () => {
+      // Arrange
+      const trackerFile = path.join(tmpDir, '.openspec', 'migration', 'ADH', 'tracker.json');
+      const contractFile = path.join(tmpDir, '.openspec', 'migration', 'ADH', 'ADH-IDE-100.contract.yaml');
+      const specFile = path.join(tmpDir, '.openspec', 'specs', 'ADH-IDE-100.md');
+      const migrateTrackerFile = path.join(tmpDir, '.openspec', 'migration', 'ADH', 'migrate-tracker.json');
+
+      createMinimalTracker(trackerFile, 'B1');
+      createMinimalContract(contractFile, 100);
+      createMinimalSpec(specFile, 100);
+      writeMigrateTracker(migrateTrackerFile, {});
+
+      const config = makeConfig({ dryRun: true });
+
+      // Act
+      await runMigration([100], 'B1', 'Test Batch', config);
+
+      // Assert: Should emit phase-related events
+      const phaseEvents = capturedEvents.filter(e =>
+        e.type === 'phase_started' ||
+        e.type === 'phase_completed' ||
+        e.type === 'phase_failed'
+      );
+      expect(phaseEvents.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('[R3-bis] State Tracking Verification', () => {
+    it('should track completedPrograms counter correctly', async () => {
+      // Arrange
+      const { startMigration, addMigrateEvent, getMigrateActiveState } = await import('../../src/server/migrate-state.js');
+
+      startMigration('B-test', 3, '/tmp/target', 'cli', false, [
+        { id: 1, name: 'Prog1' },
+        { id: 2, name: 'Prog2' },
+        { id: 3, name: 'Prog3' },
+      ]);
+
+      // Act: Simulate 2 programs completing
+      addMigrateEvent({ type: 'program_completed', programId: 1 });
+      addMigrateEvent({ type: 'program_completed', programId: 2 });
+
+      const state = getMigrateActiveState();
+
+      // Assert
+      expect(state.running).toBe(true);
+      expect(state.completedPrograms).toBe(2);
+      expect(state.totalPrograms).toBe(3);
+      expect(state.batch).toBe('B-test');
+    });
+
+    it('should track failedPrograms counter correctly', async () => {
+      // Arrange
+      const { startMigration, addMigrateEvent, getMigrateActiveState } = await import('../../src/server/migrate-state.js');
+
+      startMigration('B-test', 2, '/tmp/target', 'cli', false, []);
+
+      // Act: Simulate 1 success, 1 failure
+      addMigrateEvent({ type: 'program_completed', programId: 1 });
+      addMigrateEvent({ type: 'program_failed', programId: 2 });
+
+      const state = getMigrateActiveState();
+
+      // Assert
+      expect(state.completedPrograms).toBe(1);
+      expect(state.failedPrograms).toBe(1);
+    });
+
+    it('should maintain circular buffer of last 500 events', async () => {
+      // Arrange
+      const { startMigration, addMigrateEvent, getMigrateActiveState } = await import('../../src/server/migrate-state.js');
+
+      startMigration('B-test', 600, '/tmp/target', 'cli', false, []);
+
+      // Act: Add 600 events (exceeds MAX_EVENTS=500)
+      for (let i = 0; i < 600; i++) {
+        addMigrateEvent({ type: 'test_event', index: i });
+      }
+
+      const state = getMigrateActiveState();
+
+      // Assert: Should keep only last 500 events
+      expect(state.events.length).toBe(500);
+      // First event should be index 100 (0-99 were evicted)
+      const firstEvent = state.events[0] as { index: number };
+      expect(firstEvent.index).toBe(100);
+    });
+  });
+
   describe('[R4] Abort Safety', () => {
     it.todo('[R4] should NOT abort if migration already completed', async () => {
       // TODO: Add check in handleMigrateAbort (api-routes.ts line 526)

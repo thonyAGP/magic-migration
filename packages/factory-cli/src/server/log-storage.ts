@@ -68,7 +68,20 @@ export const readLogs = (
   if (!fs.existsSync(logsFile)) return { total: 0, logs: [] };
 
   const lines = fs.readFileSync(logsFile, 'utf8').split('\n').filter(Boolean);
-  const parsed = lines.map(line => JSON.parse(line) as LogEntry);
+  const parsed: LogEntry[] = [];
+
+  for (const line of lines) {
+    try {
+      parsed.push(JSON.parse(line) as LogEntry);
+    } catch (err) {
+      // [R5] Skip corrupted log lines instead of crashing
+      console.error('[LOG CORRUPTED] Skipping invalid JSON line in log file', {
+        batchId,
+        line: line.substring(0, 100), // First 100 chars for debugging
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }
 
   // Filter by level
   const filtered = options.level

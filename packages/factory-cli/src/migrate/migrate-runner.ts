@@ -265,8 +265,11 @@ export const runMigration = async (
         writeTracker(tracker, trackerFile);
         emit(config, ET.PHASE_COMPLETED, `Tracker updated: ${batchId} → ${batchDef.status} (${summary.completed}/${summary.total} impl, ${summary.reviewAvgCoverage}% coverage)`);
       }
-    } catch {
+    } catch (err) {
       // Non-critical: tracker update failure shouldn't break the result
+      const msg = `[R1] Tracker update failed: ${err instanceof Error ? err.message : String(err)}`;
+      emit(config, ET.ERROR, msg, { phase: 'tracker_update', batchId, error: err });
+      console.error(msg, { batchId, error: err });
     }
   }
 
@@ -280,7 +283,12 @@ export const runMigration = async (
       if (verifyResult.verified > 0) {
         emit(config, ET.PHASE_COMPLETED, `Auto-verify: ${verifyResult.verified} contracts promoted to verified`);
       }
-    } catch { /* non-critical */ }
+    } catch (err) {
+      // Non-critical: auto-verify failure shouldn't break the result
+      const msg = `[R2] Auto-verify failed: ${err instanceof Error ? err.message : String(err)}`;
+      emit(config, ET.WARNING, msg, { phase: 'auto_verify', error: err });
+      console.warn(msg, { error: err });
+    }
   }
 
   // Auto git commit + push if enabled
