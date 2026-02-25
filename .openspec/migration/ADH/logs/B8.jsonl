@@ -609,3 +609,63 @@
 {"timestamp":"2026-02-25T18:59:14.920Z","level":"info","type":"migration_completed","message":"Migration terminee : 1/3 programmes, 0 fichiers en 25s (24925ms)"}
 {"timestamp":"2026-02-25T18:59:14.925Z","level":"info","type":"phase_completed","message":"Tracker updated: B8 → enriched (1/3 impl, 65% coverage)"}
 {"timestamp":"2026-02-25T18:59:15.153Z","level":"info","type":"git_started","message":"Auto-commit: staging files..."}
+{"timestamp":"2026-02-25T19:31:26.203Z","level":"info","type":"migrate_started","message":"migrate_started"}
+{"timestamp":"2026-02-25T19:31:26.205Z","level":"info","type":"migration_started","message":"Starting migration for batch B8 (3 programs)"}
+{"timestamp":"2026-02-25T19:31:26.205Z","level":"info","type":"phase_started","message":"Decision log: D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\.migration-log\\B8"}
+{"timestamp":"2026-02-25T19:31:26.208Z","level":"info","type":"parallel_resolved","message":"Auto-parallel: 2 agents (22 CPUs, 3 programs)","data":{"requested":0,"resolved":2,"cpus":22}}
+{"timestamp":"2026-02-25T19:31:26.210Z","level":"info","type":"program_started","programId":149,"message":"Starting IDE 149"}
+{"timestamp":"2026-02-25T19:31:26.211Z","level":"info","type":"phase_completed","programId":149,"phase":"spec","message":"IDE 149: spec (verified)"}
+{"timestamp":"2026-02-25T19:31:26.212Z","level":"info","type":"phase_completed","programId":149,"phase":"contract","message":"IDE 149: contract (verified)"}
+{"timestamp":"2026-02-25T19:31:26.212Z","level":"info","type":"phase_completed","programId":149,"phase":"analyze","message":"IDE 149: analyze (verified)"}
+{"timestamp":"2026-02-25T19:31:26.213Z","level":"info","type":"phase_completed","programId":149,"phase":"types","message":"IDE 149: types (verified)"}
+{"timestamp":"2026-02-25T19:31:26.214Z","level":"info","type":"phase_completed","programId":149,"phase":"store","message":"IDE 149: store (verified)"}
+{"timestamp":"2026-02-25T19:31:26.214Z","level":"info","type":"phase_completed","programId":149,"phase":"api","message":"IDE 149: api (verified)"}
+{"timestamp":"2026-02-25T19:31:26.215Z","level":"info","type":"phase_completed","programId":149,"phase":"page","message":"IDE 149: page (verified)"}
+{"timestamp":"2026-02-25T19:31:26.215Z","level":"info","type":"phase_completed","programId":149,"phase":"components","message":"IDE 149: components (verified)"}
+{"timestamp":"2026-02-25T19:31:26.216Z","level":"info","type":"phase_completed","programId":149,"phase":"tests-unit","message":"IDE 149: tests-unit (verified)"}
+{"timestamp":"2026-02-25T19:31:26.216Z","level":"info","type":"phase_completed","programId":149,"phase":"tests-ui","message":"IDE 149: tests-ui (verified)"}
+{"timestamp":"2026-02-25T19:31:26.217Z","level":"info","type":"program_completed","programId":149,"message":"IDE 149: déjà migré","data":{"skipped":true}}
+{"timestamp":"2026-02-25T19:31:26.218Z","level":"info","type":"program_started","programId":257,"message":"Starting IDE 257"}
+{"timestamp":"2026-02-25T19:31:26.219Z","level":"info","type":"phase_completed","programId":257,"phase":"spec","message":"IDE 257: spec (reprise)"}
+{"timestamp":"2026-02-25T19:31:26.220Z","level":"info","type":"phase_completed","programId":257,"phase":"contract","message":"IDE 257: contract (reprise)"}
+{"timestamp":"2026-02-25T19:31:26.220Z","level":"info","type":"phase_completed","programId":257,"phase":"analyze","message":"IDE 257: analyze (reprise)"}
+{"timestamp":"2026-02-25T19:31:26.221Z","level":"info","type":"phase_completed","programId":257,"phase":"types","message":"IDE 257: types (reprise)"}
+{"timestamp":"2026-02-25T19:31:26.221Z","level":"info","type":"phase_completed","programId":257,"phase":"store","message":"IDE 257: store (reprise)"}
+{"timestamp":"2026-02-25T19:31:26.222Z","level":"info","type":"phase_completed","programId":257,"phase":"api","message":"IDE 257: api (reprise)"}
+{"timestamp":"2026-02-25T19:31:26.223Z","level":"info","type":"phase_completed","programId":257,"phase":"page","message":"IDE 257: page (reprise)"}
+{"timestamp":"2026-02-25T19:31:26.223Z","level":"info","type":"phase_completed","programId":257,"phase":"components","message":"IDE 257: components (reprise)"}
+{"timestamp":"2026-02-25T19:31:26.224Z","level":"info","type":"phase_completed","programId":257,"phase":"tests-unit","message":"IDE 257: tests-unit (reprise)"}
+{"timestamp":"2026-02-25T19:31:26.224Z","level":"info","type":"phase_completed","programId":257,"phase":"tests-ui","message":"IDE 257: tests-ui (reprise)"}
+{"timestamp":"2026-02-25T19:31:26.225Z","level":"info","type":"program_completed","programId":257,"message":"IDE 257: déjà généré (reprise)","data":{"resumed":true,"duration":0}}
+{"timestamp":"2026-02-25T19:31:26.226Z","level":"info","type":"program_started","programId":153,"message":"Starting IDE 153"}
+{"timestamp":"2026-02-25T19:31:26.227Z","level":"info","type":"phase_completed","programId":153,"phase":"spec","message":"IDE 153: spec (verified)"}
+{"timestamp":"2026-02-25T19:31:26.228Z","level":"info","type":"phase_completed","programId":153,"phase":"contract","message":"IDE 153: contract (verified)"}
+{"timestamp":"2026-02-25T19:31:26.229Z","level":"info","type":"phase_completed","programId":153,"phase":"analyze","message":"IDE 153: analyze (verified)"}
+{"timestamp":"2026-02-25T19:31:26.229Z","level":"info","type":"phase_completed","programId":153,"phase":"types","message":"IDE 153: types (verified)"}
+{"timestamp":"2026-02-25T19:31:26.230Z","level":"info","type":"phase_completed","programId":153,"phase":"store","message":"IDE 153: store (verified)"}
+{"timestamp":"2026-02-25T19:31:26.231Z","level":"info","type":"phase_completed","programId":153,"phase":"api","message":"IDE 153: api (verified)"}
+{"timestamp":"2026-02-25T19:31:26.231Z","level":"info","type":"phase_completed","programId":153,"phase":"page","message":"IDE 153: page (verified)"}
+{"timestamp":"2026-02-25T19:31:26.232Z","level":"info","type":"phase_completed","programId":153,"phase":"components","message":"IDE 153: components (verified)"}
+{"timestamp":"2026-02-25T19:31:26.232Z","level":"info","type":"phase_completed","programId":153,"phase":"tests-unit","message":"IDE 153: tests-unit (verified)"}
+{"timestamp":"2026-02-25T19:31:26.233Z","level":"info","type":"phase_completed","programId":153,"phase":"tests-ui","message":"IDE 153: tests-ui (verified)"}
+{"timestamp":"2026-02-25T19:31:26.233Z","level":"info","type":"program_completed","programId":153,"message":"IDE 153: déjà migré","data":{"skipped":true}}
+{"timestamp":"2026-02-25T19:31:26.234Z","level":"info","type":"phase_started","phase":"verify-tsc","message":"Starting verification loop"}
+{"timestamp":"2026-02-25T19:31:26.235Z","level":"info","type":"phase_started","phase":"verify-tsc","message":"TSC pass 1/5: running tsc --noEmit","data":{"pass":1,"maxPasses":5,"verifyProgress":0}}
+{"timestamp":"2026-02-25T19:31:27.013Z","level":"info","type":"phase_started","phase":"verify-tsc","message":"TSC pass 1: CLEAN","data":{"pass":1,"maxPasses":5,"errors":0,"clean":true,"verifyProgress":0.7}}
+{"timestamp":"2026-02-25T19:31:27.014Z","level":"info","type":"phase_started","phase":"verify-tests","message":"Tests pass 1/3: running vitest","data":{"pass":1,"maxPasses":3,"verifyProgress":0.7}}
+{"timestamp":"2026-02-25T19:31:30.800Z","level":"info","type":"phase_started","phase":"fix-tests","message":"Tests pass 1: 1 failures","data":{"pass":1,"maxPasses":3,"failures":1,"verifyProgress":0.75}}
+{"timestamp":"2026-02-25T19:31:30.802Z","level":"info","type":"phase_started","phase":"fix-tests","message":"Fix tests pass 1: done","data":{"pass":1,"maxPasses":3,"verifyProgress":0.7999999999999999}}
+{"timestamp":"2026-02-25T19:31:30.803Z","level":"info","type":"phase_started","phase":"verify-tests","message":"Tests pass 2/3: running vitest","data":{"pass":2,"maxPasses":3,"verifyProgress":0.7999999999999999}}
+{"timestamp":"2026-02-25T19:31:34.564Z","level":"info","type":"phase_started","phase":"fix-tests","message":"Tests pass 2: 1 failures","data":{"pass":2,"maxPasses":3,"failures":1,"verifyProgress":0.85}}
+{"timestamp":"2026-02-25T19:31:34.565Z","level":"info","type":"phase_started","phase":"fix-tests","message":"Fix tests pass 2: done","data":{"pass":2,"maxPasses":3,"verifyProgress":0.8999999999999999}}
+{"timestamp":"2026-02-25T19:31:34.566Z","level":"info","type":"phase_started","phase":"verify-tests","message":"Tests pass 3/3: running vitest","data":{"pass":3,"maxPasses":3,"verifyProgress":0.8999999999999999}}
+{"timestamp":"2026-02-25T19:31:38.376Z","level":"info","type":"phase_started","phase":"fix-tests","message":"Tests pass 3: 1 failures","data":{"pass":3,"maxPasses":3,"failures":1,"verifyProgress":0.95}}
+{"timestamp":"2026-02-25T19:31:38.378Z","level":"info","type":"verify_pass","message":"TSC: CLEAN (1 passes), Tests: FAIL (3 passes)"}
+{"timestamp":"2026-02-25T19:31:38.379Z","level":"info","type":"phase_started","phase":"integrate","message":"Starting integration"}
+{"timestamp":"2026-02-25T19:31:38.382Z","level":"info","type":"phase_completed","phase":"integrate","message":"Integration: 0 files modified"}
+{"timestamp":"2026-02-25T19:31:38.383Z","level":"info","type":"phase_started","programId":257,"phase":"review","message":"Reviewing IDE 257"}
+{"timestamp":"2026-02-25T19:31:38.384Z","level":"info","type":"phase_progress","programId":257,"phase":"review","message":"Reviewing coverage...","data":{"label":"Reviewing coverage..."}}
+{"timestamp":"2026-02-25T19:32:49.066Z","level":"info","type":"phase_completed","programId":257,"phase":"review","message":"Review IDE 257: 67% coverage","data":{"programId":257,"programName":"ArticleZoom","coveragePct":67,"rulesImplemented":2,"rulesTotal":3,"missingRules":["RM-003: Condition composite incorrectement mappée - les variables [Q] et [P] de la règle ne correspondent pas aux colonnes imputation/sousImputation utilisées dans le code. Variables source non identifiées dans les colonnes de la table articles."],"recommendations":["CRITIQUE: Clarifier le mapping des variables [Q] et [P] dans RM-003 - elles n'apparaissent pas dans les colonnes A-K de la table articles (cafil001_dat). Vérifier si ces variables proviennent d'une autre table ou sont des variables de session.","Compléter l'implémentation de validateCompositeCondition dans articleZoomStore.ts - le corps de la fonction est tronqué/manquant dans le code fourni.","INCOHÉRENCE SPEC: La spec indique '0 écrans visibles' mais le code génère une UI complète (HeaderPanel, ArticleGridPanel, FooterPanel). Pour un programme 'Zoom', cette UI est fonctionnellement cohérente, mais contredirait la spec. Valider l'intention réelle.","Ajouter des tests unitaires pour les 3 règles métier (validateServiceVillage, checkPassageCondition, validateCompositeCondition) avec des cas limites (null, empty string, false, combinaisons logiques).","Valider que l'appel à ADH IDE 43 (loadTitle) retourne bien le titre attendu et gérer les erreurs de chargement du titre.","Implémenter la gestion des erreurs réseau dans articleZoomService.getArticles() et getTitle() avec retry/fallback.","Vérifier le mapping exact des colonnes de cafil001_dat (articles) avec la base réelle - les noms de colonnes dans la spec (> service village, < libelle article, etc.) doivent correspondre aux champs SQL.","Ajouter une validation de la règle RM-001 côté serveur (API endpoint) pour éviter les données incohérentes en base.","Les mock articles dans le store devraient refléter des cas de test pour les 3 règles métier (serviceVillage vide, passage=false, conditions VRL/VSL).","Documenter le statut ORPHELIN_POTENTIEL du programme - s'il n'est pas appelé, envisager son intégration dans le flux principal ADH IDE 121 (Gestion_Caisse_142)."]}}
+{"timestamp":"2026-02-25T19:32:49.067Z","level":"info","type":"migration_completed","message":"Migration terminee : 1/3 programmes, 0 fichiers en 1m 23s (82863ms)"}
+{"timestamp":"2026-02-25T19:32:49.070Z","level":"info","type":"phase_completed","message":"Tracker updated: B8 → enriched (1/3 impl, 67% coverage)"}
+{"timestamp":"2026-02-25T19:32:49.149Z","level":"info","type":"git_started","message":"Auto-commit: staging files..."}
