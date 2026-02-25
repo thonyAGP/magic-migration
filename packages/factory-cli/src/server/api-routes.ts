@@ -16,7 +16,8 @@ import { createSSEStream } from './sse-stream.js';
 import { loadContracts } from '../core/contract.js';
 import { readTracker } from '../core/tracker.js';
 import { getTokensData, getBatchTokens, getProgramTokens } from './token-tracker.js';
-import { readLogs, searchLogs, getLatestLogs } from './log-storage.js';
+import { readLogs, searchLogs, getLatestLogs, writeLogEntry } from './log-storage.js';
+import type { LogEntry } from './log-storage.js';
 import { runCodegen, runCodegenEnriched } from '../generators/codegen/codegen-runner.js';
 import type { CodegenEnrichConfig, EnrichMode } from '../generators/codegen/enrich-model.js';
 import { runMigration, getMigrateStatus, createBatch } from '../migrate/migrate-runner.js';
@@ -207,8 +208,21 @@ export const handleGenerateStream = async (
   const contracts = loadContracts(contractDir);
   const sse = createSSEStream(res);
   const enrichConfig: CodegenEnrichConfig = { mode: enrichMode, model: enrichModel };
+  const genLogDir = path.join(config.migrationDir, config.contractSubDir, 'logs');
 
-  sse.send({ type: 'codegen_started', batch, total: batchDef.priorityOrder.length, enrich: enrichMode });
+  const logGen = (event: Record<string, unknown>) => {
+    sse.send(event);
+    writeLogEntry(genLogDir, batch, {
+      timestamp: new Date().toISOString(),
+      level: event.type === 'error' ? 'error' : 'info',
+      type: String(event.type ?? 'unknown'),
+      programId: event.programId as string | number | undefined,
+      message: String(event.message ?? event.type ?? ''),
+      data: event,
+    });
+  };
+
+  logGen({ type: 'codegen_started', batch, total: batchDef.priorityOrder.length, enrich: enrichMode });
 
   let totalWritten = 0;
   let totalSkipped = 0;
@@ -217,7 +231,7 @@ export const handleGenerateStream = async (
   for (const progId of batchDef.priorityOrder) {
     const contract = contracts.get(progId);
     if (!contract) {
-      sse.send({ type: 'codegen_skip', programId: progId, message: 'No contract found' });
+      logGen({ type: 'codegen_skip', programId: progId, message: 'No contract found' });
       continue;
     }
 
@@ -228,7 +242,7 @@ export const handleGenerateStream = async (
     totalSkipped += result.skipped;
     processed++;
 
-    sse.send({
+    logGen({
       type: 'codegen_program',
       programId: result.programId,
       programName: result.programName,
@@ -239,7 +253,7 @@ export const handleGenerateStream = async (
     });
   }
 
-  sse.send({ type: 'codegen_completed', batch, processed, totalWritten, totalSkipped, dryRun, enrich: enrichMode });
+  logGen({ type: 'codegen_completed', batch, processed, totalWritten, totalSkipped, dryRun, enrich: enrichMode });
   sse.close();
 };
 
@@ -263,19 +277,58 @@ export const handlePipelineStream = async (
   const preflight = preflightBatch(batch, preConfig);
 
   const sse = createSSEStream(res);
-  sse.send({ type: 'preflight', data: preflight });
+
+  // Run pipeline with live events + log persistence
+  const config = resolveConfig(ctx, { dryRun, enrich, model });
+  const logDir = path.join(config.migrationDir, config.contractSubDir, 'logs');
+
+  // Log preflight event
+  const preflightEvent = { type: 'preflight', data: preflight };
+  sse.send(preflightEvent);
+  writeLogEntry(logDir, batch, {
+    timestamp: new Date().toISOString(),
+    level: 'info',
+    type: 'preflight',
+    message: `Preflight: ${preflight.summary.ready} ready, ${preflight.summary.blocked} blocked, ${preflight.summary.alreadyDone} done`,
+    data: preflight as unknown as Record<string, unknown>,
+  });
 
   if (preflight.summary.blocked > 0 && preflight.summary.ready === 0 && preflight.summary.alreadyDone === 0) {
-    sse.send({ type: 'error', message: `Batch ${batch} blocked: ${preflight.summary.blocked} programs cannot proceed` });
+    const errorMsg = `Batch ${batch} blocked: ${preflight.summary.blocked} programs cannot proceed`;
+    sse.send({ type: 'error', message: errorMsg });
+    writeLogEntry(logDir, batch, {
+      timestamp: new Date().toISOString(),
+      level: 'error',
+      type: 'error',
+      message: errorMsg,
+    });
     sse.close();
     return;
   }
 
-  // Run pipeline with live events
-  const config = resolveConfig(ctx, { dryRun, enrich, model });
-  config.onEvent = (event) => sse.send(event);
+  const eventToLogEntry = (event: { type: string; timestamp?: string; programId?: string | number; message?: string; data?: Record<string, unknown> }): LogEntry => ({
+    timestamp: event.timestamp ?? new Date().toISOString(),
+    level: event.type === 'error' ? 'error' : 'info',
+    type: event.type,
+    programId: event.programId,
+    message: event.message ?? '',
+    data: event.data,
+  });
+
+  config.onEvent = (event) => {
+    sse.send(event);
+    writeLogEntry(logDir, batch, eventToLogEntry(event));
+  };
 
   const result = await runBatchPipeline(batch, config);
+
+  writeLogEntry(logDir, batch, {
+    timestamp: new Date().toISOString(),
+    level: 'info',
+    type: 'pipeline_result',
+    message: `Pipeline ${dryRun ? 'dry-run' : 'run'} completed: ${result.summary.total} programs`,
+    data: result.summary as unknown as Record<string, unknown>,
+  });
 
   sse.send({ type: 'pipeline_result', data: result });
   sse.close();
@@ -379,6 +432,7 @@ export const handleMigrateStream = async (
   }));
 
   const sse = createSSEStream(res);
+  const migrateLogDir = path.join(config.migrationDir, config.contractSubDir, 'logs');
 
   // Buffer events for dashboard reconnection after page refresh
   startMigration(batchId, programIds.length, targetDir, claudeMode, dryRun, programList, batchEstimatedHours);
@@ -386,6 +440,16 @@ export const handleMigrateStream = async (
   const bufferedSend = (event: unknown) => {
     addMigrateEvent(event);
     sse.send(event);
+    const e = event as Record<string, unknown>;
+    writeLogEntry(migrateLogDir, batchId, {
+      timestamp: (e.timestamp as string) ?? new Date().toISOString(),
+      level: e.type === 'error' ? 'error' : 'info',
+      type: (e.type as string) ?? 'unknown',
+      programId: e.programId as string | number | undefined,
+      phase: e.phase as string | undefined,
+      message: (e.message as string) ?? (e.type as string) ?? '',
+      data: e.data as Record<string, unknown> | undefined,
+    });
   };
 
   migrateConfig.onEvent = (event) => bufferedSend(event);
