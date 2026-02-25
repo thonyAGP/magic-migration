@@ -2815,12 +2815,30 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   migrateAbortBtn.addEventListener('click', function(e) {
     e.stopPropagation();
     if (!confirm('Annuler la migration en cours ?')) return;
-    fetch('/api/migrate/abort', { method: 'POST' }).then(function(r) { return r.json(); }).then(function(data) {
-      if (data.aborted) {
-        addMLog('Migration aborted by user');
-        migrateAbortBtn.style.display = 'none';
-      }
-    });
+
+    // Immediately stop UI updates
+    if (migrateState.eventSource) {
+      migrateState.eventSource.close();
+      migrateState.eventSource = null;
+    }
+    if (migrateState.elapsedTid) {
+      clearInterval(migrateState.elapsedTid);
+      migrateState.elapsedTid = 0;
+    }
+    if (migrateState.durationTid) {
+      clearInterval(migrateState.durationTid);
+      migrateState.durationTid = 0;
+    }
+
+    migrateAbortBtn.style.display = 'none';
+    setLoading(migrateState.activeBtn || btnMigrate, false);
+    addMLog('❌ Migration annulée par utilisateur');
+
+    var bar = document.getElementById('mp-module-bar');
+    if (bar) { bar.style.background = '#f85149'; }
+
+    // Notify backend (fire-and-forget)
+    fetch('/api/migrate/abort', { method: 'POST' }).catch(function() {});
   });
 
   // Log toggle
@@ -3110,6 +3128,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   // ─── Central event dispatch ───────────────────────────────────
   function processMigrateEvent(msg) {
     if (msg.type === 'migrate_started') {
+      console.log('[DEBUG] migrate_started event:', JSON.stringify(msg));
       migrateState.totalProgs = msg.programs || 0;
       migrateState.doneProgs = 0;
       migrateState.estimatedHours = msg.estimatedHours || 0;
@@ -3501,11 +3520,13 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
 
     migrateState.eventsProcessed = 0;
     var es = new EventSource(url);
+    migrateState.eventSource = es; // Store for abort functionality
     es.onmessage = function(ev) {
       var msg = JSON.parse(ev.data);
 
       if (msg.type === 'stream_end') {
         es.close();
+        migrateState.eventSource = null;
         clearInterval(migrateState.elapsedTid);
         setLoading(migrateState.activeBtn || btnMigrate, false);
         migrateAbortBtn.style.display = 'none';
