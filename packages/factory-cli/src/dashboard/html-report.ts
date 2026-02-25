@@ -572,13 +572,6 @@ ${MULTI_CSS}
         <div class="mp-elapsed" id="mp-tokens" style="color:#d2a8ff"></div>
       </div>
     </div>
-    <!-- Section 1b: Last task / Current task display -->
-    <div class="mp-section" id="mp-task-info" style="display:none">
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:#8b949e;gap:16px">
-        <div><span style="color:#cbd5e1">Dernière:</span> <span id="mp-last-task">–</span></div>
-        <div><span style="color:#cbd5e1">En cours:</span> <span id="mp-current-task">–</span></div>
-      </div>
-    </div>
     <!-- Section 2: Current program progress bar -->
     <div class="mp-section" id="mp-prog-section" style="display:none">
       <div class="mp-prog-title" id="mp-prog-title"></div>
@@ -590,7 +583,7 @@ ${MULTI_CSS}
     <!-- Section 3: Program grid -->
     <div class="mp-grid-section" id="mp-grid-section" style="display:none">
       <table class="mp-grid">
-        <thead><tr><th>IDE</th><th>Programme</th><th></th><th>Dur\u00e9e</th><th>Phases</th></tr></thead>
+        <thead><tr><th>IDE</th><th>Programme</th><th></th><th>Dur\u00e9e</th><th>Phase</th><th>Phases</th><th>En cours</th><th>ETA</th><th>Tokens</th></tr></thead>
         <tbody id="mp-grid-body"></tbody>
       </table>
     </div>
@@ -2856,20 +2849,6 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     el.textContent = 'Tokens: ' + formatTokens(migrateState.tokensIn) + ' in / ' + formatTokens(migrateState.tokensOut) + ' out (~$' + cost.toFixed(2) + ')';
   }
 
-  function updateTaskInfoDisplay() {
-    var taskInfoEl = document.getElementById('mp-task-info');
-    var lastTaskEl = document.getElementById('mp-last-task');
-    var currentTaskEl = document.getElementById('mp-current-task');
-    if (!taskInfoEl || !lastTaskEl || !currentTaskEl) return;
-
-    if (migrateState.lastCompletedTask || migrateState.currentTask) {
-      taskInfoEl.style.display = '';
-      lastTaskEl.textContent = migrateState.lastCompletedTask || '–';
-      currentTaskEl.textContent = migrateState.currentTask || '–';
-    } else {
-      taskInfoEl.style.display = 'none';
-    }
-  }
 
   function updateRunningDurations() {
     var now = Date.now();
@@ -2945,8 +2924,11 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
         + '<td title="' + escAttr(p.name) + '">' + escAttr(p.name) + '</td>'
         + '<td class="mp-icon" id="mp-icon-' + escAttr(p.id) + '">&#9203;</td>'
         + '<td class="mp-dur" id="mp-dur-' + escAttr(p.id) + '"></td>'
+        + '<td class="mp-phase" id="mp-phase-' + escAttr(p.id) + '" style="color:#8b949e;font-size:10px">-</td>'
+        + '<td><div class="mp-dots">' + dotsHtml + '</div></td>'
+        + '<td class="mp-current" id="mp-current-' + escAttr(p.id) + '" style="color:#58a6ff;font-size:10px">-</td>'
         + '<td class="mp-eta" id="mp-eta-' + escAttr(p.id) + '"></td>'
-        + '<td><div class="mp-dots">' + dotsHtml + '</div></td>';
+        + '<td class="mp-tokens" id="mp-tokens-' + escAttr(p.id) + '" style="color:#d2a8ff;font-size:10px;font-variant-numeric:tabular-nums">-</td>';
       tbody.appendChild(tr);
     }
     document.getElementById('mp-grid-section').style.display = '';
@@ -2976,13 +2958,11 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       }
       migrateState.lastCompletedTask = 'IDE ' + id + ' ' + progName;
       migrateState.currentTask = null;
-      updateTaskInfoDisplay();
       if (row) { row.classList.remove('mp-row-active'); row.classList.add('mp-row-done'); }
     }
     else if (status === 'failed') {
       el.innerHTML = '&#10007;';
       migrateState.currentTask = null;
-      updateTaskInfoDisplay();
       if (row) { row.classList.remove('mp-row-active'); row.classList.add('mp-row-done'); }
     }
     else { el.innerHTML = '&#9203;'; }
@@ -3047,6 +3027,10 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       migrateState.totalProgs = msg.programs || 0;
       migrateState.doneProgs = 0;
       migrateState.estimatedHours = msg.estimatedHours || 0;
+      // Initialize estimatedDurationMs from batch.stats.estimatedHours if available
+      if (migrateState.estimatedHours > 0) {
+        migrateState.estimatedDurationMs = migrateState.estimatedHours * 3600000;
+      }
       if (msg.parallel > 0) migrateState.parallelCount = msg.parallel;
       if (msg.programList && msg.programList.length) {
         migrateState.programList = msg.programList;
@@ -3116,9 +3100,17 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
         if (prev && prev !== phase) {
           migrateState.programPhases[pid].completedPhases[prev] = true;
           updatePhaseDot(pid, prev, 'done');
+          // Update "Phase" column with last completed phase
+          var phaseCell = document.getElementById('mp-phase-' + pid);
+          if (phaseCell) phaseCell.textContent = prev;
         }
         migrateState.programPhases[pid].currentPhase = phase;
-        if (phase) updatePhaseDot(pid, phase, 'active');
+        if (phase) {
+          updatePhaseDot(pid, phase, 'active');
+          // Update "En cours" column with current phase
+          var currentCell = document.getElementById('mp-current-' + pid);
+          if (currentCell) currentCell.textContent = phase;
+        }
         updateProgramProgress(pid, phase);
       } else if (phase && !pid) {
         // Batch-level phase without pid (verify-tsc, integrate) - show in prog section
@@ -3150,8 +3142,14 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
         migrateState.programPhases[pid].completedPhases[phase] = true;
         if (migrateState.programPhases[pid].currentPhase === phase) {
           migrateState.programPhases[pid].currentPhase = null;
+          // Clear "En cours" column (phase completed)
+          var currentCell = document.getElementById('mp-current-' + pid);
+          if (currentCell) currentCell.textContent = '';
         }
         updatePhaseDot(pid, phase, 'done');
+        // Update "Phase" column with completed phase
+        var phaseCell = document.getElementById('mp-phase-' + pid);
+        if (phaseCell) phaseCell.textContent = phase;
         updateProgramProgress(pid, null);
         // Update duration for batch-level per-program phases (review)
         if (migrateState.batchPhaseActive && migrateState.programStartTimes[pid]) {
@@ -3211,16 +3209,30 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
           for (var si = 0; si < ALL_PHASES.length; si++) updatePhaseDot(pid, ALL_PHASES[si], 'skipped');
         } else {
           var cur = migrateState.programPhases[pid].currentPhase;
-          if (cur) { migrateState.programPhases[pid].completedPhases[cur] = true; updatePhaseDot(pid, cur, 'done'); }
+          if (cur) {
+            migrateState.programPhases[pid].completedPhases[cur] = true;
+            updatePhaseDot(pid, cur, 'done');
+            // Update "Phase" column with last completed phase
+            var phaseCell = document.getElementById('mp-phase-' + pid);
+            if (phaseCell) phaseCell.textContent = cur;
+          }
         }
         migrateState.programPhases[pid].status = 'done';
         migrateState.programPhases[pid].currentPhase = null;
+        // Clear "En cours" column (program completed)
+        var currentCell = document.getElementById('mp-current-' + pid);
+        if (currentCell) currentCell.textContent = '';
       }
       // Accumulate tokens
       if (msg.data && msg.data.tokens) {
         migrateState.tokensIn += msg.data.tokens.input || 0;
         migrateState.tokensOut += msg.data.tokens.output || 0;
         updateTokenDisplay();
+        // Update "Tokens" column with program tokens
+        var tokenCell = document.getElementById('mp-tokens-' + pid);
+        if (tokenCell) {
+          tokenCell.textContent = formatTokens(msg.data.tokens.input) + '/' + formatTokens(msg.data.tokens.output);
+        }
       }
       updateProgramIcon(pid, 'done');
       migrateState.doneProgs++;
@@ -3274,7 +3286,6 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       migrateState.batchPhaseActive = false;
       migrateState.completedResult = r; // Store for badge reopening
       migrateState.currentTask = null;
-      updateTaskInfoDisplay();
       clearInterval(migrateState.elapsedTid);
       var bar = document.getElementById('mp-module-bar');
       if (bar) bar.style.width = '100%';
