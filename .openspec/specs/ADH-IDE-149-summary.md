@@ -1,6 +1,6 @@
 ﻿# ADH IDE 149 - Calcul stock produit WS
 
-> **Analyse**: 2026-02-08 03:32
+> **Analyse**: 2026-02-25 12:22
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
