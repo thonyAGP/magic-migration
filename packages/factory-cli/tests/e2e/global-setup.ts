@@ -8,6 +8,49 @@ import path from 'node:path';
 const FIXTURES_DIR = path.resolve(import.meta.dirname, 'fixtures');
 const ADH_DIR = path.join(FIXTURES_DIR, '.openspec', 'migration', 'ADH');
 
+/** Original contract for program 105 — reset before each run (enrichment mutates it). */
+const CONTRACT_105_INITIAL = `program:
+  id: 105
+  name: SMOKE_LEAF_3
+  complexity: LOW
+  callers:
+    - 102
+  callees: []
+  tasks_count: 1
+  tables_count: 1
+  expressions_count: 2
+rules:
+  - local_id: R1
+    description: "Validate user input"
+    category: validation
+    status: MISSING
+    target_file: ""
+    gap_notes: "Not yet implemented"
+variables:
+  - local_id: A
+    name: amount
+    type: Numeric
+    status: MISSING
+    target_file: ""
+    gap_notes: "Needs mapping"
+tables: []
+callees: []
+overall:
+  rules_total: 1
+  rules_impl: 0
+  rules_partial: 0
+  rules_missing: 1
+  rules_na: 0
+  variables_key_count: 1
+  callees_total: 0
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 0
+  status: contracted
+  generated: "2026-02-25"
+  notes: "Contract needing enrichment for E2E test"
+`;
+
 const TRACKER_INITIAL = {
   version: '1.0',
   methodology: 'SPECMAP',
@@ -61,6 +104,10 @@ export default async function globalSetup() {
   // Reset tracker to initial state
   const trackerPath = path.join(ADH_DIR, 'tracker.json');
   fs.writeFileSync(trackerPath, JSON.stringify(TRACKER_INITIAL, null, 2), 'utf8');
+
+  // Reset contract 105 to initial state (enrichment mutates it)
+  const contract105Path = path.join(ADH_DIR, 'ADH-IDE-105.contract.yaml');
+  fs.writeFileSync(contract105Path, CONTRACT_105_INITIAL, 'utf8');
 
   // Clean up any logs created by previous runs
   const logsDir = path.join(ADH_DIR, 'logs');

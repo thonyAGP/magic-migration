@@ -12,6 +12,21 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+
+// Auto-load .env files from project root (credentials, API keys)
+const loadEnvFile = (filePath: string): void => {
+  if (!fs.existsSync(filePath)) return;
+  for (const line of fs.readFileSync(filePath, 'utf8').split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eq = trimmed.indexOf('=');
+    if (eq < 0) continue;
+    const key = trimmed.slice(0, eq).trim();
+    const val = trimmed.slice(eq + 1).trim();
+    if (!process.env[key]) process.env[key] = val;
+  }
+};
+
 import type { SpecExtractor } from './core/types.js';
 import { PipelineStatus } from './core/types.js';
 import { createMagicAdapter } from './adapters/magic-adapter.js';
@@ -54,6 +69,12 @@ const hasFlag = (name: string): boolean => args.includes(`--${name}`);
 
 const run = async () => {
   const projectDir = getArg('project') ?? process.cwd();
+
+  // Load env files: project-specific first, then generic fallback
+  for (const name of ['.env.clubmed.local', '.env.local', '.env']) {
+    loadEnvFile(path.join(projectDir, name));
+  }
+
   const migrationDir = path.join(projectDir, '.openspec', 'migration');
   const trackerFile = path.join(migrationDir, 'tracker.json');
 
