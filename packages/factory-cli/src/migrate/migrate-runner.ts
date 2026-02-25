@@ -268,7 +268,7 @@ export const runMigration = async (
     } catch (err) {
       // Non-critical: tracker update failure shouldn't break the result
       const msg = `[R1] Tracker update failed: ${err instanceof Error ? err.message : String(err)}`;
-      emit(config, ET.ERROR, msg, { phase: 'tracker_update', batchId, error: err });
+      emit(config, ET.ERROR, msg, { data: { batchId, error: err } });
       console.error(msg, { batchId, error: err });
     }
   }
@@ -286,7 +286,7 @@ export const runMigration = async (
     } catch (err) {
       // Non-critical: auto-verify failure shouldn't break the result
       const msg = `[R2] Auto-verify failed: ${err instanceof Error ? err.message : String(err)}`;
-      emit(config, ET.WARNING, msg, { phase: 'auto_verify', error: err });
+      emit(config, ET.ERROR, msg, { data: { error: err } });
       console.warn(msg, { error: err });
     }
   }

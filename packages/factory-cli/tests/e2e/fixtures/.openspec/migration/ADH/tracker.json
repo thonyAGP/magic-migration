@@ -9,11 +9,11 @@
     "live_programs": 6,
     "orphan_programs": 4,
     "ecf_programs": 0,
-    "contracted": 2,
-    "enriched": 1,
+    "contracted": 4,
+    "enriched": 0,
     "verified": 0,
     "max_level": 3,
-    "last_computed": "2026-02-25T20:48:08.610Z"
+    "last_computed": "2026-02-25"
   },
   "batches": [
     {
@@ -60,8 +60,7 @@
       "name": "Smoke Test Batch Empty",
       "root": 105,
       "programs": 1,
-      "status": "contracted",
-      "contracted_date": "2026-02-25",
+      "status": "pending",
       "stats": {
         "backend_na": 0,
         "frontend_enrich": 0,
