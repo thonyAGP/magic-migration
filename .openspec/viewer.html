@@ -2128,7 +2128,7 @@
         if (spec.type === 'Template' || spec.id.startsWith('TEMPLATE')) {
           templates.push(spec);
         } else {
-          const folder = spec.folder || 'Non classe';
+          const folder = spec.folder || spec.project || 'Non classe';
           if (!byFolder[folder]) byFolder[folder] = [];
           byFolder[folder].push(spec);
         }
