@@ -3576,8 +3576,9 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
         migrateState.sseRetryCount++;
 
         if (migrateState.sseRetryCount <= migrateState.sseRetryMax) {
-          // Retry SSE connection with exponential backoff
-          var delay = Math.min(1000 * Math.pow(2, migrateState.sseRetryCount - 1), 30000); // Max 30s
+          // Retry SSE connection with standard backoff (1s, 5s, 10s, 30s, 30s...)
+          var delays = [1000, 5000, 10000]; // First 3 retries
+          var delay = delays[migrateState.sseRetryCount - 1] || 30000; // Then 30s for all others
           addMLog('SSE connection lost - retry ' + migrateState.sseRetryCount + '/' + migrateState.sseRetryMax + ' in ' + (delay/1000) + 's...');
           setTimeout(connectSSE, delay);
           return;
