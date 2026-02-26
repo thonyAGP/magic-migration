@@ -517,6 +517,8 @@ ${MULTI_CSS}
 
 <div class="action-bar" id="action-bar">
   <span class="server-badge disconnected" id="server-badge">Hors ligne</span>
+  <span class="version-badge checking" id="version-badge" title="Git version status">⟳ Checking...</span>
+  <button class="restart-btn" id="btn-restart" title="Restart server with latest code" style="display:none">🔄 Restart</button>
   <select id="batch-select" class="action-select" disabled>
     <option value="">S\u00e9lectionner un batch...</option>
   </select>
@@ -1928,6 +1930,31 @@ const MULTI_CSS = `
 }
 .server-badge.connected { background: rgba(63,185,80,0.2); color: var(--green); }
 .server-badge.disconnected { background: rgba(72,79,88,0.3); color: var(--text-dim); }
+.version-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-left: 8px;
+  cursor: help;
+}
+.version-badge.up-to-date { background: rgba(63,185,80,0.2); color: var(--green); }
+.version-badge.outdated { background: rgba(217,130,43,0.2); color: var(--orange); animation: pulse 2s infinite; }
+.version-badge.checking { background: rgba(139,148,158,0.2); color: var(--text-dim); }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.restart-btn {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--orange);
+  background: rgba(217,130,43,0.1);
+  color: var(--orange);
+  cursor: pointer;
+  margin-left: 8px;
+  transition: all 0.2s;
+}
+.restart-btn:hover { background: rgba(217,130,43,0.3); }
 .action-select {
   padding: 5px 8px;
   border: 1px solid var(--border);
@@ -2354,6 +2381,71 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   // Activate UI
   badge.textContent = 'Connect\\u00e9';
   badge.className = 'server-badge connected';
+
+  // Check git version status
+  var versionBadge = document.getElementById('version-badge');
+  var btnRestart = document.getElementById('btn-restart');
+
+  function checkGitStatus() {
+    fetch('/api/git/status').then(function(r) { return r.json(); }).then(function(git) {
+      if (git.isUpToDate) {
+        versionBadge.textContent = '✓ v' + git.serverCommit;
+        versionBadge.className = 'version-badge up-to-date';
+        versionBadge.title = 'Server running latest code';
+        btnRestart.style.display = 'none';
+      } else {
+        versionBadge.textContent = '⚠ ' + git.behindBy + ' commits behind';
+        versionBadge.className = 'version-badge outdated';
+        versionBadge.title = 'Server: ' + git.serverCommit + ' | Latest: ' + git.latestLocalCommit;
+        btnRestart.style.display = 'inline-block';
+      }
+    }).catch(function() {
+      versionBadge.textContent = '? unknown';
+      versionBadge.className = 'version-badge checking';
+    });
+  }
+
+  // Check version on load
+  checkGitStatus();
+
+  // Auto-refresh version every 30s
+  setInterval(checkGitStatus, 30000);
+
+  // Restart button handler
+  btnRestart.addEventListener('click', function() {
+    if (!confirm('Restart server? Dashboard will reconnect automatically in ~10s.')) return;
+
+    btnRestart.disabled = true;
+    btnRestart.textContent = '⟳ Restarting...';
+
+    fetch('/api/server/restart', { method: 'POST' })
+      .then(function(r) { return r.json(); })
+      .then(function(result) {
+        versionBadge.textContent = '⟳ Restarting...';
+        versionBadge.className = 'version-badge checking';
+
+        // Poll for server to come back up
+        var reconnectAttempts = 0;
+        var reconnectInterval = setInterval(function() {
+          reconnectAttempts++;
+          fetch('/api/version').then(function() {
+            clearInterval(reconnectInterval);
+            location.reload(); // Reload dashboard with new code
+          }).catch(function() {
+            if (reconnectAttempts > 20) {
+              clearInterval(reconnectInterval);
+              alert('Server did not restart. Please check terminal.');
+            }
+          });
+        }, 1000);
+      })
+      .catch(function(err) {
+        btnRestart.disabled = false;
+        btnRestart.textContent = '🔄 Restart';
+        alert('Restart failed: ' + err.message);
+      });
+  });
+
   batchSelect.disabled = false;
   btnPreflight.disabled = false;
   btnRun.disabled = false;

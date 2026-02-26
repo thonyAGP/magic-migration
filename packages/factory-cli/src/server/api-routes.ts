@@ -22,6 +22,7 @@ import { runCodegen, runCodegenEnriched } from '../generators/codegen/codegen-ru
 import type { CodegenEnrichConfig, EnrichMode } from '../generators/codegen/enrich-model.js';
 import { runMigration, getMigrateStatus, createBatch } from '../migrate/migrate-runner.js';
 import { BUILD_INFO } from '../build-info.js';
+import { getGitStatus } from './git-status.js';
 import { DEFAULT_PHASE_MODELS } from '../migrate/migrate-types.js';
 import type { MigrateConfig, MigratePhase } from '../migrate/migrate-types.js';
 import { configureClaudeMode } from '../migrate/migrate-claude.js';
@@ -779,4 +780,39 @@ export const handleVersion = (_ctx: RouteContext, res: ServerResponse): void => 
     ...BUILD_INFO,
     serverStartTime: new Date().toISOString(),
   });
+};
+
+/**
+ * GET /api/git/status
+ * Returns git status comparing server vs remote.
+ */
+export const handleGitStatus = (ctx: RouteContext, res: ServerResponse): void => {
+  const status = getGitStatus(ctx.projectDir);
+  json(res, status);
+};
+
+/**
+ * POST /api/server/restart
+ * Triggers server restart script.
+ */
+export const handleServerRestart = async (_ctx: RouteContext, res: ServerResponse): Promise<void> => {
+  const { exec } = await import('node:child_process');
+
+  // Execute restart script in background
+  exec('powershell -ExecutionPolicy Bypass -File ./restart-server-qa.ps1', {
+    cwd: process.cwd(),
+  }, (err) => {
+    if (err) {
+      console.error('[SERVER RESTART FAILED]', err);
+    }
+  });
+
+  // Return immediately (server will restart)
+  json(res, { restarting: true, message: 'Server restart initiated. Dashboard will reconnect automatically.' });
+
+  // Shutdown current server after response sent
+  setTimeout(() => {
+    console.log('[SERVER RESTART] Shutting down for restart...');
+    process.exit(0);
+  }, 1000);
 };

@@ -17,7 +17,7 @@ import {
   handleAnalyze, handleAnalyzeGet,
   handleTokensGet, handleTokensBatchGet, handleTokensProgramGet,
   handleLogsGet, handleLogsSearchGet, handleLogsLatestGet,
-  handleVersion,
+  handleVersion, handleGitStatus, handleServerRestart,
 } from './api-routes.js';
 import type { RouteContext } from './api-routes.js';
 import { generateServerDashboard } from './dashboard-html.js';
@@ -107,6 +107,12 @@ export const startActionServer = async (config: ActionServerConfig): Promise<htt
       } else if (pathname === '/api/version' && req.method === 'GET') {
         reqLogger.debug('Handling version request');
         handleVersion(ctx, res);
+      } else if (pathname === '/api/git/status' && req.method === 'GET') {
+        reqLogger.debug('Handling git status request');
+        handleGitStatus(ctx, res);
+      } else if (pathname === '/api/server/restart' && req.method === 'POST') {
+        reqLogger.info('Server restart requested');
+        await handleServerRestart(ctx, res);
       } else if (pathname === '/api/status' && req.method === 'GET') {
         reqLogger.debug('Handling status request');
         handleStatus(ctx, res);
