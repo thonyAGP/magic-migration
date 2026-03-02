@@ -387,11 +387,13 @@ const runProgramGeneration = async (
   const shouldSkip = shouldSkipProgram(contractStatus);
 
   if (shouldSkip) {
-    flushTokenAccumulator();
+    const programTokens = flushTokenAccumulator();
     for (const p of GENERATION_PHASES) {
       emit(config, ET.PHASE_COMPLETED, `IDE ${programId}: ${p} (verified)`, { phase: p, programId });
     }
-    emit(config, ET.PROGRAM_COMPLETED, `IDE ${programId}: d\u00e9j\u00e0 migr\u00e9`, { programId, data: { skipped: true } });
+    const completedData: Record<string, unknown> = { skipped: true };
+    if (programTokens) completedData.tokens = programTokens;
+    emit(config, ET.PROGRAM_COMPLETED, `IDE ${programId}: d\u00e9j\u00e0 migr\u00e9`, { programId, data: completedData });
     return {
       result: {
         programId,
@@ -402,6 +404,7 @@ const runProgramGeneration = async (
         phasesTotal: 10,
         duration: 0,
         errors: [],
+        tokens: programTokens ?? undefined,
       },
       analysis: null,
     };
@@ -426,8 +429,10 @@ const runProgramGeneration = async (
       emit(config, ET.PHASE_COMPLETED, `IDE ${programId}: ${p} (reprise)`, { phase: p, programId });
     }
 
-    flushTokenAccumulator();
-    emit(config, ET.PROGRAM_COMPLETED, `IDE ${programId}: déjà généré (reprise)`, { programId, data: { resumed: true, duration: 0 } });
+    const programTokens = flushTokenAccumulator();
+    const completedData: Record<string, unknown> = { resumed: true, duration: 0 };
+    if (programTokens) completedData.tokens = programTokens;
+    emit(config, ET.PROGRAM_COMPLETED, `IDE ${programId}: déjà généré (reprise)`, { programId, data: completedData });
 
     return {
       result: {
@@ -439,6 +444,7 @@ const runProgramGeneration = async (
         phasesTotal: 10,
         duration: 0,
         errors: [],
+        tokens: programTokens ?? undefined,
       },
       analysis: resumedAnalysis,
     };
