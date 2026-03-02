@@ -436,6 +436,56 @@ export const runVerifyFixLoop = async (
     }
   }
 
+  // CRITICAL: Block migration if verification failed after all attempts
+  // Collect all error details for diagnostic before throwing
+  const failures: string[] = [];
+
+  if (!tscClean) {
+    failures.push(
+      `❌ TypeScript compilation failed after ${tscPasses} attempt${tscPasses > 1 ? 's' : ''}`,
+      `   → Run 'pnpm typecheck' in target directory to see errors`,
+      `   → Check generated code quality and types`,
+    );
+  }
+
+  if (!testsPass && tscClean) {
+    failures.push(
+      `❌ Tests failed after ${testPasses} attempt${testPasses > 1 ? 's' : ''}`,
+      `   → Run 'pnpm test' in target directory to see failures`,
+      `   → Check test expectations vs actual behavior`,
+      `   → Review generated test files for correctness`,
+    );
+  }
+
+  if (failures.length > 0) {
+    const errorMsg = [
+      '',
+      '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+      '  MIGRATION BLOCKED - Verification Failed',
+      '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+      '',
+      ...failures,
+      '',
+      'The migration cannot continue with broken code.',
+      'Fix the issues above and retry the migration.',
+      '',
+      'Tip: Use /swarm to analyze logs and understand blockers.',
+      '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+      '',
+    ].join('\n');
+
+    // Emit error event before throwing
+    emitVerify(config, ET.PHASE_FAILED, errorMsg, MP.VERIFY_TESTS, {
+      tscClean,
+      testsPass,
+      tscPasses,
+      testPasses,
+      blocked: true,
+    });
+
+    throw new Error(errorMsg);
+  }
+
   return {
     tscClean,
     testsPass,
