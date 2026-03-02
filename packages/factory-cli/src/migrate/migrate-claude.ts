@@ -227,10 +227,16 @@ const parseCliJsonOutput = (stdout: string, durationMs: number, promptLength: nu
 /**
  * Call Claude CLI and parse the response as JSON.
  * Extracts JSON from markdown code blocks if present.
+ * Returns both parsed data and token usage.
  */
-export const callClaudeJson = async <T = unknown>(options: ClaudeCallOptions): Promise<T> => {
+export const callClaudeJson = async <T = unknown>(
+  options: ClaudeCallOptions,
+): Promise<{ data: T; tokens?: { input: number; output: number } }> => {
   const result = await callClaude(options);
-  return parseJsonResponse<T>(result.output);
+  return {
+    data: parseJsonResponse<T>(result.output),
+    tokens: result.tokens,
+  };
 };
 
 /**

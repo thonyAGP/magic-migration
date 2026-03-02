@@ -222,7 +222,7 @@ export const runMigration = async (
         emit(config, ET.PHASE_COMPLETED, `Review IDE ${progId}: ${reviewResult.report.coveragePct}% coverage`, {
           phase: MP.REVIEW,
           programId: progId,
-          data: reviewResult.report as unknown as Record<string, unknown>,
+          data: { ...reviewResult.report as unknown as Record<string, unknown>, tokens: reviewResult.tokens },
         });
       } catch (err) {
         emit(config, ET.PHASE_FAILED, `Review failed for IDE ${progId}: ${err instanceof Error ? err.message : 'unknown'}`, { phase: MP.REVIEW, programId: progId });
@@ -482,7 +482,11 @@ const runProgramGeneration = async (
       analysis = analyzeResult.analysis;
       completePhase(prog, MP.ANALYZE, { file: analyzeResult.analysisFile, duration: analyzeResult.duration });
       saveMigrateTracker(trackerFile, migrateData);
-      emit(config, ET.PHASE_COMPLETED, `IDE ${programId}: analysis done in ${formatDuration(analyzeResult.duration)}, domain=${analysis.domain}`, { phase: MP.ANALYZE, programId });
+      emit(config, ET.PHASE_COMPLETED, `IDE ${programId}: analysis done in ${formatDuration(analyzeResult.duration)}, domain=${analysis.domain}`, {
+        phase: MP.ANALYZE,
+        programId,
+        data: { tokens: analyzeResult.tokens },
+      });
     } else {
       // Load existing analysis - verify file actually exists
       const project = config.contractSubDir;

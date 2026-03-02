@@ -14,6 +14,7 @@ import type { MigrateConfig, AnalysisDocument, ReviewReport } from '../migrate-t
 export interface ReviewResult {
   report: ReviewReport;
   duration: number;
+  tokens?: { input: number; output: number };
 }
 
 export const runReviewPhase = async (
@@ -66,7 +67,7 @@ export const runReviewPhase = async (
   const prompt = buildReviewPrompt(ctx, generatedFiles);
 
   try {
-    const report = await callClaudeJson<ReviewReport>({
+    const { data: report, tokens } = await callClaudeJson<ReviewReport>({
       prompt,
       model: getModelForPhase(config, MP.REVIEW),
       cliBin: config.cliBin,
@@ -77,7 +78,7 @@ export const runReviewPhase = async (
     report.programId = programId;
     report.programName = analysis.domainPascal;
 
-    return { report, duration: Date.now() - start };
+    return { report, duration: Date.now() - start, tokens };
   } catch {
     // Fallback: compute basic coverage from contract
     const rulesTotal = ctx.contract?.rules.length ?? 0;

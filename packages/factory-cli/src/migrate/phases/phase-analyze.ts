@@ -16,6 +16,7 @@ export interface AnalyzeResult {
   analysis: AnalysisDocument;
   skipped: boolean;
   duration: number;
+  tokens?: { input: number; output: number };
 }
 
 export const runAnalyzePhase = async (
@@ -40,7 +41,7 @@ export const runAnalyzePhase = async (
   }
 
   const prompt = buildAnalyzePrompt(ctx);
-  const analysis = await callClaudeJson<AnalysisDocument>({
+  const { data: analysis, tokens } = await callClaudeJson<AnalysisDocument>({
     prompt,
     model: getModelForPhase(config, MigratePhase.ANALYZE),
     cliBin: config.cliBin,
@@ -57,5 +58,5 @@ export const runAnalyzePhase = async (
     fs.writeFileSync(analysisFile, JSON.stringify(analysis, null, 2), 'utf8');
   }
 
-  return { analysisFile, analysis, skipped: false, duration: Date.now() - start };
+  return { analysisFile, analysis, skipped: false, duration: Date.now() - start, tokens };
 };
