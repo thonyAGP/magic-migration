@@ -210,6 +210,7 @@ export const MigrateEventType = {
   GIT_COMPLETED: 'git_completed',
   GIT_FAILED: 'git_failed',
   PARALLEL_RESOLVED: 'parallel_resolved',
+  WARNING: 'warning',
   ERROR: 'error',
 } as const;
 export type MigrateEventType = (typeof MigrateEventType)[keyof typeof MigrateEventType];

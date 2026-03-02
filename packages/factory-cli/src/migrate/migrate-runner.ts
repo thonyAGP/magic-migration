@@ -191,6 +191,21 @@ export const runMigration = async (
     tscClean = verifyResult.tscClean;
     testsPass = verifyResult.testsPass;
 
+    // Save warnings for later analysis if any issues found
+    if (verifyResult.hasIssues && verifyResult.warnings.length > 0) {
+      const warningsFile = path.join(config.migrationDir, config.contractSubDir, `${batchId}-warnings.json`);
+      const warningsData = {
+        batchId,
+        batchName,
+        timestamp: new Date().toISOString(),
+        warnings: verifyResult.warnings,
+        tscPasses: verifyResult.tscPasses,
+        testPasses: verifyResult.testPasses,
+      };
+      fs.writeFileSync(warningsFile, JSON.stringify(warningsData, null, 2), 'utf8');
+      emit(config, ET.WARNING, `⚠️  Verification warnings saved to ${path.basename(warningsFile)}`, { data: { warnings: verifyResult.warnings.length } });
+    }
+
     emit(config, ET.VERIFY_PASS, `TSC: ${tscClean ? 'CLEAN' : 'ERRORS'} (${verifyResult.tscPasses} passes), Tests: ${testsPass ? 'PASS' : 'FAIL'} (${verifyResult.testPasses} passes)`);
   }
 

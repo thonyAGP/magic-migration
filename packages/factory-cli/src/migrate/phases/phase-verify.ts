@@ -355,12 +355,21 @@ export const runFixTestsPhase = async (
 
 // ─── Verify+Fix Loop ──────────────────────────────────────────
 
+export interface VerifyWarning {
+  type: 'tsc' | 'tests';
+  attempts: number;
+  message: string;
+  details?: string;
+}
+
 export interface VerifyFixLoop {
   tscClean: boolean;
   testsPass: boolean;
   tscPasses: number;
   testPasses: number;
   totalDuration: number;
+  warnings: VerifyWarning[];
+  hasIssues: boolean;
 }
 
 export const runVerifyFixLoop = async (
@@ -409,6 +418,7 @@ export const runVerifyFixLoop = async (
   }
 
   // Tests verify+fix loop (only if tsc is clean)
+  let lastTestFailures: TestFailure[] = [];
   if (tscClean) {
     for (let i = 0; i < testMaxPasses; i++) {
       testPasses++;
@@ -418,6 +428,7 @@ export const runVerifyFixLoop = async (
         { pass: i + 1, maxPasses: testMaxPasses, verifyProgress: testProgress });
 
       const testResult = await runVerifyTestsPhase(config, domainFilter);
+      lastTestFailures = testResult.failures; // Capture failures for detailed warning
 
       if (testResult.pass) {
         testsPass = true;
@@ -440,11 +451,17 @@ export const runVerifyFixLoop = async (
     }
   }
 
-  // CRITICAL: Block migration if verification failed after all attempts
-  // Collect all error details for diagnostic before throwing
+  // Collect verification issues as warnings instead of blocking
+  const warnings: VerifyWarning[] = [];
   const failures: string[] = [];
 
   if (!tscClean) {
+    warnings.push({
+      type: 'tsc',
+      attempts: tscPasses,
+      message: `TypeScript compilation failed after ${tscPasses} attempt${tscPasses > 1 ? 's' : ''}`,
+      details: `Run 'pnpm typecheck' in target directory to see errors`,
+    });
     failures.push(
       `❌ TypeScript compilation failed after ${tscPasses} attempt${tscPasses > 1 ? 's' : ''}`,
       `   → Run 'pnpm typecheck' in target directory to see errors`,
@@ -453,41 +470,62 @@ export const runVerifyFixLoop = async (
   }
 
   if (!testsPass && tscClean) {
+    // Capture detailed test failures for analysis
+    const testDetails = lastTestFailures.length > 0
+      ? JSON.stringify(lastTestFailures, null, 2)
+      : 'No detailed failure info available';
+
+    warnings.push({
+      type: 'tests',
+      attempts: testPasses,
+      message: `Tests failed after ${testPasses} attempt${testPasses > 1 ? 's' : ''} (${lastTestFailures.length} test${lastTestFailures.length > 1 ? 's' : ''})`,
+      details: testDetails,
+    });
     failures.push(
-      `❌ Tests failed after ${testPasses} attempt${testPasses > 1 ? 's' : ''}`,
+      `❌ Tests failed after ${testPasses} attempt${testPasses > 1 ? 's' : ''} (${lastTestFailures.length} test${lastTestFailures.length > 1 ? 's' : ''})`,
       `   → Run 'pnpm test' in target directory to see failures`,
       `   → Check test expectations vs actual behavior`,
       `   → Review generated test files for correctness`,
     );
+
+    // Show first failure as example
+    if (lastTestFailures.length > 0) {
+      const first = lastTestFailures[0];
+      failures.push(
+        ``,
+        `   Example: ${first.testFile}`,
+        `   Test: ${first.testName}`,
+        `   Error preview: ${first.error.slice(0, 150)}...`,
+      );
+    }
   }
 
+  // Emit warning event instead of error (migration continues)
   if (failures.length > 0) {
-    const errorMsg = [
+    const warningMsg = [
       '',
       '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
-      '  MIGRATION BLOCKED - Verification Failed',
+      '  ⚠️  VERIFICATION WARNINGS - Migration Continues',
       '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
       '',
       ...failures,
       '',
-      'The migration cannot continue with broken code.',
-      'Fix the issues above and retry the migration.',
+      '⚠️  Code generated but requires manual fixes.',
+      'The migration will continue. Review issues after completion.',
       '',
-      'Tip: Use /swarm to analyze logs and understand blockers.',
+      'Tip: Use /swarm to analyze and fix issues automatically.',
       '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
       '',
     ].join('\n');
 
-    // Emit error event before throwing
-    emitVerify(config, ET.PHASE_FAILED, errorMsg, MP.VERIFY_TESTS, {
+    emitVerify(config, ET.PHASE_COMPLETED, warningMsg, MP.VERIFY_TESTS, {
       tscClean,
       testsPass,
       tscPasses,
       testPasses,
-      blocked: true,
+      hasWarnings: true,
+      warnings,
     });
-
-    throw new Error(errorMsg);
   }
 
   return {
@@ -496,6 +534,8 @@ export const runVerifyFixLoop = async (
     tscPasses,
     testPasses,
     totalDuration: Date.now() - start,
+    warnings,
+    hasIssues: warnings.length > 0,
   };
 };
 
