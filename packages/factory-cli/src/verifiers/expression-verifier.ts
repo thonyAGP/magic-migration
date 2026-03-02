@@ -91,6 +91,7 @@ const runTest = (testFilePath: string, cwd: string): boolean => {
       cwd,
       stdio: 'pipe',
       timeout: 30000, // 30s timeout
+      windowsHide: true,
     });
     return true;
   } catch (error) {

@@ -323,16 +323,16 @@ export const runMigration = async (
     try {
       emit(config, ET.GIT_STARTED, 'Auto-commit: staging files...');
 
-      execSync(`git add "${config.targetDir}"`, { cwd: config.projectDir });
-      execSync(`git add .openspec/migration/`, { cwd: config.projectDir });
+      execSync(`git add "${config.targetDir}"`, { cwd: config.projectDir, windowsHide: true });
+      execSync(`git add .openspec/migration/`, { cwd: config.projectDir, windowsHide: true });
 
       const msg = `feat(migration): ${batchId} - ${batchName} (${summary.completed} programs, ${summary.totalFiles} files)`;
-      execSync(`git commit --no-verify -m "${msg}"`, { cwd: config.projectDir });
+      execSync(`git commit --no-verify -m "${msg}"`, { cwd: config.projectDir, windowsHide: true });
 
-      const sha = execSync('git rev-parse --short HEAD', { cwd: config.projectDir }).toString().trim();
-      const branch = execSync('git branch --show-current', { cwd: config.projectDir }).toString().trim();
+      const sha = execSync('git rev-parse --short HEAD', { cwd: config.projectDir, windowsHide: true }).toString().trim();
+      const branch = execSync('git branch --show-current', { cwd: config.projectDir, windowsHide: true }).toString().trim();
 
-      execSync(`git push origin ${branch}`, { cwd: config.projectDir });
+      execSync(`git push origin ${branch}`, { cwd: config.projectDir, windowsHide: true });
 
       emit(config, ET.GIT_COMPLETED, `Committed ${sha} and pushed to ${branch}`);
       gitResult = { commitSha: sha, pushed: true, branch };

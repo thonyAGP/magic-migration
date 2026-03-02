@@ -21,6 +21,7 @@ function getCommitHash(): string {
       cwd: join(__dirname, '..'),
       encoding: 'utf8',
       stdio: ['pipe', 'pipe', 'ignore'], // Suppress stderr
+      windowsHide: true,
     }).trim();
   } catch {
     // Fallback to .build-commit file (production build)

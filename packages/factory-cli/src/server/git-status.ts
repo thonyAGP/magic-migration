@@ -24,13 +24,13 @@ export const getGitStatus = (projectDir: string): GitStatus => {
     const serverCommit = BUILD_INFO.commit;
 
     // Latest local commit
-    const latestLocal = execSync('git log -1 --format=%h', { cwd: projectDir }).toString().trim();
+    const latestLocal = execSync('git log -1 --format=%h', { cwd: projectDir, windowsHide: true }).toString().trim();
 
     // Latest remote commit (if available)
     let latestRemote: string | null = null;
     try {
-      execSync('git fetch origin --quiet', { cwd: projectDir, timeout: 5000 });
-      latestRemote = execSync('git log origin/master -1 --format=%h', { cwd: projectDir }).toString().trim();
+      execSync('git fetch origin --quiet', { cwd: projectDir, timeout: 5000, windowsHide: true });
+      latestRemote = execSync('git log origin/master -1 --format=%h', { cwd: projectDir, windowsHide: true }).toString().trim();
     } catch {
       // Remote not available or fetch failed
     }
@@ -39,7 +39,7 @@ export const getGitStatus = (projectDir: string): GitStatus => {
     let behindBy = 0;
     if (serverCommit !== latestLocal) {
       try {
-        const countStr = execSync(`git rev-list ${serverCommit}..${latestLocal} --count`, { cwd: projectDir }).toString().trim();
+        const countStr = execSync(`git rev-list ${serverCommit}..${latestLocal} --count`, { cwd: projectDir, windowsHide: true }).toString().trim();
         behindBy = parseInt(countStr, 10) || 0;
       } catch {
         behindBy = 1; // At least 1 commit behind if hashes differ

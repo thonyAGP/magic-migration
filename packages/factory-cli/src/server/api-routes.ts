@@ -810,6 +810,7 @@ export const handleServerRestart = async (ctx: RouteContext, res: ServerResponse
       cwd: process.cwd(),
       detached: true,
       stdio: 'ignore',
+      windowsHide: true, // Prevent DOS window from opening on Windows
     });
     newServer.unref(); // Detach from parent
 
