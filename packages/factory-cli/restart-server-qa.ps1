@@ -44,14 +44,21 @@ Write-Host "  Done Build success at $buildTime" -ForegroundColor Green
 # 4. Start server in background
 Write-Host ""
 Write-Host "[4/5] Starting server..." -ForegroundColor Yellow
-$currentDir = Get-Location
-$job = Start-Job -ScriptBlock {
-    param($P, $Proj, $Dir)
-    Set-Location $Dir
-    npx tsx src/cli.ts serve --port $P --project $Proj
-} -ArgumentList $Port, $ProjectPath, $currentDir
 
-Start-Sleep -Seconds 3
+# Add Volta to PATH for this session
+$env:PATH = "C:\Program Files\Volta;$env:PATH"
+
+# Launch server directly as detached background process (no shell wrapper)
+# This keeps the process alive independently
+$pnpmPath = (Get-Command pnpm).Source
+$processInfo = Start-Process -FilePath $pnpmPath `
+    -ArgumentList "tsx", "src/cli.ts", "serve", "--port", $Port, "--dir", "ADH" `
+    -WorkingDirectory (Get-Location) `
+    -WindowStyle Hidden `
+    -PassThru
+
+Write-Host "  Server PID: $($processInfo.Id)" -ForegroundColor Gray
+Start-Sleep -Seconds 5
 
 # 5. Check version
 Write-Host ""
@@ -84,6 +91,4 @@ catch {
 
 Write-Host ""
 Write-Host "Success Server ready at http://localhost:$Port" -ForegroundColor Green
-Write-Host ""
-Write-Host "Job ID: $($job.Id)" -ForegroundColor Gray
 Write-Host ""

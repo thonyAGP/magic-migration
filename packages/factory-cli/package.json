@@ -27,7 +27,13 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
     "test:e2e:report": "playwright show-report",
-    "test:all": "vitest run && playwright test"
+    "test:all": "vitest run && playwright test",
+    "service:start": "pm2 start ecosystem.config.cjs",
+    "service:stop": "pm2 stop factory-dashboard",
+    "service:restart": "pm2 restart factory-dashboard",
+    "service:status": "pm2 status",
+    "service:logs": "pm2 logs factory-dashboard --lines 50",
+    "service:monit": "pm2 monit"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
@@ -42,6 +48,7 @@
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.0.0",
     "@vitest/coverage-v8": "^4.0.18",
+    "pm2": "^6.0.14",
     "tsx": "^4.21.0",
     "typescript": "^5.9.0",
     "vitest": "^4.0.18"

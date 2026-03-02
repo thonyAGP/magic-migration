@@ -795,24 +795,27 @@ export const handleGitStatus = (ctx: RouteContext, res: ServerResponse): void =>
  * POST /api/server/restart
  * Triggers server restart script.
  */
-export const handleServerRestart = async (_ctx: RouteContext, res: ServerResponse): Promise<void> => {
-  const { exec } = await import('node:child_process');
+export const handleServerRestart = async (ctx: RouteContext, res: ServerResponse): Promise<void> => {
+  const { spawn } = await import('node:child_process');
 
-  // Execute restart script in background
-  exec('powershell -ExecutionPolicy Bypass -File ./restart-server-qa.ps1', {
-    cwd: process.cwd(),
-  }, (err) => {
-    if (err) {
-      console.error('[SERVER RESTART FAILED]', err);
-    }
-  });
-
-  // Return immediately (server will restart)
+  // Return immediately (before restart)
   json(res, { restarting: true, message: 'Server restart initiated. Dashboard will reconnect automatically.' });
 
-  // Shutdown current server after response sent
+  // Delay to let response finish, then restart
   setTimeout(() => {
     console.log('[SERVER RESTART] Shutting down for restart...');
-    process.exit(0);
-  }, 1000);
+
+    // Spawn new server as completely detached process BEFORE exit
+    const newServer = spawn('npx', ['tsx', 'src/cli.ts', 'serve', '--port', '3070', '--dir', 'ADH'], {
+      cwd: process.cwd(),
+      detached: true,
+      stdio: 'ignore',
+    });
+    newServer.unref(); // Detach from parent
+
+    // Give the spawn 500ms to initialize, then exit current process
+    setTimeout(() => {
+      process.exit(0);
+    }, 500);
+  }, 100);
 };
