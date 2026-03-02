@@ -186,8 +186,10 @@ const callClaudeCli = async (options: ClaudeCallOptions): Promise<ClaudeCallResu
  * The CLI may return either:
  * - An object: `{ result: "...", usage?: { input_tokens, output_tokens }, cost_usd? }`
  * - An array:  `[{ type: "result", result: "...", usage?: {...} }]`
+ *
+ * @internal - Exported for testing only
  */
-const parseCliJsonOutput = (stdout: string, durationMs: number, promptLength: number): ClaudeCallResult => {
+export const parseCliJsonOutput = (stdout: string, durationMs: number, promptLength: number): ClaudeCallResult => {
   const estimateTokens = (textLen: number) => ({
     input: Math.ceil(promptLength / 4),
     output: Math.ceil(textLen / 4),
@@ -217,9 +219,30 @@ const parseCliJsonOutput = (stdout: string, durationMs: number, promptLength: nu
     }
 
     return { output: text, durationMs, tokens };
-  } catch {
-    // Fallback: if JSON parse fails, treat as raw text + estimate tokens
+  } catch (err) {
+    // Detect HTTP errors or other non-JSON responses from Claude CLI
     const text = stdout.trim();
+    const preview = text.slice(0, 200);
+
+    // Common patterns that indicate an error response instead of valid output
+    const errorPatterns = [
+      /^GET\s+\//i,
+      /^POST\s+\//i,
+      /^HTTP\/\d/i,
+      /^Error:/i,
+      /^<!DOCTYPE/i,
+      /^<html/i,
+    ];
+
+    if (errorPatterns.some(pattern => pattern.test(text))) {
+      throw new Error(
+        `Claude CLI returned an HTTP/error response instead of JSON. ` +
+        `Preview: "${preview}${text.length > 200 ? '...' : ''}"`
+      );
+    }
+
+    // If it's just malformed JSON but not an obvious error, fallback to raw text
+    // This preserves backward compatibility for edge cases
     return { output: text, durationMs, tokens: estimateTokens(text.length) };
   }
 };
