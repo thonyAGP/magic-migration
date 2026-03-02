@@ -1,67 +1,67 @@
 {
   "running": true,
-  "batch": "B8",
-  "startedAt": 1772464484727,
+  "batch": "B14",
+  "startedAt": 1772476085568,
   "totalPrograms": 3,
   "completedPrograms": 3,
   "failedPrograms": 0,
   "targetDir": "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web",
   "mode": "bedrock",
   "dryRun": false,
-  "estimatedHours": 2,
+  "estimatedHours": 3.4,
   "programList": [
     {
-      "id": 149,
-      "name": "IDE-149"
+      "id": 28,
+      "name": ""
     },
     {
-      "id": 257,
-      "name": "IDE-257"
+      "id": 32,
+      "name": "IDE-32"
     },
     {
-      "id": 153,
-      "name": "IDE-153"
+      "id": 33,
+      "name": "IDE-33"
     }
   ],
   "events": [
     {
       "type": "migrate_started",
-      "batch": "B8",
+      "batch": "B14",
       "programs": 3,
       "targetDir": "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web",
       "dryRun": false,
       "mode": "bedrock",
       "programList": [
         {
-          "id": 149,
-          "name": "IDE-149"
+          "id": 28,
+          "name": ""
         },
         {
-          "id": 257,
-          "name": "IDE-257"
+          "id": 32,
+          "name": "IDE-32"
         },
         {
-          "id": 153,
-          "name": "IDE-153"
+          "id": 33,
+          "name": "IDE-33"
         }
       ],
-      "estimatedHours": 2,
+      "estimatedHours": 3.4,
       "parallel": 0
     },
     {
       "type": "migration_started",
-      "timestamp": "2026-03-02T15:14:44.730Z",
-      "message": "Starting migration for batch B8 (3 programs)"
+      "timestamp": "2026-03-02T18:28:05.573Z",
+      "message": "  Starting migration for batch B14 (3 programs)"
     },
     {
       "type": "phase_started",
-      "timestamp": "2026-03-02T15:14:44.730Z",
-      "message": "Decision log: D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\.migration-log\\B8"
+      "timestamp": "2026-03-02T18:28:05.575Z",
+      "message": "  Decision log: D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\.migration-log\\B14"
     },
     {
       "type": "parallel_resolved",
-      "timestamp": "2026-03-02T15:14:44.733Z",
-      "message": "Auto-parallel: 2 agents (22 CPUs, 3 programs)",
+      "timestamp": "2026-03-02T18:28:05.580Z",
+      "message": "  Auto-parallel: 2 agents (22 CPUs, 3 programs)",
       "data": {
         "requested": 0,
         "resolved": 2,
@@ -70,258 +70,430 @@
     },
     {
       "type": "program_started",
-      "timestamp": "2026-03-02T15:14:44.736Z",
-      "message": "Starting IDE 149",
-      "programId": 149
+      "timestamp": "2026-03-02T18:28:05.583Z",
+      "message": "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📦 IDE 28                    [1/0]\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+      "programId": 28
     },
     {
-      "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.739Z",
-      "message": "IDE 149: spec (verified)",
+      "type": "phase_started",
+      "timestamp": "2026-03-02T18:28:05.603Z",
+      "message": "  → Génération spécification",
       "phase": "spec",
-      "programId": 149
+      "programId": 28
     },
     {
-      "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.740Z",
-      "message": "IDE 149: contract (verified)",
-      "phase": "contract",
-      "programId": 149
-    },
-    {
-      "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.742Z",
-      "message": "IDE 149: analyze (verified)",
-      "phase": "analyze",
-      "programId": 149
-    },
-    {
-      "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.743Z",
-      "message": "IDE 149: types (verified)",
-      "phase": "types",
-      "programId": 149
-    },
-    {
-      "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.744Z",
-      "message": "IDE 149: store (verified)",
-      "phase": "store",
-      "programId": 149
-    },
-    {
-      "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.745Z",
-      "message": "IDE 149: api (verified)",
-      "phase": "api",
-      "programId": 149
-    },
-    {
-      "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.747Z",
-      "message": "IDE 149: page (verified)",
-      "phase": "page",
-      "programId": 149
-    },
-    {
-      "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.748Z",
-      "message": "IDE 149: components (verified)",
-      "phase": "components",
-      "programId": 149
-    },
-    {
-      "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.749Z",
-      "message": "IDE 149: tests-unit (verified)",
-      "phase": "tests-unit",
-      "programId": 149
-    },
-    {
-      "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.750Z",
-      "message": "IDE 149: tests-ui (verified)",
-      "phase": "tests-ui",
-      "programId": 149
-    },
-    {
-      "type": "program_completed",
-      "timestamp": "2026-03-02T15:14:44.751Z",
-      "message": "IDE 149: déjà migré",
-      "programId": 149,
+      "type": "phase_progress",
+      "timestamp": "2026-03-02T18:28:05.604Z",
+      "message": "Génération spécification",
+      "programId": 28,
+      "phase": "spec",
       "data": {
-        "skipped": true
+        "label": "Génération spécification"
       }
     },
     {
       "type": "program_started",
-      "timestamp": "2026-03-02T15:14:44.754Z",
-      "message": "Starting IDE 257",
-      "programId": 257
+      "timestamp": "2026-03-02T18:28:05.606Z",
+      "message": "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📦 IDE 32                    [1/0]\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+      "programId": 32
     },
     {
       "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.757Z",
-      "message": "IDE 257: spec (reprise)",
+      "timestamp": "2026-03-02T18:28:05.608Z",
+      "message": "  ✓ Génération spécification",
       "phase": "spec",
-      "programId": 257
+      "programId": 32
     },
     {
       "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.759Z",
-      "message": "IDE 257: contract (reprise)",
+      "timestamp": "2026-03-02T18:28:05.609Z",
+      "message": "  ✓ Analyse contrat",
       "phase": "contract",
-      "programId": 257
+      "programId": 32
     },
     {
       "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.760Z",
-      "message": "IDE 257: analyze (reprise)",
+      "timestamp": "2026-03-02T18:28:05.610Z",
+      "message": "  ✓ Analyse complète",
       "phase": "analyze",
-      "programId": 257
+      "programId": 32
     },
     {
       "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.761Z",
-      "message": "IDE 257: types (reprise)",
+      "timestamp": "2026-03-02T18:28:05.611Z",
+      "message": "  ✓ Types TypeScript",
       "phase": "types",
-      "programId": 257
+      "programId": 32
     },
     {
       "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.762Z",
-      "message": "IDE 257: store (reprise)",
+      "timestamp": "2026-03-02T18:28:05.612Z",
+      "message": "  ✓ Store Zustand",
       "phase": "store",
-      "programId": 257
+      "programId": 32
     },
     {
       "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.763Z",
-      "message": "IDE 257: api (reprise)",
+      "timestamp": "2026-03-02T18:28:05.613Z",
+      "message": "  ✓ API REST",
       "phase": "api",
-      "programId": 257
+      "programId": 32
     },
     {
       "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.764Z",
-      "message": "IDE 257: page (reprise)",
+      "timestamp": "2026-03-02T18:28:05.614Z",
+      "message": "  ✓ Page React",
       "phase": "page",
-      "programId": 257
+      "programId": 32
     },
     {
       "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.765Z",
-      "message": "IDE 257: components (reprise)",
+      "timestamp": "2026-03-02T18:28:05.615Z",
+      "message": "  ✓ Composants UI",
       "phase": "components",
-      "programId": 257
+      "programId": 32
     },
     {
       "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.766Z",
-      "message": "IDE 257: tests-unit (reprise)",
+      "timestamp": "2026-03-02T18:28:05.616Z",
+      "message": "  ✓ Tests unitaires",
       "phase": "tests-unit",
-      "programId": 257
+      "programId": 32
     },
     {
       "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.767Z",
-      "message": "IDE 257: tests-ui (reprise)",
+      "timestamp": "2026-03-02T18:28:05.617Z",
+      "message": "  ✓ Tests Playwright",
       "phase": "tests-ui",
-      "programId": 257
+      "programId": 32
     },
     {
       "type": "program_completed",
-      "timestamp": "2026-03-02T15:14:44.769Z",
-      "message": "IDE 257: déjà généré (reprise)",
-      "programId": 257,
+      "timestamp": "2026-03-02T18:28:05.618Z",
+      "message": "\n  Résultat: SUCCÈS\n  Fichiers: 0 générés\n  Durée: 0s (0ms)\n",
+      "programId": 32,
       "data": {
         "resumed": true,
         "duration": 0
       }
     },
     {
-      "type": "program_started",
-      "timestamp": "2026-03-02T15:14:44.771Z",
-      "message": "Starting IDE 153",
-      "programId": 153
-    },
-    {
       "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.774Z",
-      "message": "IDE 153: spec (verified)",
+      "timestamp": "2026-03-02T18:28:05.621Z",
+      "message": "  ✓ Génération spécification",
       "phase": "spec",
-      "programId": 153
+      "programId": 28
     },
     {
-      "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.775Z",
-      "message": "IDE 153: contract (verified)",
+      "type": "phase_started",
+      "timestamp": "2026-03-02T18:28:05.626Z",
+      "message": "  → Analyse contrat",
       "phase": "contract",
-      "programId": 153
+      "programId": 28
+    },
+    {
+      "type": "phase_progress",
+      "timestamp": "2026-03-02T18:28:05.627Z",
+      "message": "Analyse contrat",
+      "programId": 28,
+      "phase": "contract",
+      "data": {
+        "label": "Analyse contrat"
+      }
     },
     {
       "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.776Z",
-      "message": "IDE 153: analyze (verified)",
+      "timestamp": "2026-03-02T18:28:05.628Z",
+      "message": "  ✓ Analyse contrat",
+      "phase": "contract",
+      "programId": 28
+    },
+    {
+      "type": "phase_started",
+      "timestamp": "2026-03-02T18:28:05.630Z",
+      "message": "  → Analyse complète",
       "phase": "analyze",
-      "programId": 153
+      "programId": 28
+    },
+    {
+      "type": "phase_progress",
+      "timestamp": "2026-03-02T18:28:05.631Z",
+      "message": "Analyse complète",
+      "programId": 28,
+      "phase": "analyze",
+      "data": {
+        "label": "Analyse complète"
+      }
     },
     {
       "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.778Z",
-      "message": "IDE 153: types (verified)",
+      "timestamp": "2026-03-02T18:28:05.636Z",
+      "message": "  ✓ Analyse complète",
+      "phase": "analyze",
+      "programId": 28
+    },
+    {
+      "type": "phase_started",
+      "timestamp": "2026-03-02T18:28:05.638Z",
+      "message": "  → Types TypeScript",
       "phase": "types",
-      "programId": 153
+      "programId": 28
+    },
+    {
+      "type": "phase_progress",
+      "timestamp": "2026-03-02T18:28:05.639Z",
+      "message": "Types TypeScript",
+      "programId": 28,
+      "phase": "types",
+      "data": {
+        "label": "Types TypeScript"
+      }
     },
     {
       "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.780Z",
-      "message": "IDE 153: store (verified)",
+      "timestamp": "2026-03-02T18:28:15.586Z",
+      "message": "  ✓ Types TypeScript",
+      "phase": "types",
+      "programId": 28
+    },
+    {
+      "type": "phase_started",
+      "timestamp": "2026-03-02T18:28:15.589Z",
+      "message": "  → Store Zustand",
       "phase": "store",
-      "programId": 153
+      "programId": 28
+    },
+    {
+      "type": "phase_progress",
+      "timestamp": "2026-03-02T18:28:15.589Z",
+      "message": "Store Zustand",
+      "programId": 28,
+      "phase": "store",
+      "data": {
+        "label": "Store Zustand"
+      }
     },
     {
       "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.781Z",
-      "message": "IDE 153: api (verified)",
+      "timestamp": "2026-03-02T18:28:52.976Z",
+      "message": "  ✓ Store Zustand",
+      "phase": "store",
+      "programId": 28
+    },
+    {
+      "type": "phase_started",
+      "timestamp": "2026-03-02T18:28:52.979Z",
+      "message": "  → API REST",
       "phase": "api",
-      "programId": 153
+      "programId": 28
+    },
+    {
+      "type": "phase_progress",
+      "timestamp": "2026-03-02T18:28:52.980Z",
+      "message": "API REST",
+      "programId": 28,
+      "phase": "api",
+      "data": {
+        "label": "API REST"
+      }
     },
     {
       "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.782Z",
-      "message": "IDE 153: page (verified)",
+      "timestamp": "2026-03-02T18:29:02.961Z",
+      "message": "  ✓ API REST",
+      "phase": "api",
+      "programId": 28
+    },
+    {
+      "type": "phase_started",
+      "timestamp": "2026-03-02T18:29:02.964Z",
+      "message": "  → Page React",
       "phase": "page",
-      "programId": 153
+      "programId": 28
+    },
+    {
+      "type": "phase_progress",
+      "timestamp": "2026-03-02T18:29:02.965Z",
+      "message": "Page React",
+      "programId": 28,
+      "phase": "page",
+      "data": {
+        "label": "Page React"
+      }
     },
     {
       "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.783Z",
-      "message": "IDE 153: components (verified)",
+      "timestamp": "2026-03-02T18:29:44.802Z",
+      "message": "  ✓ Page React",
+      "phase": "page",
+      "programId": 28
+    },
+    {
+      "type": "phase_started",
+      "timestamp": "2026-03-02T18:29:44.805Z",
+      "message": "  → Composants UI",
       "phase": "components",
-      "programId": 153
+      "programId": 28
+    },
+    {
+      "type": "phase_progress",
+      "timestamp": "2026-03-02T18:29:44.806Z",
+      "message": "Composants UI",
+      "programId": 28,
+      "phase": "components",
+      "data": {
+        "label": "Composants UI"
+      }
     },
     {
       "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.783Z",
-      "message": "IDE 153: tests-unit (verified)",
+      "timestamp": "2026-03-02T18:31:15.089Z",
+      "message": "  ✓ Composants UI",
+      "phase": "components",
+      "programId": 28
+    },
+    {
+      "type": "phase_started",
+      "timestamp": "2026-03-02T18:31:15.092Z",
+      "message": "  → Tests unitaires",
       "phase": "tests-unit",
-      "programId": 153
+      "programId": 28
+    },
+    {
+      "type": "phase_progress",
+      "timestamp": "2026-03-02T18:31:15.093Z",
+      "message": "Tests unitaires",
+      "programId": 28,
+      "phase": "tests-unit",
+      "data": {
+        "label": "Tests unitaires"
+      }
     },
     {
       "type": "phase_completed",
-      "timestamp": "2026-03-02T15:14:44.784Z",
-      "message": "IDE 153: tests-ui (verified)",
+      "timestamp": "2026-03-02T18:32:08.272Z",
+      "message": "  ✓ Tests unitaires",
+      "phase": "tests-unit",
+      "programId": 28
+    },
+    {
+      "type": "phase_started",
+      "timestamp": "2026-03-02T18:32:08.276Z",
+      "message": "  → Tests Playwright",
       "phase": "tests-ui",
-      "programId": 153
+      "programId": 28
+    },
+    {
+      "type": "phase_progress",
+      "timestamp": "2026-03-02T18:32:08.276Z",
+      "message": "Tests Playwright",
+      "programId": 28,
+      "phase": "tests-ui",
+      "data": {
+        "label": "Tests Playwright"
+      }
+    },
+    {
+      "type": "phase_completed",
+      "timestamp": "2026-03-02T18:32:47.327Z",
+      "message": "  ✓ Tests Playwright",
+      "phase": "tests-ui",
+      "programId": 28
     },
     {
       "type": "program_completed",
-      "timestamp": "2026-03-02T15:14:44.785Z",
-      "message": "IDE 153: déjà migré",
-      "programId": 153,
+      "timestamp": "2026-03-02T18:32:47.372Z",
+      "message": "\n  Résultat: SUCCÈS\n  Fichiers: 0 générés\n  Durée: 4m 42s (281788ms)\n",
+      "programId": 28,
       "data": {
-        "skipped": true
+        "duration": 281788,
+        "filesGenerated": 13
+      }
+    },
+    {
+      "type": "program_started",
+      "timestamp": "2026-03-02T18:32:47.375Z",
+      "message": "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📦 IDE 33                    [1/0]\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+      "programId": 33
+    },
+    {
+      "type": "phase_completed",
+      "timestamp": "2026-03-02T18:32:47.377Z",
+      "message": "  ✓ Génération spécification",
+      "phase": "spec",
+      "programId": 33
+    },
+    {
+      "type": "phase_completed",
+      "timestamp": "2026-03-02T18:32:47.377Z",
+      "message": "  ✓ Analyse contrat",
+      "phase": "contract",
+      "programId": 33
+    },
+    {
+      "type": "phase_completed",
+      "timestamp": "2026-03-02T18:32:47.379Z",
+      "message": "  ✓ Analyse complète",
+      "phase": "analyze",
+      "programId": 33
+    },
+    {
+      "type": "phase_completed",
+      "timestamp": "2026-03-02T18:32:47.380Z",
+      "message": "  ✓ Types TypeScript",
+      "phase": "types",
+      "programId": 33
+    },
+    {
+      "type": "phase_completed",
+      "timestamp": "2026-03-02T18:32:47.381Z",
+      "message": "  ✓ Store Zustand",
+      "phase": "store",
+      "programId": 33
+    },
+    {
+      "type": "phase_completed",
+      "timestamp": "2026-03-02T18:32:47.381Z",
+      "message": "  ✓ API REST",
+      "phase": "api",
+      "programId": 33
+    },
+    {
+      "type": "phase_completed",
+      "timestamp": "2026-03-02T18:32:47.382Z",
+      "message": "  ✓ Page React",
+      "phase": "page",
+      "programId": 33
+    },
+    {
+      "type": "phase_completed",
+      "timestamp": "2026-03-02T18:32:47.384Z",
+      "message": "  ✓ Composants UI",
+      "phase": "components",
+      "programId": 33
+    },
+    {
+      "type": "phase_completed",
+      "timestamp": "2026-03-02T18:32:47.385Z",
+      "message": "  ✓ Tests unitaires",
+      "phase": "tests-unit",
+      "programId": 33
+    },
+    {
+      "type": "phase_completed",
+      "timestamp": "2026-03-02T18:32:47.386Z",
+      "message": "  ✓ Tests Playwright",
+      "phase": "tests-ui",
+      "programId": 33
+    },
+    {
+      "type": "program_completed",
+      "timestamp": "2026-03-02T18:32:47.386Z",
+      "message": "\n  Résultat: SUCCÈS\n  Fichiers: 0 générés\n  Durée: 0s (0ms)\n",
+      "programId": 33,
+      "data": {
+        "resumed": true,
+        "duration": 0
       }
     }
   ]

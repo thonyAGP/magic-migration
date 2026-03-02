@@ -457,9 +457,9 @@
       "stats": {
         "backend_na": 0,
         "frontend_enrich": 0,
-        "fully_impl": 2,
-        "coverage_avg_frontend": 48,
-        "total_partial": 1,
+        "fully_impl": 3,
+        "coverage_avg_frontend": 31,
+        "total_partial": 0,
         "total_missing": 0
       },
       "priority_order": [
@@ -609,76 +609,77 @@
   ],
   "migrate": {
     "28": {
-      "status": "failed",
-      "currentPhase": "tests-ui",
+      "status": "completed",
+      "currentPhase": null,
       "phases": {
         "spec": {
           "status": "completed",
-          "startedAt": "2026-02-26T09:10:53.499Z",
-          "completedAt": "2026-02-26T09:10:53.508Z",
+          "startedAt": "2026-03-02T18:28:05.603Z",
+          "completedAt": "2026-03-02T18:28:05.621Z",
           "duration": 0,
           "file": "..\\..\\.openspec\\specs\\ADH-IDE-28.md"
         },
         "contract": {
           "status": "completed",
-          "startedAt": "2026-02-26T09:10:53.510Z",
-          "completedAt": "2026-02-26T09:10:53.589Z",
-          "duration": 77,
+          "startedAt": "2026-03-02T18:28:05.626Z",
+          "completedAt": "2026-03-02T18:28:05.628Z",
+          "duration": 0,
           "file": "..\\..\\.openspec\\migration\\ADH\\ADH-IDE-28.contract.yaml"
         },
         "analyze": {
           "status": "completed",
-          "startedAt": "2026-02-26T09:10:53.594Z",
-          "completedAt": "2026-02-26T09:12:18.780Z",
-          "duration": 85186,
+          "startedAt": "2026-03-02T18:28:05.632Z",
+          "completedAt": "2026-03-02T18:28:05.633Z",
+          "duration": 0,
           "file": "..\\..\\.openspec\\migration\\ADH\\ADH-IDE-28.analysis.json"
         },
         "types": {
           "status": "completed",
-          "startedAt": "2026-02-26T09:12:18.783Z",
-          "completedAt": "2026-02-26T09:12:49.991Z",
-          "duration": 31207,
-          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\test-qa\\src\\types\\accountMerge.ts"
+          "startedAt": "2026-03-02T18:28:05.638Z",
+          "completedAt": "2026-03-02T18:28:15.586Z",
+          "duration": 9946,
+          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\types\\accountMerge.ts"
         },
         "store": {
           "status": "completed",
-          "startedAt": "2026-02-26T09:12:49.994Z",
-          "completedAt": "2026-02-26T09:14:21.078Z",
-          "duration": 91083,
-          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\test-qa\\src\\stores\\accountMergeStore.ts"
+          "startedAt": "2026-03-02T18:28:15.588Z",
+          "completedAt": "2026-03-02T18:28:52.976Z",
+          "duration": 37386,
+          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\stores\\accountMergeStore.ts"
         },
         "api": {
           "status": "completed",
-          "startedAt": "2026-02-26T09:14:21.080Z",
-          "completedAt": "2026-02-26T09:15:10.172Z",
-          "duration": 49091,
-          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\test-qa\\src\\services\\api\\endpoints-accountMerge.ts"
+          "startedAt": "2026-03-02T18:28:52.979Z",
+          "completedAt": "2026-03-02T18:29:02.961Z",
+          "duration": 9980,
+          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\services\\api\\endpoints-accountMerge.ts"
         },
         "page": {
           "status": "completed",
-          "startedAt": "2026-02-26T09:15:10.173Z",
-          "completedAt": "2026-02-26T09:16:20.440Z",
-          "duration": 70266,
-          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\test-qa\\src\\pages\\AccountMergePage.tsx"
+          "startedAt": "2026-03-02T18:29:02.964Z",
+          "completedAt": "2026-03-02T18:29:44.802Z",
+          "duration": 41836,
+          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\pages\\AccountMergePage.tsx"
         },
         "components": {
           "status": "completed",
-          "startedAt": "2026-02-26T09:16:20.443Z",
-          "completedAt": "2026-02-26T09:21:09.180Z",
-          "duration": 288735
+          "startedAt": "2026-03-02T18:29:44.805Z",
+          "completedAt": "2026-03-02T18:31:15.089Z",
+          "duration": 90282
         },
         "tests-unit": {
           "status": "completed",
-          "startedAt": "2026-02-26T09:21:09.185Z",
-          "completedAt": "2026-02-26T09:22:41.073Z",
-          "duration": 91886,
-          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\test-qa\\src\\__tests__\\accountMergeStore.test.ts"
+          "startedAt": "2026-03-02T18:31:15.092Z",
+          "completedAt": "2026-03-02T18:32:08.272Z",
+          "duration": 53178,
+          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\__tests__\\accountMergeStore.test.ts"
         },
         "tests-ui": {
-          "status": "failed",
-          "startedAt": "2026-02-26T09:22:41.076Z",
-          "error": "Command failed: type \"C:\\Users\\thony\\AppData\\Local\\Temp\\mf-prompt-1772097761079-9wnt2u.txt\" | claude --print --output-format json --model sonnet\n",
-          "completedAt": "2026-02-26T09:25:41.108Z"
+          "status": "completed",
+          "startedAt": "2026-03-02T18:32:08.275Z",
+          "completedAt": "2026-03-02T18:32:47.327Z",
+          "duration": 39050,
+          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\__tests__\\AccountMergePage.test.tsx"
         }
       },
       "files": [
@@ -689,13 +690,20 @@
         "D:\\Projects\\ClubMed\\LecteurMagic\\test-qa\\src\\stores\\accountMergeStore.ts",
         "D:\\Projects\\ClubMed\\LecteurMagic\\test-qa\\src\\services\\api\\endpoints-accountMerge.ts",
         "D:\\Projects\\ClubMed\\LecteurMagic\\test-qa\\src\\pages\\AccountMergePage.tsx",
-        "D:\\Projects\\ClubMed\\LecteurMagic\\test-qa\\src\\__tests__\\accountMergeStore.test.ts"
+        "D:\\Projects\\ClubMed\\LecteurMagic\\test-qa\\src\\__tests__\\accountMergeStore.test.ts",
+        "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\types\\accountMerge.ts",
+        "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\stores\\accountMergeStore.ts",
+        "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\services\\api\\endpoints-accountMerge.ts",
+        "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\pages\\AccountMergePage.tsx",
+        "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\__tests__\\accountMergeStore.test.ts",
+        "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\__tests__\\AccountMergePage.test.tsx"
       ],
       "errors": [
         "[tests-ui] Command failed: type \"C:\\Users\\thony\\AppData\\Local\\Temp\\mf-prompt-1772097761079-9wnt2u.txt\" | claude --print --output-format json --model sonnet\n",
         "Command failed: type \"C:\\Users\\thony\\AppData\\Local\\Temp\\mf-prompt-1772097761079-9wnt2u.txt\" | claude --print --output-format json --model sonnet\n"
       ],
-      "startedAt": "2026-02-26T09:10:53.499Z"
+      "startedAt": "2026-02-26T09:10:53.499Z",
+      "completedAt": "2026-03-02T18:32:47.330Z"
     },
     "32": {
       "status": "completed",
