@@ -21,7 +21,7 @@ import type { LogEntry } from './log-storage.js';
 import { runCodegen, runCodegenEnriched } from '../generators/codegen/codegen-runner.js';
 import type { CodegenEnrichConfig, EnrichMode } from '../generators/codegen/enrich-model.js';
 import { runMigration, getMigrateStatus, createBatch } from '../migrate/migrate-runner.js';
-import { BUILD_INFO } from '../build-info.js';
+import { getBuildInfo } from '../build-info.js';
 import { getGitStatus } from './git-status.js';
 import { DEFAULT_PHASE_MODELS } from '../migrate/migrate-types.js';
 import type { MigrateConfig, MigratePhase } from '../migrate/migrate-types.js';
@@ -777,7 +777,7 @@ export const handleLogsLatestGet = (ctx: RouteContext, query: URLSearchParams, r
  */
 export const handleVersion = (_ctx: RouteContext, res: ServerResponse): void => {
   json(res, {
-    ...BUILD_INFO,
+    ...getBuildInfo(), // Call function to get fresh commit hash
     serverStartTime: new Date().toISOString(),
   });
 };
