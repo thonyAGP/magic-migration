@@ -133,8 +133,15 @@ export const calculateModules = (input: ModuleCalculatorInput): ModuleCalculator
     }
 
     const memberCount = members.length;
+
+    // Weighted calculation based on pipeline status (aligned with P1 phase weights)
+    // verified = 100% (all phases done)
+    // enriched = 86% (SPEC→TESTS_UI done, VERIFY phases remain = 14%)
+    // contracted = 7% (SPEC→TYPES done, ENRICH+VERIFY remain = 93%)
+    // pending = 0% (nothing done)
+    const weightedSum = verified * 100 + enriched * 86 + contracted * 7;
     const readinessPct = memberCount > 0
-      ? Math.round(verified / memberCount * 100)
+      ? Math.round(weightedSum / memberCount)
       : 100;
 
     allModules.push({
