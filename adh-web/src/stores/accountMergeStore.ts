@@ -26,6 +26,38 @@ interface AccountMergeActions {
   updateProgress: (current: number, total: number, table: string) => void
   setError: (error: string | null) => void
   reset: () => void
+  
+  // RM-001: Condition: W0 reseau [M] different de 'R'
+  checkNetworkCondition: (network: string) => boolean
+  
+  // RM-006: Negation de (W0 code LOG existe [BB]) (condition inversee)
+  checkCodeLogNotExists: (codeLog: string | null) => boolean
+  
+  // RM-008: Negation de (W0 reprise confirmee [BD]) (condition inversee)
+  checkResumeNotConfirmed: (resumeConfirmed: boolean) => boolean
+  
+  // RM-009: Negation de (W0 Compte remplace à l... [BI]) (condition inversee)
+  checkAccountNotReplaced: (accountReplaced: boolean) => boolean
+  
+  // RM-011: Condition toujours vraie (flag actif)
+  checkAlwaysTrue: () => boolean
+  
+  // RM-010: Condition composite: [BK]=6 OR P0 Reprise Auto [I]
+  checkCompositeCondition: (bkValue: number, autoResume: boolean) => boolean
+  
+  // RM-012: Negation de P0.Sans interface [J] (condition inversee)
+  checkWithInterface: (withoutInterface: boolean) => boolean
+  
+  // RM-013: Negation de VG78 (condition inversee)
+  checkVG78Negation: (vg78: boolean) => boolean
+}
+
+interface MergeVariables {
+  // FN: W0 chrono histo
+  chronoHisto: string
+  
+  // FJ: W0 reprise
+  reprise: boolean
 }
 
 const initialState: AccountMergeState = {
@@ -160,8 +192,14 @@ const createMockMergeLogs = (mergeId: number): MergeLog[] => [
   }
 ]
 
-export const useAccountMergeStore = create<AccountMergeState & AccountMergeActions>((set, get) => ({
+export const useAccountMergeStore = create<AccountMergeState & AccountMergeActions & MergeVariables>((set, get) => ({
   ...initialState,
+  
+  // FN: W0 chrono histo
+  chronoHisto: '',
+  
+  // FJ: W0 reprise
+  reprise: false,
 
   validatePrerequisites: async () => {
     const { isRealApi } = useDataSourceStore.getState()
@@ -446,5 +484,45 @@ export const useAccountMergeStore = create<AccountMergeState & AccountMergeActio
 
   reset: () => {
     set(initialState)
+  },
+
+  // RM-001: Condition: W0 reseau [M] different de 'R'
+  checkNetworkCondition: (network: string) => {
+    return network !== 'R'
+  },
+
+  // RM-006: Negation de (W0 code LOG existe [BB]) (condition inversee)
+  checkCodeLogNotExists: (codeLog: string | null) => {
+    return !codeLog || codeLog.trim() === ''
+  },
+
+  // RM-008: Negation de (W0 reprise confirmee [BD]) (condition inversee)
+  checkResumeNotConfirmed: (resumeConfirmed: boolean) => {
+    return !resumeConfirmed
+  },
+
+  // RM-009: Negation de (W0 Compte remplace à l... [BI]) (condition inversee)
+  checkAccountNotReplaced: (accountReplaced: boolean) => {
+    return !accountReplaced
+  },
+
+  // RM-011: Condition toujours vraie (flag actif)
+  checkAlwaysTrue: () => {
+    return true
+  },
+
+  // RM-010: Condition composite: [BK]=6 OR P0 Reprise Auto [I]
+  checkCompositeCondition: (bkValue: number, autoResume: boolean) => {
+    return bkValue === 6 || autoResume
+  },
+
+  // RM-012: Negation de P0.Sans interface [J] (condition inversee)
+  checkWithInterface: (withoutInterface: boolean) => {
+    return !withoutInterface
+  },
+
+  // RM-013: Negation de VG78 (condition inversee)
+  checkVG78Negation: (vg78: boolean) => {
+    return !vg78
   }
 }))
