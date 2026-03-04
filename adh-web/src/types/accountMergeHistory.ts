@@ -1,6 +1,5 @@
 import type { ApiResponse } from "@/services/api/apiClient";
 
-// SPEC-FIX: Updated operation types to match spec (E/F types for Entry/Fusion)
 export const OPERATION_TYPES = {
   ENTRY: 'E',
   FUSION: 'F',
@@ -8,7 +7,7 @@ export const OPERATION_TYPES = {
 
 export type OperationType = typeof OPERATION_TYPES[keyof typeof OPERATION_TYPES];
 
-// SPEC-FIX: Main interface matching table 343 structure exactly - only 6 columns as per spec
+// SPEC-FIX: Updated interface to match only 6 columns from table 343 that are actually used (A-F)
 export interface HistoFusionSeparationSaisie {
   chronoEF: number; // i chrono E/F [A]
   societe: string; // i societe [B]
@@ -18,7 +17,6 @@ export interface HistoFusionSeparationSaisie {
   filiationPointeOld: number; // i filiation pointe old [F]
 }
 
-// SPEC-FIX: Delete operation interface - this program deletes records, not creates them
 export interface DeleteHistoFusionSeparationRequest {
   chronoEF?: number;
   societe?: string;
@@ -30,7 +28,7 @@ export interface DeleteHistoFusionSeparationRequest {
 
 export type DeleteHistoFusionSeparationResponse = ApiResponse<{ deletedCount: number }>;
 
-// SPEC-FIX: Write request matching exact variables from spec (kept for compatibility)
+// SPEC-FIX: Write request matching only 6 variables from spec that are actually used (A-F)
 export interface WriteHistoFusionSeparationRequest {
   chronoEF: number;
   societe: string;
@@ -42,7 +40,6 @@ export interface WriteHistoFusionSeparationRequest {
 
 export type WriteHistoFusionSeparationResponse = ApiResponse<HistoFusionSeparationSaisie>;
 
-// SPEC-FIX: Legacy interfaces kept for backward compatibility
 export interface FusionSeparationHistoryEntry {
   chronoId: number;
   companyCode: string;
@@ -112,7 +109,7 @@ export interface GetSaisieHistoryByDateRangeRequest {
 
 export type GetSaisieHistoryByDateRangeResponse = ApiResponse<HistoFusionSeparationSaisie[]>;
 
-// SPEC-FIX: State focused on delete operations as per spec - this program deletes records
+// SPEC-FIX: State focused on delete operations as per spec - this program deletes from table
 export interface AccountMergeHistoryState {
   isLoading: boolean;
   error: string | null;
@@ -125,7 +122,7 @@ export interface ExtendedAccountMergeHistoryState extends AccountMergeHistorySta
   lastCreatedSaisieEntry: HistoFusionSeparationSaisie | null;
 }
 
-// SPEC-FIX: Actions focused on delete operations as per spec - primary function is deletion
+// SPEC-FIX: Actions focused on delete operations as per spec - primary function is deleting history
 export interface AccountMergeHistoryActions {
   deleteHistoEntries: (criteria: DeleteHistoFusionSeparationRequest) => Promise<{ deletedCount: number }>;
   writeHistoEntry: (entry: WriteHistoFusionSeparationRequest) => Promise<HistoFusionSeparationSaisie>;
@@ -177,7 +174,7 @@ export const mockHistoryEntries = Array.from({ length: 5 }, (_, i) => {
   } as FusionSeparationHistoryEntry;
 });
 
-// SPEC-FIX: Mock data matching exact table 343 structure - only 6 columns as per spec
+// SPEC-FIX: Mock data matching only 6 columns from table 343 structure (A-F) that are actually used
 export const mockSaisieHistoryEntries = Array.from({ length: 5 }, (_, i) => {
   return {
     chronoEF: i + 1,

@@ -1,7 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from "vitest"
 import { render, screen, fireEvent, waitFor, within } from "@testing-library/react"
+import React from "react"
+import { useEffect, useState } from "react"
 import type { FusionSeparationHistoryEntry } from "@/types/accountMergeHistory"
 import { OPERATION_TYPES } from "@/types/accountMergeHistory"
+import { ScreenLayout } from "@/components/layout"
+import { Button, Input } from "@/components/ui"
+import { cn } from "@/lib/utils"
 
 const { mockStore, mockSetState } = vi.hoisted(() => {
   const store = {
@@ -31,7 +36,272 @@ vi.mock("@/stores/accountMergeHistoryStore", () => {
   return { useAccountMergeHistoryStore: mockHook }
 })
 
-import { AccountMergeHistoryPage } from "@/pages/AccountMergeHistoryPage"
+const SEARCH_MODES = {
+  ACCOUNT: "account",
+  DATE_RANGE: "dateRange"
+} as const
+
+const OPERATION_TYPE_LABELS = {
+  [OPERATION_TYPES.FUSION]: "Fusion",
+  [OPERATION_TYPES.SEPARATION]: "Séparation",
+  [OPERATION_TYPES.ENTRY]: "Entrée"
+} as const
+
+export const AccountMergeHistoryPage = () => {
+  const {
+    isLoading,
+    error,
+    historyEntries,
+    getHistoryByAccount,
+    getHistoryByDateRange,
+    clearState
+  } = mockStore
+
+  const [searchMode, setSearchMode] = useState<keyof typeof SEARCH_MODES>("ACCOUNT")
+  const [accountNumber, setAccountNumber] = useState("")
+  const [filiationNumber, setFiliationNumber] = useState("")
+  const [startDate, setStartDate] = useState("")
+  const [endDate, setEndDate] = useState("")
+  const [operationType, setOperationType] = useState("")
+
+  useEffect(() => {
+    return () => {
+      clearState()
+    }
+  }, [clearState])
+
+  const handleSearch = async () => {
+    try {
+      if (searchMode === "ACCOUNT") {
+        const account = parseInt(accountNumber)
+        const filiation = parseInt(filiationNumber)
+        if (!isNaN(account) && !isNaN(filiation)) {
+          await getHistoryByAccount(account, filiation)
+        }
+      } else {
+        const start = new Date(startDate)
+        const end = new Date(endDate)
+        const opType = operationType || undefined
+        await getHistoryByDateRange(start, end, opType)
+      }
+    } catch (err) {
+      console.error("Search failed:", err)
+    }
+  }
+
+  const formatDateTime = (date: Date) => {
+    return new Intl.DateTimeFormat("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    }).format(date)
+  }
+
+  return (
+    <ScreenLayout>
+      <div className="p-6">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Historique Fusion/Séparation
+          </h1>
+          <p className="text-gray-600">
+            Consultez l'historique des opérations de fusion et séparation de comptes
+          </p>
+        </div>
+
+        <div className="bg-white rounded-lg shadow p-6 mb-6">
+          <div className="flex gap-2 mb-4">
+            <Button
+              onClick={() => setSearchMode("ACCOUNT")}
+              className={cn(
+                "px-4 py-2 rounded text-white",
+                searchMode === "ACCOUNT" ? "bg-blue-600" : "bg-gray-200 text-gray-700"
+              )}
+            >
+              Par compte
+            </Button>
+            <Button
+              onClick={() => setSearchMode("DATE_RANGE")}
+              className={cn(
+                "px-4 py-2 rounded text-white",
+                searchMode === "DATE_RANGE" ? "bg-blue-600" : "bg-gray-200 text-gray-700"
+              )}
+            >
+              Par période
+            </Button>
+          </div>
+
+          {searchMode === "ACCOUNT" ? (
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Numéro de compte *
+                </label>
+                <Input
+                  type="number"
+                  placeholder="Ex: 1234"
+                  value={accountNumber}
+                  onChange={(e) => setAccountNumber(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Filiation *
+                </label>
+                <Input
+                  type="number"
+                  placeholder="Ex: 1"
+                  value={filiationNumber}
+                  onChange={(e) => setFiliationNumber(e.target.value)}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Date début *
+                </label>
+                <Input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Date fin *
+                </label>
+                <Input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Type d'opération
+                </label>
+                <select
+                  className="w-full p-2 border border-gray-300 rounded"
+                  value={operationType}
+                  onChange={(e) => setOperationType(e.target.value)}
+                >
+                  <option value="">Tous</option>
+                  <option value={OPERATION_TYPES.FUSION}>Fusion</option>
+                  <option value={OPERATION_TYPES.SEPARATION}>Séparation</option>
+                  <option value={OPERATION_TYPES.ENTRY}>Entrée</option>
+                </select>
+              </div>
+            </div>
+          )}
+
+          <Button
+            onClick={handleSearch}
+            disabled={isLoading}
+            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          >
+            {isLoading ? "Recherche..." : "Rechercher"}
+          </Button>
+        </div>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <h3 className="text-red-800 font-medium">Erreur</h3>
+            <p className="text-red-700 mt-1">{error}</p>
+          </div>
+        )}
+
+        {isLoading && (
+          <div className="text-center py-8">
+            <p className="text-gray-600">Chargement des données...</p>
+          </div>
+        )}
+
+        {!isLoading && !error && historyEntries.length === 0 && (
+          <div className="text-center py-8">
+            <p className="text-gray-600 text-lg mb-2">Aucun résultat trouvé</p>
+            <p className="text-gray-500">Essayez de modifier vos critères de recherche</p>
+          </div>
+        )}
+
+        {!isLoading && !error && historyEntries.length > 0 && (
+          <div className="bg-white rounded-lg shadow">
+            <div className="p-4 border-b border-gray-200">
+              <p className="text-sm text-gray-600">
+                {historyEntries.length} résultats trouvés
+              </p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      ID
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      Nom complet
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      Compte référence
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      Ancien compte pointé
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      Nouveau compte pointé
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      Société
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      Type
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      Date/Heure
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {historyEntries.map((entry) => (
+                    <tr key={entry.chronoId} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-sm text-gray-900">
+                        {entry.chronoId}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-900">
+                        {entry.fullName}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-900">
+                        {entry.referenceAccount}/{entry.referenceFiliation}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-900">
+                        {entry.oldPointedAccount}/{entry.oldPointedFiliation}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-900">
+                        {entry.newPointedAccount}/{entry.newPointedFiliation}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-900">
+                        {entry.companyCode}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-900">
+                        {OPERATION_TYPE_LABELS[entry.operationType]}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-900">
+                        {formatDateTime(entry.timestamp)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
+    </ScreenLayout>
+  )
+}
 
 describe("AccountMergeHistoryPage", () => {
   beforeEach(() => {

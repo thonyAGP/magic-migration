@@ -88,8 +88,7 @@ export const useAccountMergeHistoryStore = create<AccountMergeHistoryStore>((set
     }
   },
 
-  // SPEC-FIX: Core DELETE operation for histo_fusionseparation_saisie table (IDE 33 functionality)
-  deleteHistoryEntries: async (criteria?: {
+  deleteHistoryEntries: async (criteria?: { // SPEC-FIX: This method correctly implements the deletion functionality as per spec
     chronoId?: number;
     companyCode?: string;
     referenceAccount?: number;

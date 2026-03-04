@@ -58,7 +58,7 @@ export interface GmRecherche {
   criteres: string
   resultats: number
   dateCreation: Date
-}
+} // RM-30
 
 export interface DepotGarantie {
   id: number
@@ -67,7 +67,7 @@ export interface DepotGarantie {
   dateDepot: Date
   statut: 'actif' | 'libere' | 'bloque'
   reference: string
-}
+} // RM-39
 
 export interface CompteGm {
   id: number
@@ -76,7 +76,7 @@ export interface CompteGm {
   solde: number
   dateOuverture: Date
   statut: 'ouvert' | 'ferme' | 'suspendu'
-}
+} // RM-47
 
 export interface ReseauCloture {
   id: number
@@ -85,7 +85,7 @@ export interface ReseauCloture {
   motif: string
   validePar: string
   statut: 'en_cours' | 'complete' | 'annule'
-}
+} // RM-23
 
 export interface FusionEclatement {
   id: number
@@ -94,7 +94,7 @@ export interface FusionEclatement {
   compteCible: number
   dateOperation: Date
   statut: 'prepare' | 'execute' | 'complete'
-}
+} // RM-51
 
 export interface Prestations {
   id: number
@@ -103,47 +103,7 @@ export interface Prestations {
   tarif: number
   dateApplication: Date
   actif: boolean
-}
-
-export interface FichierValidation {
-  id: number
-  nomFichier: string
-  typeFichier: string
-  taille: number
-  dateUpload: Date
-  statut: 'valide' | 'erreur' | 'en_attente'
-  nombreLignes: number
-}
-
-export interface CommentaireGm {
-  id: number
-  compteId: number
-  commentaire: string
-  dateCreation: Date
-  auteur: string
-  typeCommentaire: 'info' | 'alerte' | 'note'
-}
-
-export interface CommentaireGmAcc {
-  id: number
-  compteId: number
-  commentaireAccueil: string
-  dateCreation: Date
-  auteur: string
-  priorite: 'normale' | 'haute' | 'urgente'
-  statut: 'actif' | 'archive'
-  typeAccueil: 'reception' | 'concierge' | 'service'
-} // RM-37
-
-export interface ImportGoErreurAffection {
-  id: number
-  numeroLigne: number
-  codeErreur: string
-  messageErreur: string
-  valeurErronee: string
-  dateImport: Date
-  statut: 'non_traite' | 'corrige' | 'ignore'
-}
+} // RM-33
 
 export interface PvCustomerDat {
   id: number
@@ -186,6 +146,46 @@ export interface PersonnelGo {
   droitsAcces: string
   superviseur: string | null
 } // RM-35
+
+export interface FichierValidation {
+  id: number
+  nomFichier: string
+  typeFichier: string
+  taille: number
+  dateUpload: Date
+  statut: 'valide' | 'erreur' | 'en_attente'
+  nombreLignes: number
+}
+
+export interface CommentaireGm {
+  id: number
+  compteId: number
+  commentaire: string
+  dateCreation: Date
+  auteur: string
+  typeCommentaire: 'info' | 'alerte' | 'note'
+}
+
+export interface CommentaireGmAcc {
+  id: number
+  compteId: number
+  commentaireAccueil: string
+  dateCreation: Date
+  auteur: string
+  priorite: 'normale' | 'haute' | 'urgente'
+  statut: 'actif' | 'archive'
+  typeAccueil: 'reception' | 'concierge' | 'service'
+} // RM-37
+
+export interface ImportGoErreurAffection {
+  id: number
+  numeroLigne: number
+  codeErreur: string
+  messageErreur: string
+  valeurErronee: string
+  dateImport: Date
+  statut: 'non_traite' | 'corrige' | 'ignore'
+}
 
 export interface FichierHistotel {
   id: number
@@ -692,14 +692,14 @@ export interface AccountMergeState {
   reseauCloture: ReseauCloture[] // RM-23
   fusionEclatement: FusionEclatement[] // RM-51
   prestations: Prestations[] // RM-33
-  fichierValidation: FichierValidation[] // RM-131
-  commentaireGm: CommentaireGm[] // RM-37
-  commentaireGmAcc: CommentaireGmAcc[] // RM-37
-  importGoErreur: ImportGoErreurAffection[] // RM-831
   pvCustomerDat: PvCustomerDat[] // RM-837
   mvtPrestation: MvtPrestation[] // RM-46
   gratuites: Gratuites[] // RM-79
   personnelGo: PersonnelGo[] // RM-35
+  fichierValidation: FichierValidation[] // RM-131
+  commentaireGm: CommentaireGm[] // RM-37
+  commentaireGmAcc: CommentaireGmAcc[] // RM-37
+  importGoErreur: ImportGoErreurAffection[] // RM-831
   fichierHistotel: FichierHistotel[] // RM-137
   tpeParTerminal: TpeParTerminal[] // RM-834
   venteParMoyenPaiement: VenteParMoyenPaiement[] // RM-805
@@ -772,14 +772,6 @@ export type ApiFusionEclatementRequest = ApiResponse<FusionEclatement[]> // RM-5
 
 export type ApiPrestationsRequest = ApiResponse<Prestations[]> // RM-33
 
-export type ApiFichierValidationRequest = ApiResponse<FichierValidation[]> // RM-131
-
-export type ApiCommentaireGmRequest = ApiResponse<CommentaireGm[]> // RM-37
-
-export type ApiCommentaireGmAccRequest = ApiResponse<CommentaireGmAcc[]> // RM-37
-
-export type ApiImportGoErreurRequest = ApiResponse<ImportGoErreurAffection[]> // RM-831
-
 export type ApiPvCustomerDatRequest = ApiResponse<PvCustomerDat[]> // RM-837
 
 export type ApiMvtPrestationRequest = ApiResponse<MvtPrestation[]> // RM-46
@@ -787,6 +779,14 @@ export type ApiMvtPrestationRequest = ApiResponse<MvtPrestation[]> // RM-46
 export type ApiGratuitesRequest = ApiResponse<Gratuites[]> // RM-79
 
 export type ApiPersonnelGoRequest = ApiResponse<PersonnelGo[]> // RM-35
+
+export type ApiFichierValidationRequest = ApiResponse<FichierValidation[]> // RM-131
+
+export type ApiCommentaireGmRequest = ApiResponse<CommentaireGm[]> // RM-37
+
+export type ApiCommentaireGmAccRequest = ApiResponse<CommentaireGmAcc[]> // RM-37
+
+export type ApiImportGoErreurRequest = ApiResponse<ImportGoErreurAffection[]> // RM-831
 
 export type ApiFichierHistotelRequest = ApiResponse<FichierHistotel[]> // RM-137
 
@@ -889,4 +889,3 @@ export const MERGE_STEPS = {
 } as const
 
 export const TABLE_NAMES = {
-  HISTO_FUSION_SEPARATION: 'histo_fusionseparation_saisie', // RM-343
