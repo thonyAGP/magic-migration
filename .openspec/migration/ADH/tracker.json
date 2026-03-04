@@ -587,7 +587,7 @@
         "backend_na": 0,
         "frontend_enrich": 0,
         "fully_impl": 3,
-        "coverage_avg_frontend": 38,
+        "coverage_avg_frontend": 30,
         "total_partial": 0,
         "total_missing": 0
       },
