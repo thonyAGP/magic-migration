@@ -1,3 +1,4 @@
+```typescript
 import type { ApiResponse } from "@/services/api/apiClient"
 
 export interface MergeRequest {
@@ -123,6 +124,17 @@ export interface CommentaireGm {
   typeCommentaire: 'info' | 'alerte' | 'note'
 }
 
+export interface CommentaireGmAcc {
+  id: number
+  compteId: number
+  commentaireAccueil: string
+  dateCreation: Date
+  auteur: string
+  priorite: 'normale' | 'haute' | 'urgente'
+  statut: 'actif' | 'archive'
+  typeAccueil: 'reception' | 'concierge' | 'service'
+} // RM-37
+
 export interface ImportGoErreurAffection {
   id: number
   numeroLigne: number
@@ -162,6 +174,19 @@ export interface Gratuites {
   autorisePar: string
 } // RM-79
 
+export interface PersonnelGo {
+  id: number
+  personnelId: string
+  nom: string
+  prenom: string
+  poste: string
+  dateEmbauche: Date
+  statut: 'actif' | 'inactif' | 'suspendu'
+  departement: string
+  droitsAcces: string
+  superviseur: string | null
+} // RM-35
+
 export interface FichierHistotel {
   id: number
   nomFichier: string
@@ -190,13 +215,15 @@ export interface VenteParMoyenPaiement {
   statut: 'valide' | 'annule' | 'rembourse'
 } // RM-805
 
-export interface Comptable {
+export interface ComptableCte {
   id: number
   codeComptable: string
   libelle: string
   typeCompte: 'actif' | 'passif' | 'charge' | 'produit'
   solde: number
   dateCreation: Date
+  compteParent: string | null
+  niveauCompte: number
 } // RM-40
 
 export interface PlafondLit {
@@ -218,25 +245,16 @@ export interface EzCard {
   solde: number
 } // RM-312
 
-export interface GmComplet {
+export interface GmCompletGmc {
   id: number
   compteId: number
   donneesCompletes: string
   dateGeneration: Date
   versionGm: string
   statut: 'actuel' | 'archive'
+  tailleDonnees: number
+  formatExport: string
 } // RM-31
-
-export interface PersonnelGo {
-  id: number
-  personnelId: string
-  nom: string
-  prenom: string
-  poste: string
-  dateEmbauche: Date
-  statut: 'actif' | 'inactif' | 'suspendu'
-  departement: string
-} // RM-35
 
 export interface QualiteAvantReprise {
   id: number
@@ -259,7 +277,7 @@ export interface FichierMessagerie {
   contenuMessage: string
 } // RM-123
 
-export interface ChangeVente {
+export interface ChangeVenteChg {
   id: number
   venteId: number
   tauxChange: number
@@ -269,9 +287,10 @@ export interface ChangeVente {
   montantCible: number
   dateChange: Date
   commission: number
+  numeroOperation: string
 } // RM-147
 
-export interface CodesAutocom {
+export interface CodesAutocomAut {
   id: number
   codeAutocom: string
   libelle: string
@@ -279,9 +298,10 @@ export interface CodesAutocom {
   actif: boolean
   dateCreation: Date
   parametres: string
+  priorite: number
 } // RM-80
 
-export interface Change {
+export interface ChangeChg {
   id: number
   typeOperation: 'achat' | 'vente'
   deviseSource: string
@@ -290,9 +310,11 @@ export interface Change {
   montant: number
   dateOperation: Date
   compteId: number
+  numeroTransaction: string
+  commission: number
 } // RM-44
 
-export interface Vente {
+export interface VenteVep {
   id: number
   numeroVente: string
   dateVente: Date
@@ -301,6 +323,8 @@ export interface Vente {
   vendeurId: string
   statut: 'en_cours' | 'validee' | 'annulee'
   moyenPaiement: string
+  taxe: number
+  remise: number
 } // RM-309
 
 export interface TransacEnteteBar {
@@ -314,7 +338,7 @@ export interface TransacEnteteBar {
   typeTransaction: 'vente' | 'remboursement'
 } // RM-15
 
-export interface VenteOption {
+export interface VenteOptionVeo {
   id: number
   venteId: number
   optionId: string
@@ -323,9 +347,11 @@ export interface VenteOption {
   quantite: number
   montantTotal: number
   dateAjout: Date
+  typeOption: string
+  obligatoire: boolean
 } // RM-307
 
-export interface DepotObjets {
+export interface DepotObjetsDoa {
   id: number
   numeroDepot: string
   clientId: number
@@ -335,6 +361,7 @@ export interface DepotObjets {
   valeurEstimee: number
   statut: 'depose' | 'retire' | 'perdu'
   responsableId: string
+  emplacementDepot: string
 } // RM-41
 
 export interface HeureDePassage {
@@ -560,6 +587,93 @@ export interface Email {
   pieceJointe: boolean
 } // RM-285
 
+export interface ValeurCreditBarDefaut {
+  id: number
+  codeCredit: string
+  valeurDefaut: number
+  typeCredit: 'bar' | 'restaurant' | 'boutique'
+  dateApplication: Date
+  actif: boolean
+  limiteTarifaire: number
+  description: string
+} // RM-804
+
+export interface ClientGm {
+  id: number
+  clientId: string
+  codeClient: string
+  nom: string
+  prenom: string
+  dateNaissance: Date
+  adresse: string
+  telephone: string
+  email: string
+  statut: 'actif' | 'inactif' | 'suspendu'
+  dateInscription: Date
+} // RM-36
+
+export interface VendeursVen {
+  id: number
+  vendeurId: string
+  nom: string
+  prenom: string
+  codeVendeur: string
+  commission: number
+  typeVente: string
+  secteur: string
+  dateEmbauche: Date
+  statut: 'actif' | 'inactif' | 'conge'
+} // RM-93
+
+export interface Table1059 {
+  id: number
+  referenceData: string
+  typeData: string
+  valeurData: string
+  dateCreation: Date
+  dateModification: Date | null
+  parametres: string
+  statut: 'actif' | 'archive'
+  metadonnees: string
+} // RM-1059
+
+export interface TronconTro {
+  id: number
+  codeTroncon: string
+  nomTroncon: string
+  typeTransport: 'avion' | 'train' | 'bus' | 'bateau'
+  villeDeparture: string
+  villeArrivee: string
+  dureeTrajet: number
+  distanceKm: number
+  actif: boolean
+  compagnieTransport: string
+} // RM-167
+
+export interface HistoFusionSeparationLog {
+  id: number
+  operationId: string
+  typeOperation: 'fusion' | 'separation'
+  dateOperation: Date
+  utilisateur: string
+  compteSource: string
+  compteCible: string
+  statut: 'initie' | 'en_cours' | 'complete' | 'erreur'
+  detailsOperation: string
+  resultat: string | null
+} // RM-342
+
+export interface DateComptableDat {
+  id: number
+  dateComptable: Date
+  exerciceComptable: string
+  statut: 'ouvert' | 'ferme' | 'cloture'
+  typeExercice: 'mensuel' | 'trimestriel' | 'annuel'
+  dateOuverture: Date
+  dateCloture: Date | null
+  responsable: string
+} // RM-70
+
 export interface AccountMergeState {
   mergeRequest: MergeRequest | null
   sourceAccount: Account | null
@@ -580,27 +694,28 @@ export interface AccountMergeState {
   prestations: Prestations[] // RM-33
   fichierValidation: FichierValidation[] // RM-131
   commentaireGm: CommentaireGm[] // RM-37
+  commentaireGmAcc: CommentaireGmAcc[] // RM-37
   importGoErreur: ImportGoErreurAffection[] // RM-831
   pvCustomerDat: PvCustomerDat[] // RM-837
   mvtPrestation: MvtPrestation[] // RM-46
   gratuites: Gratuites[] // RM-79
+  personnelGo: PersonnelGo[] // RM-35
   fichierHistotel: FichierHistotel[] // RM-137
   tpeParTerminal: TpeParTerminal[] // RM-834
   venteParMoyenPaiement: VenteParMoyenPaiement[] // RM-805
-  comptable: Comptable[] // RM-40
+  comptableCte: ComptableCte[] // RM-40
   plafondLit: PlafondLit[] // RM-807
   ezCard: EzCard[] // RM-312
-  gmComplet: GmComplet[] // RM-31
-  personnelGo: PersonnelGo[] // RM-35
+  gmCompletGmc: GmCompletGmc[] // RM-31
   qualiteAvantReprise: QualiteAvantReprise[] // RM-786
   fichierMessagerie: FichierMessagerie[] // RM-123
-  changeVente: ChangeVente[] // RM-147
-  codesAutocom: CodesAutocom[] // RM-80
-  change: Change[] // RM-44
-  vente: Vente[] // RM-309
+  changeVenteChg: ChangeVenteChg[] // RM-147
+  codesAutocomAut: CodesAutocomAut[] // RM-80
+  changeChg: ChangeChg[] // RM-44
+  venteVep: VenteVep[] // RM-309
   transacEnteteBar: TransacEnteteBar[] // RM-15
-  venteOption: VenteOption[] // RM-307
-  depotObjets: DepotObjets[] // RM-41
+  venteOptionVeo: VenteOptionVeo[] // RM-307
+  depotObjetsDoa: DepotObjetsDoa[] // RM-41
   heureDePassage: HeureDePassage[] // RM-463
   table947: Table947[] // RM-947
   hebergementHeb: HebergementHeb[] // RM-34
@@ -621,6 +736,13 @@ export interface AccountMergeState {
   pvDiscountReasons: PvDiscountReasons[] // RM-382
   commentaireCom: CommentaireCom[] // RM-171
   email: Email[] // RM-285
+  valeurCreditBarDefaut: ValeurCreditBarDefaut[] // RM-804
+  clientGm: ClientGm[] // RM-36
+  vendeursVen: VendeursVen[] // RM-93
+  table1059: Table1059[] // RM-1059
+  tronconTro: TronconTro[] // RM-167
+  histoFusionSeparationLog: HistoFusionSeparationLog[] // RM-342
+  dateComptableDat: DateComptableDat[] // RM-70
 }
 
 export type ApiValidationRequest = ApiResponse<ValidationStatus>
@@ -654,6 +776,8 @@ export type ApiFichierValidationRequest = ApiResponse<FichierValidation[]> // RM
 
 export type ApiCommentaireGmRequest = ApiResponse<CommentaireGm[]> // RM-37
 
+export type ApiCommentaireGmAccRequest = ApiResponse<CommentaireGmAcc[]> // RM-37
+
 export type ApiImportGoErreurRequest = ApiResponse<ImportGoErreurAffection[]> // RM-831
 
 export type ApiPvCustomerDatRequest = ApiResponse<PvCustomerDat[]> // RM-837
@@ -662,39 +786,39 @@ export type ApiMvtPrestationRequest = ApiResponse<MvtPrestation[]> // RM-46
 
 export type ApiGratuitesRequest = ApiResponse<Gratuites[]> // RM-79
 
+export type ApiPersonnelGoRequest = ApiResponse<PersonnelGo[]> // RM-35
+
 export type ApiFichierHistotelRequest = ApiResponse<FichierHistotel[]> // RM-137
 
 export type ApiTpeParTerminalRequest = ApiResponse<TpeParTerminal[]> // RM-834
 
 export type ApiVenteParMoyenPaiementRequest = ApiResponse<VenteParMoyenPaiement[]> // RM-805
 
-export type ApiComptableRequest = ApiResponse<Comptable[]> // RM-40
+export type ApiComptableCteRequest = ApiResponse<ComptableCte[]> // RM-40
 
 export type ApiPlafondLitRequest = ApiResponse<PlafondLit[]> // RM-807
 
 export type ApiEzCardRequest = ApiResponse<EzCard[]> // RM-312
 
-export type ApiGmCompletRequest = ApiResponse<GmComplet[]> // RM-31
-
-export type ApiPersonnelGoRequest = ApiResponse<PersonnelGo[]> // RM-35
+export type ApiGmCompletGmcRequest = ApiResponse<GmCompletGmc[]> // RM-31
 
 export type ApiQualiteAvantRepriseRequest = ApiResponse<QualiteAvantReprise[]> // RM-786
 
 export type ApiFichierMessagerieRequest = ApiResponse<FichierMessagerie[]> // RM-123
 
-export type ApiChangeVenteRequest = ApiResponse<ChangeVente[]> // RM-147
+export type ApiChangeVenteChgRequest = ApiResponse<ChangeVenteChg[]> // RM-147
 
-export type ApiCodesAutocomRequest = ApiResponse<CodesAutocom[]> // RM-80
+export type ApiCodesAutocomAutRequest = ApiResponse<CodesAutocomAut[]> // RM-80
 
-export type ApiChangeRequest = ApiResponse<Change[]> // RM-44
+export type ApiChangeChgRequest = ApiResponse<ChangeChg[]> // RM-44
 
-export type ApiVenteRequest = ApiResponse<Vente[]> // RM-309
+export type ApiVenteVepRequest = ApiResponse<VenteVep[]> // RM-309
 
 export type ApiTransacEnteteBarRequest = ApiResponse<TransacEnteteBar[]> // RM-15
 
-export type ApiVenteOptionRequest = ApiResponse<VenteOption[]> // RM-307
+export type ApiVenteOptionVeoRequest = ApiResponse<VenteOptionVeo[]> // RM-307
 
-export type ApiDepotObjetsRequest = ApiResponse<DepotObjets[]> // RM-41
+export type ApiDepotObjetsDoaRequest = ApiResponse<DepotObjetsDoa[]> // RM-41
 
 export type ApiHeureDePassageRequest = ApiResponse<HeureDePassage[]> // RM-463
 
@@ -736,6 +860,20 @@ export type ApiCommentaireComRequest = ApiResponse<CommentaireCom[]> // RM-171
 
 export type ApiEmailRequest = ApiResponse<Email[]> // RM-285
 
+export type ApiValeurCreditBarDefautRequest = ApiResponse<ValeurCreditBarDefaut[]> // RM-804
+
+export type ApiClientGmRequest = ApiResponse<ClientGm[]> // RM-36
+
+export type ApiVendeursVenRequest = ApiResponse<VendeursVen[]> // RM-93
+
+export type ApiTable1059Request = ApiResponse<Table1059[]> // RM-1059
+
+export type ApiTronconTroRequest = ApiResponse<TronconTro[]> // RM-167
+
+export type ApiHistoFusionSeparationLogRequest = ApiResponse<HistoFusionSeparationLog[]> // RM-342
+
+export type ApiDateComptableDatRequest = ApiResponse<DateComptableDat[]> // RM-70
+
 export const MERGE_STATUSES = {
   PENDING: 'pending',
   VALIDATED: 'validated',
@@ -752,53 +890,3 @@ export const MERGE_STEPS = {
 
 export const TABLE_NAMES = {
   HISTO_FUSION_SEPARATION: 'histo_fusionseparation_saisie', // RM-343
-  GM_RECHERCHE: 'gm-recherche_____gmr', // RM-30
-  DEPOT_GARANTIE: 'depot_garantie___dga', // RM-39
-  COMPTE_GM: 'compte_gm________cgm', // RM-47
-  RESEAU_CLOTURE: 'reseau_cloture___rec', // RM-23
-  FUSION_ECLATEMENT: 'fusion_eclatementfec', // RM-51
-  PRESTATIONS: 'prestations______pre', // RM-33
-  FICHIER_VALIDATION: 'fichier_validation', // RM-131
-  COMMENTAIRE_GM: 'commentaire_gm_________acc', // RM-37
-  IMPORT_GO_ERREUR: 'import_go_erreur_affection', // RM-831
-  PV_CUSTOMER_DAT: '##_pv_customer_dat', // RM-837
-  MVT_PRESTATION: 'mvt_prestation___mpr', // RM-46
-  GRATUITES: 'gratuites________gra', // RM-79
-  FICHIER_HISTOTEL: 'fichier_histotel', // RM-137
-  TPE_PAR_TERMINAL: 'tpe_par_terminal', // RM-834
-  VENTE_PAR_MOYEN_PAIEMENT: 'vente_par_moyen_paiement', // RM-805
-  COMPTABLE: 'comptable________cte', // RM-40
-  PLAFOND_LIT: 'plafond_lit', // RM-807
-  EZ_CARD: 'ez_card', // RM-312
-  GM_COMPLET: 'gm-complet_______gmc', // RM-31
-  PERSONNEL_GO: 'personnel_go______go', // RM-35
-  QUALITE_AVANT_REPRISE: 'qualite_avant_reprise', // RM-786
-  FICHIER_MESSAGERIE: 'fichier_messagerie', // RM-123
-  CHANGE_VENTE: 'change_vente_____chg', // RM-147
-  CODES_AUTOCOM: 'codes_autocom____aut', // RM-80
-  CHANGE: 'change___________chg', // RM-44
-  VENTE: 'vente____________vep', // RM-309
-  TRANSAC_ENTETE_BAR: 'transac_entete_bar', // RM-15
-  VENTE_OPTION: 'vente_option_veo', // RM-307
-  DEPOT_OBJETS: 'depot_objets_____doa', // RM-41
-  HEURE_DE_PASSAGE: 'heure_de_passage', // RM-463
-  TABLE_947: 'Table_947', // RM-947
-  HEBERGEMENT_HEB: 'hebergement______heb', // RM-34
-  HEB_CIRCUIT_HCI: 'heb_circuit______hci', // RM-168
-  CC_TOTAL_PAR_TYPE: 'cc_total_par_type', // RM-268
-  CC_TYPE_DETAIL: 'cc_type_detail', // RM-272
-  LIGNES_DE_SOLDE_SLD: 'lignes_de_solde__sld', // RM-48
-  CC_TOTAL: 'cc_total', // RM-271
-  PARTICIPANTS_PAR: 'participants_____par', // RM-298
-  VOYAGES_VOY: 'voyages__________voy', // RM-29
-  BL_DETAIL: 'bl_detail', // RM-19
-  COMPTABLE_GRATUITE: 'comptable_gratuite', // RM-38
-  IMPORT_MOD: 'import_mod', // RM-358
-  DEPOT_DEVISES_DDA: 'depot_devises____dda', // RM-42
-  PMS_PRINT_PARAM: 'pms_print_param', // RM-366
-  DETAILS_PARTICI_DPA: 'details_partici__dpa', // RM-301
-  SOLDE_DEVISES_SDA: 'solde_devises____sda', // RM-43
-  PV_DISCOUNT_REASONS: 'pv_discount_reasons', // RM-382
-  COMMENTAIRE_COM: 'commentaire______com', // RM-171
-  EMAIL: 'email' // RM-285
-} as const

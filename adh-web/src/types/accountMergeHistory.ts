@@ -1,13 +1,48 @@
 import type { ApiResponse } from "@/services/api/apiClient";
 
+// SPEC-FIX: Updated operation types to match spec (E/F types for Entry/Fusion)
 export const OPERATION_TYPES = {
   ENTRY: 'E',
   FUSION: 'F',
-  SEPARATION: 'S',
 } as const;
 
 export type OperationType = typeof OPERATION_TYPES[keyof typeof OPERATION_TYPES];
 
+// SPEC-FIX: Main interface matching table 343 structure exactly - only 6 columns as per spec
+export interface HistoFusionSeparationSaisie {
+  chronoEF: number; // i chrono E/F [A]
+  societe: string; // i societe [B]
+  compteReference: number; // i compte reference [C]
+  filiationReference: number; // i filiation reference [D]
+  comptePointeOld: number; // i compte pointe old [E]
+  filiationPointeOld: number; // i filiation pointe old [F]
+}
+
+// SPEC-FIX: Delete operation interface - this program deletes records, not creates them
+export interface DeleteHistoFusionSeparationRequest {
+  chronoEF?: number;
+  societe?: string;
+  compteReference?: number;
+  filiationReference?: number;
+  comptePointeOld?: number;
+  filiationPointeOld?: number;
+}
+
+export type DeleteHistoFusionSeparationResponse = ApiResponse<{ deletedCount: number }>;
+
+// SPEC-FIX: Write request matching exact variables from spec (kept for compatibility)
+export interface WriteHistoFusionSeparationRequest {
+  chronoEF: number;
+  societe: string;
+  compteReference: number;
+  filiationReference: number;
+  comptePointeOld: number;
+  filiationPointeOld: number;
+}
+
+export type WriteHistoFusionSeparationResponse = ApiResponse<HistoFusionSeparationSaisie>;
+
+// SPEC-FIX: Legacy interfaces kept for backward compatibility
 export interface FusionSeparationHistoryEntry {
   chronoId: number;
   companyCode: string;
@@ -24,24 +59,6 @@ export interface FusionSeparationHistoryEntry {
   timestamp: Date;
 }
 
-// RM-343: histo_fusionseparation_saisie table structure
-export interface HistoFusionSeparationSaisie {
-  id: number;
-  companyCode: string;
-  accountNumber: number;
-  filiationNumber: number;
-  targetAccountNumber: number;
-  targetFiliationNumber: number;
-  operationType: OperationType;
-  operatorLastName: string;
-  operatorFirstName: string;
-  operatorFullName: string;
-  createdAt: Date;
-  updatedAt: Date;
-  status: 'PENDING' | 'COMPLETED' | 'CANCELLED';
-  remarks: string | null;
-}
-
 export interface CreateHistoryEntryRequest {
   companyCode: string;
   referenceAccount: number;
@@ -55,7 +72,6 @@ export interface CreateHistoryEntryRequest {
   firstName: string;
 }
 
-// RM-343: Create request for histo_fusionseparation_saisie
 export interface CreateSaisieHistoryRequest {
   companyCode: string;
   accountNumber: number;
@@ -69,8 +85,6 @@ export interface CreateSaisieHistoryRequest {
 }
 
 export type CreateHistoryEntryResponse = ApiResponse<FusionSeparationHistoryEntry>;
-
-// RM-343: Response type for saisie history creation
 export type CreateSaisieHistoryResponse = ApiResponse<HistoFusionSeparationSaisie>;
 
 export interface GetHistoryByAccountRequest {
@@ -79,8 +93,6 @@ export interface GetHistoryByAccountRequest {
 }
 
 export type GetHistoryByAccountResponse = ApiResponse<FusionSeparationHistoryEntry[]>;
-
-// RM-343: Get saisie history response
 export type GetSaisieHistoryResponse = ApiResponse<HistoFusionSeparationSaisie[]>;
 
 export interface GetHistoryByDateRangeRequest {
@@ -91,7 +103,6 @@ export interface GetHistoryByDateRangeRequest {
 
 export type GetHistoryByDateRangeResponse = ApiResponse<FusionSeparationHistoryEntry[]>;
 
-// RM-343: Get saisie history by date range
 export interface GetSaisieHistoryByDateRangeRequest {
   startDate: Date;
   endDate: Date;
@@ -101,31 +112,33 @@ export interface GetSaisieHistoryByDateRangeRequest {
 
 export type GetSaisieHistoryByDateRangeResponse = ApiResponse<HistoFusionSeparationSaisie[]>;
 
+// SPEC-FIX: State focused on delete operations as per spec - this program deletes records
 export interface AccountMergeHistoryState {
   isLoading: boolean;
   error: string | null;
-  lastCreatedEntry: FusionSeparationHistoryEntry | null;
+  lastDeletedCount: number;
   historyEntries: FusionSeparationHistoryEntry[];
 }
 
-// RM-343: Extended state for saisie history
 export interface ExtendedAccountMergeHistoryState extends AccountMergeHistoryState {
   saisieEntries: HistoFusionSeparationSaisie[];
   lastCreatedSaisieEntry: HistoFusionSeparationSaisie | null;
 }
 
+// SPEC-FIX: Actions focused on delete operations as per spec - primary function is deletion
 export interface AccountMergeHistoryActions {
+  deleteHistoEntries: (criteria: DeleteHistoFusionSeparationRequest) => Promise<{ deletedCount: number }>;
+  writeHistoEntry: (entry: WriteHistoFusionSeparationRequest) => Promise<HistoFusionSeparationSaisie>;
   createHistoryEntry: (entry: Omit<FusionSeparationHistoryEntry, 'chronoId' | 'timestamp' | 'fullName'>) => Promise<FusionSeparationHistoryEntry>;
   getHistoryByAccount: (accountNumber: number, filiationNumber?: number) => Promise<FusionSeparationHistoryEntry[]>;
   getHistoryByDateRange: (startDate: Date, endDate: Date, operationType?: OperationType) => Promise<FusionSeparationHistoryEntry[]>;
   setLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
-  setLastCreatedEntry: (entry: FusionSeparationHistoryEntry | null) => void;
+  setLastDeletedCount: (count: number) => void;
   setHistoryEntries: (entries: FusionSeparationHistoryEntry[]) => void;
   clearState: () => void;
 }
 
-// RM-343: Extended actions for saisie history
 export interface ExtendedAccountMergeHistoryActions extends AccountMergeHistoryActions {
   createSaisieHistoryEntry: (entry: CreateSaisieHistoryRequest) => Promise<HistoFusionSeparationSaisie>;
   getSaisieHistoryByAccount: (accountNumber: number, filiationNumber?: number) => Promise<HistoFusionSeparationSaisie[]>;
@@ -136,8 +149,6 @@ export interface ExtendedAccountMergeHistoryActions extends AccountMergeHistoryA
 }
 
 export type AccountMergeHistoryStore = AccountMergeHistoryState & AccountMergeHistoryActions;
-
-// RM-343: Extended store type
 export type ExtendedAccountMergeHistoryStore = ExtendedAccountMergeHistoryState & ExtendedAccountMergeHistoryActions;
 
 const FIRST_NAMES = ['Jean', 'Marie', 'Pierre', 'Sophie', 'Luc', 'Anne', 'Marc', 'Claire'] as const;
@@ -158,7 +169,7 @@ export const mockHistoryEntries = Array.from({ length: 5 }, (_, i) => {
     oldPointedFiliation: (i % 5) + 1,
     newPointedAccount: Math.floor(Math.random() * 8000) + 1000,
     newPointedFiliation: (i % 5) + 1,
-    operationType: rand([OPERATION_TYPES.FUSION, OPERATION_TYPES.SEPARATION]),
+    operationType: rand([OPERATION_TYPES.FUSION, OPERATION_TYPES.ENTRY]),
     lastName,
     firstName,
     fullName: `${lastName} ${firstName}`.trim(),
@@ -166,25 +177,14 @@ export const mockHistoryEntries = Array.from({ length: 5 }, (_, i) => {
   } as FusionSeparationHistoryEntry;
 });
 
-// RM-343: Mock saisie history entries
+// SPEC-FIX: Mock data matching exact table 343 structure - only 6 columns as per spec
 export const mockSaisieHistoryEntries = Array.from({ length: 5 }, (_, i) => {
-  const lastName = rand(LAST_NAMES);
-  const firstName = rand(FIRST_NAMES);
-
   return {
-    id: i + 1,
-    companyCode: String(((i % 5) + 1)).padStart(2, '0'),
-    accountNumber: Math.floor(Math.random() * 8000) + 1000,
-    filiationNumber: (i % 5) + 1,
-    targetAccountNumber: Math.floor(Math.random() * 8000) + 1000,
-    targetFiliationNumber: (i % 5) + 1,
-    operationType: rand([OPERATION_TYPES.FUSION, OPERATION_TYPES.SEPARATION]),
-    operatorLastName: lastName,
-    operatorFirstName: firstName,
-    operatorFullName: `${lastName} ${firstName}`.trim(),
-    createdAt: new Date(Date.now() - (Math.floor(Math.random() * 30) + 1) * 24 * 60 * 60 * 1000),
-    updatedAt: new Date(Date.now() - (Math.floor(Math.random() * 15) + 1) * 24 * 60 * 60 * 1000),
-    status: rand(['PENDING', 'COMPLETED', 'CANCELLED'] as const),
-    remarks: Math.random() > 0.5 ? `Remarque ${i + 1}` : null,
+    chronoEF: i + 1,
+    societe: String(((i % 5) + 1)).padStart(2, '0'),
+    compteReference: Math.floor(Math.random() * 8000) + 1000,
+    filiationReference: (i % 5) + 1,
+    comptePointeOld: Math.floor(Math.random() * 8000) + 1000,
+    filiationPointeOld: (i % 5) + 1,
   } as HistoFusionSeparationSaisie;
 });

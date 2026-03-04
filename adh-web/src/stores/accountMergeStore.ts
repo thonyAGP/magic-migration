@@ -30,8 +30,23 @@ interface AccountMergeActions {
   // RM-001: Condition: W0 reseau [M] different de 'R'
   checkNetworkCondition: (network: string) => boolean
   
+  // RM-002: Condition: W0 validation [N] egale 'V'
+  checkValidationEqual: (validation: string) => boolean
+  
+  // RM-003: Condition: W0 validation [N] different de 'V'
+  checkValidationNotEqual: (validation: string) => boolean
+  
+  // RM-004: Condition: W0 chrono histo [BA] egale 'F'
+  checkChronoHistoEqual: (chronoHisto: string) => boolean
+  
+  // RM-005: Condition: W0 chrono histo [BA] different de 'F'
+  checkChronoHistoNotEqual: (chronoHisto: string) => boolean
+  
   // RM-006: Negation de (W0 code LOG existe [BB]) (condition inversee)
   checkCodeLogNotExists: (codeLog: string | null) => boolean
+  
+  // RM-007: Si W0 Filiation garantie ... [BF] alors IF (W0 reprise confirmee [BD] sinon 'RETRY','DONE'),'PASSED')
+  checkFiliationCondition: (filiationGarantie: boolean, repriseConfirmee: boolean) => 'RETRY' | 'DONE' | 'PASSED'
   
   // RM-008: Negation de (W0 reprise confirmee [BD]) (condition inversee)
   checkResumeNotConfirmed: (resumeConfirmed: boolean) => boolean
@@ -53,11 +68,17 @@ interface AccountMergeActions {
 }
 
 interface MergeVariables {
+  // FA: W0 validation
+  validation: string
+  
   // FN: W0 chrono histo
   chronoHisto: string
   
   // FJ: W0 reprise
   reprise: boolean
+  
+  // FQ: W0 filiation garantie
+  filiationGarantie: boolean
 }
 
 const initialState: AccountMergeState = {
@@ -195,11 +216,17 @@ const createMockMergeLogs = (mergeId: number): MergeLog[] => [
 export const useAccountMergeStore = create<AccountMergeState & AccountMergeActions & MergeVariables>((set, get) => ({
   ...initialState,
   
+  // FA: W0 validation
+  validation: '',
+  
   // FN: W0 chrono histo
   chronoHisto: '',
   
   // FJ: W0 reprise
   reprise: false,
+  
+  // FQ: W0 filiation garantie
+  filiationGarantie: false,
 
   validatePrerequisites: async () => {
     const { isRealApi } = useDataSourceStore.getState()
@@ -491,9 +518,37 @@ export const useAccountMergeStore = create<AccountMergeState & AccountMergeActio
     return network !== 'R'
   },
 
+  // RM-002: Condition: W0 validation [N] egale 'V'
+  checkValidationEqual: (validation: string) => { // RM-002
+    return validation === 'V'
+  },
+
+  // RM-003: Condition: W0 validation [N] different de 'V'
+  checkValidationNotEqual: (validation: string) => { // RM-003
+    return validation !== 'V'
+  },
+
+  // RM-004: Condition: W0 chrono histo [BA] egale 'F'
+  checkChronoHistoEqual: (chronoHisto: string) => { // RM-004
+    return chronoHisto === 'F'
+  },
+
+  // RM-005: Condition: W0 chrono histo [BA] different de 'F'
+  checkChronoHistoNotEqual: (chronoHisto: string) => { // RM-005
+    return chronoHisto !== 'F'
+  },
+
   // RM-006: Negation de (W0 code LOG existe [BB]) (condition inversee)
   checkCodeLogNotExists: (codeLog: string | null) => {
     return !codeLog || codeLog.trim() === ''
+  },
+
+  // RM-007: Si W0 Filiation garantie ... [BF] alors IF (W0 reprise confirmee [BD] sinon 'RETRY','DONE'),'PASSED')
+  checkFiliationCondition: (filiationGarantie: boolean, repriseConfirmee: boolean) => { // RM-007
+    if (filiationGarantie) {
+      return repriseConfirmee ? 'DONE' : 'RETRY'
+    }
+    return 'PASSED'
   },
 
   // RM-008: Negation de (W0 reprise confirmee [BD]) (condition inversee)

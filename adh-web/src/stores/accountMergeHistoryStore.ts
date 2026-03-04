@@ -25,7 +25,7 @@ export const useAccountMergeHistoryStore = create<AccountMergeHistoryStore>((set
   setHistoryEntries: (entries: FusionSeparationHistoryEntry[]) => 
     set({ historyEntries: entries }),
 
-  createHistoryEntry: async (entry) => {
+  writeHistoryEntry: async (entry) => {
     set({ isLoading: true, error: null });
     try {
       const validTypes = Object.values(OPERATION_TYPES);
@@ -55,12 +55,24 @@ export const useAccountMergeHistoryStore = create<AccountMergeHistoryStore>((set
       }
 
       const response = await apiClient.post<ApiResponse<FusionSeparationHistoryEntry>>(
-        '/api/account-merge/history',
-        { ...entry, fullName }
+        '/api/histo-fusion-separation-saisie',
+        {
+          chronoEF: entry.chronoId,
+          societe: entry.companyCode,
+          compteReference: entry.referenceAccount,
+          filiationReference: entry.referenceFiliation,
+          comptePointeOld: entry.oldPointedAccount,
+          filiationPointeOld: entry.oldPointedFiliation,
+          comptePointeNew: entry.newPointedAccount,
+          filiationPointeNew: entry.newPointedFiliation,
+          typeEF: entry.operationType,
+          nom: entry.lastName,
+          prenom: entry.firstName
+        }
       );
 
       if (!response.success || !response.data) {
-        throw new Error(response.error || 'Failed to create history entry');
+        throw new Error(response.error || 'Failed to write history entry');
       }
 
       set({ 
@@ -74,6 +86,53 @@ export const useAccountMergeHistoryStore = create<AccountMergeHistoryStore>((set
       set({ error: errorMessage, isLoading: false });
       throw e;
     }
+  },
+
+  // SPEC-FIX: Core DELETE operation for histo_fusionseparation_saisie table (IDE 33 functionality)
+  deleteHistoryEntries: async (criteria?: {
+    chronoId?: number;
+    companyCode?: string;
+    referenceAccount?: number;
+    referenceFiliation?: number;
+    oldPointedAccount?: number;
+    oldPointedFiliation?: number;
+  }) => {
+    set({ isLoading: true, error: null });
+    try {
+      const isRealApi = useDataSourceStore.getState().isRealApi;
+      
+      if (!isRealApi) {
+        set({ 
+          historyEntries: [],
+          isLoading: false 
+        });
+        return { deletedCount: mockHistoryEntries.length };
+      }
+
+      const response = await apiClient.delete<ApiResponse<{ deletedCount: number }>>(
+        '/api/histo-fusion-separation-saisie',
+        criteria ? { data: criteria } : undefined
+      );
+
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Failed to delete history entries');
+      }
+
+      set({ 
+        historyEntries: [],
+        isLoading: false 
+      });
+
+      return response.data;
+    } catch (e) {
+      const errorMessage = e instanceof Error ? e.message : 'Unknown error occurred';
+      set({ error: errorMessage, isLoading: false });
+      throw e;
+    }
+  },
+
+  createHistoryEntry: async (entry) => {
+    return get().writeHistoryEntry(entry);
   },
 
   getHistoryByAccount: async (accountNumber: number, filiationNumber?: number) => {
@@ -113,7 +172,7 @@ export const useAccountMergeHistoryStore = create<AccountMergeHistoryStore>((set
       }
 
       const response = await apiClient.get<ApiResponse<FusionSeparationHistoryEntry[]>>(
-        `/api/account-merge/history?${params.toString()}`
+        `/api/histo-fusion-separation-saisie?${params.toString()}`
       );
 
       if (!response.success || !response.data) {
@@ -176,7 +235,7 @@ export const useAccountMergeHistoryStore = create<AccountMergeHistoryStore>((set
       }
 
       const response = await apiClient.get<ApiResponse<FusionSeparationHistoryEntry[]>>(
-        `/api/account-merge/history/date-range?${params.toString()}`
+        `/api/histo-fusion-separation-saisie/date-range?${params.toString()}`
       );
 
       if (!response.success || !response.data) {
