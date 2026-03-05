@@ -7,6 +7,8 @@ export interface HistoFusionSeparationSaisie {
   filiationReference: number
   comptePointeOld: number
   filiationPointeOld: number
+  iComptePointeOld: number
+  iFiliationPointeOld: number
 }
 
 export interface HistoFusionSeparationCriteria {
@@ -14,6 +16,10 @@ export interface HistoFusionSeparationCriteria {
   societe?: string
   compteReference?: number
   filiationReference?: number
+  comptePointeOld?: number
+  filiationPointeOld?: number
+  iComptePointeOld?: number
+  iFiliationPointeOld?: number
 }
 
 export interface DeletionResult {
@@ -37,6 +43,29 @@ export interface HistoryCleanupActions {
   validateDeletionCriteria: (
     criteria: HistoFusionSeparationCriteria
   ) => Promise<boolean>
+}
+
+export interface AuditLogEntry {
+  operation: "delete"
+  table: "histo_Fus_Sep_Saisie"
+  criteria: HistoFusionSeparationCriteria
+  recordCount: number
+  timestamp: string
+  sessionId?: string
+  userId?: string
+}
+
+export interface GlobalContext {
+  sessionKey?: number
+  currentSociete?: string
+  operationContext?: {
+    compteReference?: number
+    filiationReference?: number
+    comptePointeOld?: number
+    filiationPointeOld?: number
+    iComptePointeOld?: number
+    iFiliationPointeOld?: number
+  }
 }
 
 export type DeleteHistoFusionSeparationSaisieRequest = {

@@ -1,10 +1,10 @@
+import type { HistoFusionSeparationCriteria } from "@/types/historyCleanup"
 import { useCallback, useEffect, useState } from "react"
 import { ScreenLayout } from "@/components/layout"
 import { Button, Dialog, Input } from "@/components/ui"
 import { cn } from "@/lib/utils"
 import { useHistoryCleanupStore } from "@/stores/historyCleanupStore"
 import { useDataSourceStore } from "@/stores/dataSourceStore"
-import type { HistoFusionSeparationCriteria } from "@/types/historyCleanup"
 
 type ValidationStatus = "idle" | "valid" | "invalid"
 
@@ -180,12 +180,11 @@ export const HistoryCleanupPage = () => {
       recordCount,
       timestamp: new Date().toISOString(),
       sessionId: sessionId || sessionContext.sessionId,
-      userId: "current_user" // Would come from auth context in real app
+      userId: "current_user"
     }
     
     setAuditLogs(prev => [...prev, auditEntry])
     
-    // In real implementation, would send to audit service
     console.log("Audit log entry:", auditEntry)
   }, [sessionContext.sessionId])
 
@@ -253,8 +252,8 @@ export const HistoryCleanupPage = () => {
   const isCalledFromFusion = sessionContext.fusionProcessId !== undefined
 
   const hasCriteria = useImplicitCriteria ? 
-    (sessionContext.sessionId || sessionContext.operationKey || sessionContext.fusionProcessId) :
-    (chronoEF || societe || compteReference || filiationReference || iComptePointeOld || iFiliationPointeOld)
+    !!(sessionContext.sessionId || sessionContext.operationKey || sessionContext.fusionProcessId) :
+    !!(chronoEF || societe || compteReference || filiationReference || iComptePointeOld || iFiliationPointeOld)
   
   const canDelete = validationStatus === "valid" && !isLoading && constraintErrors.length === 0
 

@@ -51,6 +51,12 @@ interface FusionSeparationHistoryFilters {
   typeEF?: string
 }
 
+interface FusionSeparationHistoryStoreState extends FusionSeparationHistoryState {
+  historyEntries: FusionSeparationHistoryEntry[]
+  loadHistoryEntries: (filters?: FusionSeparationHistoryFilters) => Promise<void>
+  reset: () => void
+}
+
 const applyFusionSeparationHistoryFilters = (
   entries: FusionSeparationHistoryEntry[],
   filters: FusionSeparationHistoryFilters
@@ -80,7 +86,7 @@ const handleApiError = (error: unknown): string => {
   return error instanceof Error ? error.message : "An unknown error occurred"
 }
 
-export const useFusionSeparationHistoryStore = create<FusionSeparationHistoryState>((set, get) => ({
+export const useFusionSeparationHistoryStore = create<FusionSeparationHistoryStoreState>((set, get) => ({
   historyEntries: [],
   isLoading: false,
   error: null,
@@ -144,7 +150,7 @@ export const useFusionSeparationHistoryStore = create<FusionSeparationHistorySta
   },
 
   formatFullName: (nom: string, prenom: string) => {
-    return `${nom.trim()}&' '&${prenom.trim()}` // SPEC-FIX: Match exact spec concatenation format with & operators
+    return `${nom.trim()}&' '&${prenom.trim()}`
   },
 
   setCurrentEntry: (entry: FusionSeparationHistoryEntry) => {

@@ -49,5 +49,5 @@ export interface HistoFusionSeparationSaisieWriteRequest {
 
 export type FusionSeparationHistoryApiEndpoints = {
   writeEntry: (request: FusionSeparationHistoryWriteRequest) => Promise<ApiResponse<void>>
-  writeHistoFusionSeparationSaisie: (request: HistoFusionSeparationSaisieWriteRequest) => Promise<ApiResponse<void>> // TABLE 343
+  writeHistoFusionSeparationSaisie: (request: HistoFusionSeparationSaisieWriteRequest) => Promise<ApiResponse<void>>
 }

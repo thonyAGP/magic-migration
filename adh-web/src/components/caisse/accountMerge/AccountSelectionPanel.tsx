@@ -20,20 +20,40 @@ const formatDate = (date: Date): string => new Date(date).toLocaleDateString();
 
 const formatBalance = (balance: number): string => `${balance.toFixed(2)} €`;
 
+const AccountDetailsRow = ({ label, value }: { label: string; value: string }) => (
+  <>
+    <dt className="text-gray-600">{label}:</dt>
+    <dd className="font-medium">{value}</dd>
+  </>
+);
+
 const renderAccountDetails = (account: Account, title: string) => (
   <div className="bg-white rounded-lg shadow p-6">
     <h3 className="text-md font-semibold mb-3">{title}</h3>
     <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-      <dt className="text-gray-600">Numéro de compte:</dt>
-      <dd className="font-medium">{account.accountNumber}</dd>
-      <dt className="text-gray-600">Solde:</dt>
-      <dd className="font-medium">{formatBalance(account.balance)}</dd>
-      <dt className="text-gray-600">Statut:</dt>
-      <dd className="font-medium">{account.status}</dd>
-      <dt className="text-gray-600">Date de création:</dt>
-      <dd className="font-medium">{formatDate(account.createdDate)}</dd>
+      <AccountDetailsRow label="Numéro de compte" value={account.accountNumber} />
+      <AccountDetailsRow label="Solde" value={formatBalance(account.balance)} />
+      <AccountDetailsRow label="Statut" value={account.status} />
+      <AccountDetailsRow label="Date de création" value={formatDate(account.createdDate)} />
     </dl>
   </div>
+);
+
+const ValidationDetailsRow = ({ label, value, isStatus = false }: { 
+  label: string; 
+  value: string | boolean; 
+  isStatus?: boolean; 
+}) => (
+  <>
+    <dt className="text-gray-600">{label}:</dt>
+    <dd className={cn(
+      "font-medium",
+      isStatus && value === "OK" ? "text-green-600" : 
+      isStatus && value !== "OK" ? "text-red-600" : ""
+    )}>
+      {typeof value === 'boolean' ? (value ? "Oui" : "Non") : value}
+    </dd>
+  </>
 );
 
 export const AccountSelectionPanel = ({
@@ -111,19 +131,19 @@ export const AccountSelectionPanel = ({
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-md font-semibold mb-3">État de validation</h3>
           <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-            <dt className="text-gray-600">Clôture en cours:</dt>
-            <dd className="font-medium">
-              {validationState.isClosureInProgress ? "Oui" : "Non"}
-            </dd>
-            <dt className="text-gray-600">Statut réseau:</dt>
-            <dd className="font-medium">{validationState.networkStatus}</dd>
-            <dt className="text-gray-600">Statut de validation:</dt>
-            <dd className={cn(
-              "font-medium",
-              validationState.validationStatus === "OK" ? "text-green-600" : "text-red-600"
-            )}>
-              {validationState.validationStatus}
-            </dd>
+            <ValidationDetailsRow 
+              label="Clôture en cours" 
+              value={validationState.isClosureInProgress} 
+            />
+            <ValidationDetailsRow 
+              label="Statut réseau" 
+              value={validationState.networkStatus} 
+            />
+            <ValidationDetailsRow 
+              label="Statut de validation" 
+              value={validationState.validationStatus}
+              isStatus={true}
+            />
           </dl>
         </div>
       )}

@@ -1,10 +1,10 @@
 ```tsx
 import { useCallback, useEffect, useState } from "react";
+import type { BusinessRulesResult } from "@/types/accountMerge";
 import { useAccountMergeStore } from "@/stores/accountMergeStore";
 import { ScreenLayout } from "@/components/layout";
 import { Button, Input, Dialog } from "@/components/ui";
 import { cn } from "@/lib/utils";
-import type { BusinessRulesResult } from "@/types/accountMerge";
 
 const getValidationStepStatuses = (currentStep: string) => ({
   isValidated: currentStep === "validated" || currentStep === "transferring" || currentStep === "updating" || currentStep === "finalizing" || currentStep === "completed",

@@ -581,13 +581,14 @@
       "name": "Fusion",
       "root": "28",
       "programs": 3,
-      "status": "enriched",
+      "status": "verified",
       "enriched_date": "2026-03-04",
+      "verified_date": "2026-03-05",
       "stats": {
         "backend_na": 0,
         "frontend_enrich": 0,
         "fully_impl": 3,
-        "coverage_avg_frontend": 60,
+        "coverage_avg_frontend": 61,
         "total_partial": 0,
         "total_missing": 0
       },

@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { useFusionSeparationHistoryStore } from "@/stores/fusionSeparationHistoryStore"
 import type { FusionSeparationHistoryEntry } from "@/types/fusionSeparationHistory"
 
-const typeEFOptions = ["FUSION", "SEPARATION"] as const
+const TYPE_EF_OPTIONS = ["FUSION", "SEPARATION"] as const
 
 const validateNumber = (value: string, fieldName: string): string => {
   if (!value.trim()) return `${fieldName} is required`
@@ -131,27 +131,27 @@ export const FusionSeparationHistoryPage = () => {
       setCurrentEntry(entry)
       setSubmitSuccess(true)
       clearForm()
-    } catch (err) {
+    } catch {
       setValidationError("Failed to write history entry")
     }
   }, [chronoEF, societe, compteReference, filiationReference, comptePointeOld, filiationPointeOld, comptePointeNew, filiationPointeNew, typeEF, nom, prenom, validateForm, writeHistoryEntry, setCurrentEntry, clearForm])
 
-  const handleFieldChange = useCallback((setter: (value: string) => void) => (value: string) => {
+  const createFieldChangeHandler = useCallback((setter: (value: string) => void) => (value: string) => {
     setter(value)
     setValidationError("")
   }, [])
 
-  const handleChronoEFChange = useCallback(handleFieldChange(setChronoEF), [handleFieldChange])
-  const handleSocieteChange = useCallback(handleFieldChange(setSociete), [handleFieldChange])
-  const handleCompteReferenceChange = useCallback(handleFieldChange(setCompteReference), [handleFieldChange])
-  const handleFiliationReferenceChange = useCallback(handleFieldChange(setFiliationReference), [handleFieldChange])
-  const handleComptePointeOldChange = useCallback(handleFieldChange(setComptePointeOld), [handleFieldChange])
-  const handleFiliationPointeOldChange = useCallback(handleFieldChange(setFiliationPointeOld), [handleFieldChange])
-  const handleComptePointeNewChange = useCallback(handleFieldChange(setComptePointeNew), [handleFieldChange])
-  const handleFiliationPointeNewChange = useCallback(handleFieldChange(setFiliationPointeNew), [handleFieldChange])
-  const handleTypeEFChange = useCallback(handleFieldChange(setTypeEF), [handleFieldChange])
-  const handleNomChange = useCallback(handleFieldChange(setNom), [handleFieldChange])
-  const handlePrenomChange = useCallback(handleFieldChange(setPrenom), [handleFieldChange])
+  const handleChronoEFChange = useCallback(createFieldChangeHandler(setChronoEF), [createFieldChangeHandler])
+  const handleSocieteChange = useCallback(createFieldChangeHandler(setSociete), [createFieldChangeHandler])
+  const handleCompteReferenceChange = useCallback(createFieldChangeHandler(setCompteReference), [createFieldChangeHandler])
+  const handleFiliationReferenceChange = useCallback(createFieldChangeHandler(setFiliationReference), [createFieldChangeHandler])
+  const handleComptePointeOldChange = useCallback(createFieldChangeHandler(setComptePointeOld), [createFieldChangeHandler])
+  const handleFiliationPointeOldChange = useCallback(createFieldChangeHandler(setFiliationPointeOld), [createFieldChangeHandler])
+  const handleComptePointeNewChange = useCallback(createFieldChangeHandler(setComptePointeNew), [createFieldChangeHandler])
+  const handleFiliationPointeNewChange = useCallback(createFieldChangeHandler(setFiliationPointeNew), [createFieldChangeHandler])
+  const handleTypeEFChange = useCallback(createFieldChangeHandler(setTypeEF), [createFieldChangeHandler])
+  const handleNomChange = useCallback(createFieldChangeHandler(setNom), [createFieldChangeHandler])
+  const handlePrenomChange = useCallback(createFieldChangeHandler(setPrenom), [createFieldChangeHandler])
 
   if (isLoading) {
     return (
@@ -329,7 +329,7 @@ export const FusionSeparationHistoryPage = () => {
                     "bg-white text-sm"
                   )}
                 >
-                  {typeEFOptions.map((option) => (
+                  {TYPE_EF_OPTIONS.map((option) => (
                     <option key={option} value={option}>
                       {option}
                     </option>

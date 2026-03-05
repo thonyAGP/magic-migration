@@ -894,6 +894,14 @@ export interface DateComptable {
   operator?: string;
 }
 
+export interface BusinessRulesResult {
+  [key: string]: {
+    passed: boolean;
+    description: string;
+    status?: string;
+  };
+}
+
 export const TABLE_NAMES = {
   GM_RECHERCHE: "gm-recherche_____gmr",
   DEPOT_GARANTIE: "depot_garantie___dga",

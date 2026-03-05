@@ -10,6 +10,51 @@ interface DeletionServicePanelProps {
 
 type ValidationStatus = "idle" | "validating" | "valid" | "invalid"
 
+const parseNumericValue = (value: string): number | undefined => {
+  if (!value.trim()) return undefined
+  const parsed = parseInt(value.trim())
+  return isNaN(parsed) ? undefined : parsed
+}
+
+const getStatusColor = (status: ValidationStatus): string => {
+  switch (status) {
+    case "validating":
+      return "text-blue-600"
+    case "valid":
+      return "text-green-600"
+    case "invalid":
+      return "text-red-600"
+    default:
+      return "text-gray-500"
+  }
+}
+
+const getStatusText = (status: ValidationStatus): string => {
+  switch (status) {
+    case "validating":
+      return "Validation en cours..."
+    case "valid":
+      return "Critères validés"
+    case "invalid":
+      return "Critères invalides ou aucune donnée trouvée"
+    default:
+      return "Saisissez vos critères de suppression"
+  }
+}
+
+const getStatusIndicatorColor = (status: ValidationStatus): string => {
+  switch (status) {
+    case "validating":
+      return "bg-blue-500"
+    case "valid":
+      return "bg-green-500"
+    case "invalid":
+      return "bg-red-500"
+    default:
+      return "bg-gray-300"
+  }
+}
+
 export const DeletionServicePanel = ({ className }: DeletionServicePanelProps) => {
   const {
     isLoading,
@@ -25,12 +70,6 @@ export const DeletionServicePanel = ({ className }: DeletionServicePanelProps) =
   const [filiationReference, setFiliationReference] = useState("")
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [validationStatus, setValidationStatus] = useState<ValidationStatus>("idle")
-
-  const parseNumericValue = useCallback((value: string): number | undefined => {
-    if (!value.trim()) return undefined
-    const parsed = parseInt(value.trim())
-    return isNaN(parsed) ? undefined : parsed
-  }, [])
 
   const buildCriteria = useCallback((): HistoFusionSeparationCriteria => {
     const criteria: HistoFusionSeparationCriteria = {}
@@ -55,7 +94,7 @@ export const DeletionServicePanel = ({ className }: DeletionServicePanelProps) =
     }
     
     return criteria
-  }, [chronoEF, societe, compteReference, filiationReference, parseNumericValue])
+  }, [chronoEF, societe, compteReference, filiationReference])
 
   const handleValidateCriteria = useCallback(async () => {
     const criteria = buildCriteria()
@@ -109,45 +148,6 @@ export const DeletionServicePanel = ({ className }: DeletionServicePanelProps) =
       setValidationStatus("idle")
     }, []
   )
-
-  const getStatusColor = (): string => {
-    switch (validationStatus) {
-      case "validating":
-        return "text-blue-600"
-      case "valid":
-        return "text-green-600"
-      case "invalid":
-        return "text-red-600"
-      default:
-        return "text-gray-500"
-    }
-  }
-
-  const getStatusText = (): string => {
-    switch (validationStatus) {
-      case "validating":
-        return "Validation en cours..."
-      case "valid":
-        return "Critères validés"
-      case "invalid":
-        return "Critères invalides ou aucune donnée trouvée"
-      default:
-        return "Saisissez vos critères de suppression"
-    }
-  }
-
-  const getStatusIndicatorColor = (): string => {
-    switch (validationStatus) {
-      case "validating":
-        return "bg-blue-500"
-      case "valid":
-        return "bg-green-500"
-      case "invalid":
-        return "bg-red-500"
-      default:
-        return "bg-gray-300"
-    }
-  }
 
   return (
     <>
@@ -216,9 +216,9 @@ export const DeletionServicePanel = ({ className }: DeletionServicePanelProps) =
 
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className={cn("w-3 h-3 rounded-full", getStatusIndicatorColor())} />
-            <span className={cn("text-sm font-medium", getStatusColor())}>
-              {getStatusText()}
+            <div className={cn("w-3 h-3 rounded-full", getStatusIndicatorColor(validationStatus))} />
+            <span className={cn("text-sm font-medium", getStatusColor(validationStatus))}>
+              {getStatusText(validationStatus)}
             </span>
           </div>
 
