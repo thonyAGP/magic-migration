@@ -28,5 +28,5 @@ export interface FusionSeparationHistoryWriteRequest {
 }
 
 export type FusionSeparationHistoryApiEndpoints = {
-  writeEntry: ApiResponse<FusionSeparationHistoryWriteRequest, void>
+  writeEntry: (request: FusionSeparationHistoryWriteRequest) => Promise<void> // SPEC-FIX
 }

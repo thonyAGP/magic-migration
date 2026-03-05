@@ -62,10 +62,10 @@ export const useHistoryCleanupStore = create<HistoryCleanupStore>((set, get) => 
         if (criteria.filiationReference !== undefined) {
           queryParams.append('filiationReference', criteria.filiationReference.toString())
         }
-        if (criteria.comptePointeOld !== undefined) { // SPEC-FIX: added missing criteria
+        if (criteria.comptePointeOld !== undefined) {
           queryParams.append('comptePointeOld', criteria.comptePointeOld.toString())
         }
-        if (criteria.filiationPointeOld !== undefined) { // SPEC-FIX: added missing criteria
+        if (criteria.filiationPointeOld !== undefined) {
           queryParams.append('filiationPointeOld', criteria.filiationPointeOld.toString())
         }
 
@@ -136,8 +136,8 @@ export const useHistoryCleanupStore = create<HistoryCleanupStore>((set, get) => 
           criteria.societe || 
           criteria.compteReference !== undefined || 
           criteria.filiationReference !== undefined ||
-          criteria.comptePointeOld !== undefined || // SPEC-FIX: added missing criteria validation
-          criteria.filiationPointeOld !== undefined // SPEC-FIX: added missing criteria validation
+          criteria.comptePointeOld !== undefined ||
+          criteria.filiationPointeOld !== undefined
         )
 
         const isValid = hasAnyCriteria && (
