@@ -15,7 +15,7 @@ export interface FusionSeparationHistoryEntry {
 }
 
 export interface FusionSeparationHistoryState {
-  historyEntries: FusionSeparationHistoryEntry[]
+  // SPEC-FIX: Removed historyEntries - spec shows R:0 (no read operations, write-only table)
   isLoading: boolean
   error: string | null
   currentEntry: FusionSeparationHistoryEntry | null

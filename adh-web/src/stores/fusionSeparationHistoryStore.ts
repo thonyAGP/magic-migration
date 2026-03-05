@@ -54,24 +54,72 @@ export const useFusionSeparationHistoryStore = create<FusionSeparationHistorySta
 
   writeHistoryEntry: async (entry: FusionSeparationHistoryEntry) => {
     set({ isLoading: true, error: null })
-    
+
     try {
       const isRealApi = useDataSourceStore.getState().isRealApi
-      
+
       if (isRealApi) {
         await apiClient.post("/api/fusion-separation-history/entries", { entry })
       } else {
         await new Promise(resolve => setTimeout(resolve, 500))
         mockHistoryEntries.push({ ...entry })
       }
-      
+
       const currentEntries = get().historyEntries
-      set({ 
+      set({
         historyEntries: [...currentEntries, entry],
-        isLoading: false 
+        isLoading: false
       })
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to write history entry"
+      set({ error: errorMessage, isLoading: false })
+      throw error
+    }
+  },
+
+  loadHistoryEntries: async (filters?: { societe?: string; compteReference?: number; typeEF?: string }) => {
+    set({ isLoading: true, error: null })
+
+    try {
+      const isRealApi = useDataSourceStore.getState().isRealApi
+
+      if (isRealApi) {
+        const response = await apiClient.get<FusionSeparationHistoryEntry[]>(
+          "/api/fusion-separation-history/entries",
+          { params: filters }
+        )
+        set({
+          historyEntries: response.data || [],
+          isLoading: false
+        })
+      } else {
+        let filteredEntries = [...mockHistoryEntries]
+
+        if (filters) {
+          if (filters.societe) {
+            filteredEntries = filteredEntries.filter(entry =>
+              entry.societe.toLowerCase().includes(filters.societe!.toLowerCase())
+            )
+          }
+          if (filters.compteReference !== undefined) {
+            filteredEntries = filteredEntries.filter(entry =>
+              entry.compteReference === filters.compteReference
+            )
+          }
+          if (filters.typeEF) {
+            filteredEntries = filteredEntries.filter(entry =>
+              entry.typeEF === filters.typeEF
+            )
+          }
+        }
+
+        set({
+          historyEntries: filteredEntries,
+          isLoading: false
+        })
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to load history entries"
       set({ error: errorMessage, isLoading: false })
       throw error
     }

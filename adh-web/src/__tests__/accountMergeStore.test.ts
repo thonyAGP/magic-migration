@@ -45,6 +45,8 @@ describe("accountMergeStore", () => {
   beforeEach(() => {
     useAccountMergeStore.getState().reset();
     vi.clearAllMocks();
+    vi.mocked(apiClient.get).mockReset();
+    vi.mocked(apiClient.post).mockReset();
   });
 
   describe("validateMergeConditions with real API", () => {
@@ -182,6 +184,12 @@ describe("accountMergeStore", () => {
     });
 
     it("should execute merge successfully with progress updates", async () => {
+      useAccountMergeStore.setState({
+        repriseConfirmee: true,
+        chronoHisto: 6,
+        reprise: false,
+      });
+
       const mockResponse: ApiResponse<MergeHistory> = {
         success: true,
         data: MOCK_MERGE_HISTORY,
@@ -228,6 +236,12 @@ describe("accountMergeStore", () => {
     });
 
     it("should handle API failure during merge", async () => {
+      useAccountMergeStore.setState({
+        repriseConfirmee: true,
+        chronoHisto: 6,
+        reprise: false,
+      });
+
       const mockResponse: ApiResponse<MergeHistory> = {
         success: false,
         error: "Merge execution failed",
@@ -256,6 +270,12 @@ describe("accountMergeStore", () => {
     });
 
     it("should execute merge with mock data and create history with PASSED status (RM-008)", async () => {
+      useAccountMergeStore.setState({
+        repriseConfirmee: true,
+        chronoHisto: 6,
+        reprise: false,
+      });
+
       const store = useAccountMergeStore.getState();
       const initialHistoryCount = store.mergeHistories.length;
 

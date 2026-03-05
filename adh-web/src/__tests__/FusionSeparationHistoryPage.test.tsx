@@ -108,8 +108,16 @@ describe("FusionSeparationHistoryPage", () => {
   it("validates numeric fields", async () => {
     render(<FusionSeparationHistoryPage />)
     
-    const chronoInput = screen.getByLabelText(/chrono ef/i)
-    fireEvent.change(chronoInput, { target: { value: "-1" } })
+    fireEvent.change(screen.getByLabelText(/chrono ef/i), { target: { value: "-1" } })
+    fireEvent.change(screen.getByLabelText(/société/i), { target: { value: "Test Company" } })
+    fireEvent.change(screen.getByLabelText(/compte reference/i), { target: { value: "456" } })
+    fireEvent.change(screen.getByLabelText(/filiation reference/i), { target: { value: "789" } })
+    fireEvent.change(screen.getByLabelText(/compte pointe old/i), { target: { value: "111" } })
+    fireEvent.change(screen.getByLabelText(/filiation pointe old/i), { target: { value: "222" } })
+    fireEvent.change(screen.getByLabelText(/compte pointe new/i), { target: { value: "333" } })
+    fireEvent.change(screen.getByLabelText(/filiation pointe new/i), { target: { value: "444" } })
+    fireEvent.change(screen.getByLabelText("Nom *"), { target: { value: "Doe" } })
+    fireEvent.change(screen.getByLabelText("Prénom *"), { target: { value: "John" } })
     
     const submitButton = screen.getByText("Write History Entry")
     fireEvent.click(submitButton)
@@ -160,6 +168,8 @@ describe("FusionSeparationHistoryPage", () => {
     
     render(<FusionSeparationHistoryPage />)
     
+    const chronoInput = screen.getByLabelText(/chrono ef/i) as HTMLInputElement
+    
     fireEvent.change(screen.getByLabelText(/chrono ef/i), { target: { value: "123" } })
     fireEvent.change(screen.getByLabelText(/société/i), { target: { value: "Test Company" } })
     fireEvent.change(screen.getByLabelText(/compte reference/i), { target: { value: "456" } })
@@ -175,7 +185,8 @@ describe("FusionSeparationHistoryPage", () => {
     fireEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText(/history entry written successfully/i)).toBeInTheDocument()
+      expect(mockStore.writeHistoryEntry).toHaveBeenCalled()
+      expect(chronoInput.value).toBe("")
     })
   })
 

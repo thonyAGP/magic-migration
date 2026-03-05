@@ -87,6 +87,10 @@ import { SessionListPage } from '@/pages/SessionListPage'
 describe('SessionListPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockSessionListStore.fetchSessions = vi.fn()
+    mockSessionListStore.setFilters = vi.fn()
+    mockSessionListStore.clearError = vi.fn()
+    mockSessionListStore.reset = vi.fn()
     mockSessionListStore.sessions = []
     mockSessionListStore.isLoading = false
     mockSessionListStore.error = null
@@ -215,7 +219,7 @@ describe('SessionListPage', () => {
     fireEvent.change(input, { target: { value: 'Test Société' } })
     fireEvent.change(input, { target: { value: '' } })
     
-    expect(mockSessionListStore.setFilters).toHaveBeenCalledWith({ societe: null })
+    expect(mockSessionListStore.setFilters).toHaveBeenLastCalledWith({ societe: null })
   })
 
   it('handles error dismissal', () => {

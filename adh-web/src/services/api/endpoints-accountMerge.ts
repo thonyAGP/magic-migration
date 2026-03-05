@@ -160,7 +160,10 @@ const deleteHistoFusSepSaisie = async (sessionId: string): Promise<ApiResponse<v
   return apiClient.delete<void>(`/api/accountMerge/histo-saisie/${sessionId}`)
 }
 
-const fetchAccountTitle = async (accountId: string): Promise<ApiResponse<AccountTitle>> => {
+const fetchAccountTitle = async (accountId: string): Promise<ApiResponse<AccountTitle>> => { // CALLEE 43: Recuperation du titre
+  if (!accountId || accountId.trim().length === 0) {
+    throw new Error("Account ID is required for title retrieval")
+  }
   return apiClient.get<AccountTitle>(`/api/accountMerge/account-title/${accountId}`)
 }
 
@@ -168,20 +171,34 @@ const readHistoFusSepLog = async (mergeId: number): Promise<ApiResponse<HistoFus
   return apiClient.get<HistoFusSepLog[]>(`/api/accountMerge/histo-log/${mergeId}`)
 }
 
-const printSeparationOrFusion = async (mergeId: number, printType: "separation" | "fusion"): Promise<ApiResponse<void>> => {
+const printSeparationOrFusion = async (mergeId: number, printType: "separation" | "fusion"): Promise<ApiResponse<void>> => { // CALLEE 36: Print Separation ou fusion
+  if (mergeId <= 0) {
+    throw new Error("Valid merge ID is required for printing")
+  }
+  if (printType !== "separation" && printType !== "fusion") {
+    throw new Error("Print type must be either 'separation' or 'fusion'")
+  }
   return apiClient.post<void>("/api/accountMerge/print", { mergeId, printType })
 }
 
-const getPrinter = async (): Promise<ApiResponse<PrinterInfo>> => {
-  return apiClient.get<PrinterInfo>("/api/accountMerge/printer")
+const getPrinter = async (): Promise<ApiResponse<PrinterInfo>> => { // CALLEE 180: Printer choice
+  const response = await apiClient.get<PrinterInfo>("/api/accountMerge/printer")
+  if (response.success && !response.data) {
+    throw new Error("No printer available")
+  }
+  return response
 }
 
 const setListingNumber = async (listingNumber: string): Promise<ApiResponse<void>> => {
   return apiClient.post<void>("/api/accountMerge/set-listing-number", { listingNumber })
 }
 
-const resetCurrentPrinter = async (): Promise<ApiResponse<void>> => {
-  return apiClient.post<void>("/api/accountMerge/reset-printer", {})
+const resetCurrentPrinter = async (): Promise<ApiResponse<void>> => { // CALLEE 182: Raz Current Printer
+  const response = await apiClient.post<void>("/api/accountMerge/reset-printer", {})
+  if (!response.success) {
+    throw new Error("Failed to reset current printer")
+  }
+  return response
 }
 
 export const accountMergeApi = {

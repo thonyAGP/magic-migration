@@ -2,7 +2,7 @@
   "version": "1.0",
   "methodology": "SPECMAP",
   "created": "2026-02-11",
-  "updated": "2026-03-04",
+  "updated": "2026-03-05",
   "status": "verifying",
   "stats": {
     "total_programs": 350,
@@ -587,7 +587,7 @@
         "backend_na": 0,
         "frontend_enrich": 0,
         "fully_impl": 3,
-        "coverage_avg_frontend": 44,
+        "coverage_avg_frontend": 53,
         "total_partial": 0,
         "total_missing": 0
       },
@@ -692,6 +692,95 @@
       "errors": [],
       "startedAt": "2026-03-04T21:48:35.919Z",
       "completedAt": "2026-03-04T21:59:59.946Z"
+    },
+    "32": {
+      "status": "completed",
+      "currentPhase": null,
+      "phases": {
+        "spec": {
+          "status": "completed",
+          "startedAt": "2026-03-04T23:23:10.204Z",
+          "completedAt": "2026-03-04T23:23:10.238Z",
+          "duration": 0,
+          "file": "..\\..\\.openspec\\specs\\ADH-IDE-32.md"
+        },
+        "contract": {
+          "status": "completed",
+          "startedAt": "2026-03-04T23:23:10.257Z",
+          "completedAt": "2026-03-04T23:23:10.287Z",
+          "duration": 0,
+          "file": "..\\..\\.openspec\\migration\\ADH\\ADH-IDE-32.contract.yaml"
+        },
+        "analyze": {
+          "status": "completed",
+          "startedAt": "2026-03-04T23:23:10.335Z",
+          "completedAt": "2026-03-04T23:23:10.336Z",
+          "duration": 0,
+          "file": "..\\..\\.openspec\\migration\\ADH\\ADH-IDE-32.analysis.json"
+        },
+        "types": {
+          "status": "completed",
+          "startedAt": "2026-03-04T23:23:10.357Z",
+          "completedAt": "2026-03-04T23:23:10.392Z",
+          "duration": 0,
+          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\types\\fusionSeparationHistory.ts"
+        },
+        "store": {
+          "status": "completed",
+          "startedAt": "2026-03-04T23:23:10.410Z",
+          "completedAt": "2026-03-04T23:23:10.442Z",
+          "duration": 0,
+          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\stores\\fusionSeparationHistoryStore.ts"
+        },
+        "api": {
+          "status": "completed",
+          "startedAt": "2026-03-04T23:23:10.462Z",
+          "completedAt": "2026-03-04T23:23:10.492Z",
+          "duration": 0,
+          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\services\\api\\endpoints-fusionSeparationHistory.ts"
+        },
+        "page": {
+          "status": "completed",
+          "startedAt": "2026-03-04T23:23:10.509Z",
+          "completedAt": "2026-03-04T23:23:10.543Z",
+          "duration": 0,
+          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\pages\\FusionSeparationHistoryPage.tsx"
+        },
+        "components": {
+          "status": "completed",
+          "startedAt": "2026-03-04T23:23:10.561Z",
+          "completedAt": "2026-03-04T23:23:10.599Z",
+          "duration": 3
+        },
+        "tests-unit": {
+          "status": "completed",
+          "startedAt": "2026-03-04T23:23:10.618Z",
+          "completedAt": "2026-03-04T23:23:10.647Z",
+          "duration": 0,
+          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\__tests__\\fusionSeparationHistoryStore.test.ts"
+        },
+        "tests-ui": {
+          "status": "completed",
+          "startedAt": "2026-03-04T23:23:10.667Z",
+          "completedAt": "2026-03-04T23:23:10.696Z",
+          "duration": 0,
+          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\__tests__\\FusionSeparationHistoryPage.test.tsx"
+        }
+      },
+      "files": [
+        "..\\..\\.openspec\\specs\\ADH-IDE-32.md",
+        "..\\..\\.openspec\\migration\\ADH\\ADH-IDE-32.contract.yaml",
+        "..\\..\\.openspec\\migration\\ADH\\ADH-IDE-32.analysis.json",
+        "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\types\\fusionSeparationHistory.ts",
+        "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\stores\\fusionSeparationHistoryStore.ts",
+        "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\services\\api\\endpoints-fusionSeparationHistory.ts",
+        "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\pages\\FusionSeparationHistoryPage.tsx",
+        "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\__tests__\\fusionSeparationHistoryStore.test.ts",
+        "D:\\Projects\\ClubMed\\LecteurMagic\\adh-web\\src\\__tests__\\FusionSeparationHistoryPage.test.tsx"
+      ],
+      "errors": [],
+      "startedAt": "2026-03-04T23:23:10.204Z",
+      "completedAt": "2026-03-04T23:23:10.714Z"
     },
     "33": {
       "status": "completed",

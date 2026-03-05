@@ -115,6 +115,23 @@ export interface HistoFusionSeparation {
   validated: boolean;
 }
 
+export interface HistoFusionSeparationLog {
+  id: number;
+  fusionSeparationId: number;
+  operationType: "FUSION" | "SEPARATION";
+  logDate: Date;
+  logLevel: "INFO" | "WARNING" | "ERROR" | "DEBUG";
+  logMessage: string;
+  operationStep?: string;
+  accountIdSource?: string;
+  accountIdTarget?: string;
+  operator: string;
+  errorCode?: string;
+  stackTrace?: string;
+  additionalData?: Record<string, unknown>;
+  sessionId?: string;
+}
+
 export interface CompteGm {
   accountId: string;
   accountNumber: string;
@@ -485,6 +502,398 @@ export interface Table947 {
   relatedAccountId?: string;
 }
 
+export interface Table1059 {
+  id: number;
+  entityId: string;
+  recordType: string;
+  recordData: Record<string, unknown>;
+  recordDate: Date;
+  status: string;
+  operator?: string;
+  accountId?: string;
+  relatedEntityType?: string;
+  relatedEntityId?: string;
+}
+
+export interface Hebergement {
+  id: number;
+  accountId: string;
+  roomNumber: string;
+  roomType: string;
+  checkInDate: Date;
+  checkOutDate?: Date;
+  numberOfGuests: number;
+  status: string;
+  rateCode?: string;
+  dailyRate: number;
+  totalAmount: number;
+  operator?: string;
+  notes?: string;
+}
+
+export interface HebCircuit {
+  id: number;
+  hebergementId: number;
+  circuitCode: string;
+  circuitType: string;
+  circuitDate: Date;
+  destination?: string;
+  duration?: number;
+  pricePerPerson: number;
+  numberOfParticipants: number;
+  status: string;
+  operator?: string;
+}
+
+export interface CcTotalParType {
+  id: number;
+  accountId: string;
+  typeCode: string;
+  typeLabel: string;
+  totalAmount: number;
+  totalDate: Date;
+  fiscalPeriod: string;
+  numberOfTransactions: number;
+  validated: boolean;
+  validationDate?: Date;
+  operator?: string;
+}
+
+export interface CcTypeDetail {
+  id: number;
+  ccTotalParTypeId: number;
+  accountId: string;
+  detailCode: string;
+  detailLabel: string;
+  amount: number;
+  quantity: number;
+  unitPrice: number;
+  transactionDate: Date;
+  status: string;
+  operator?: string;
+}
+
+export interface LignesDeSolde {
+  id: number;
+  accountId: string;
+  lineType: string;
+  lineDate: Date;
+  debitAmount: number;
+  creditAmount: number;
+  balance: number;
+  description: string;
+  referenceNumber?: string;
+  validated: boolean;
+  validationDate?: Date;
+  fiscalPeriod?: string;
+  operator?: string;
+}
+
+export interface CcTotal {
+  id: number;
+  accountId: string;
+  totalDate: Date;
+  totalDebit: number;
+  totalCredit: number;
+  balance: number;
+  fiscalPeriod: string;
+  numberOfLines: number;
+  status: string;
+  validated: boolean;
+  validationDate?: Date;
+  operator?: string;
+}
+
+export interface Participants {
+  id: number;
+  accountId: string;
+  voyageId?: number;
+  firstName: string;
+  lastName: string;
+  dateOfBirth?: Date;
+  passportNumber?: string;
+  nationality?: string;
+  participantType: string;
+  registrationDate: Date;
+  status: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  emergencyContact?: string;
+  specialRequirements?: string;
+}
+
+export interface Voyages {
+  id: number;
+  accountId: string;
+  voyageCode: string;
+  destination: string;
+  departureDate: Date;
+  returnDate: Date;
+  numberOfDays: number;
+  numberOfNights: number;
+  basePrice: number;
+  status: string;
+  travelAgent?: string;
+  bookingDate: Date;
+  confirmationNumber?: string;
+  cancelled: boolean;
+  cancellationDate?: Date;
+  operator?: string;
+}
+
+export interface BlDetail {
+  id: number;
+  blNumber: string;
+  accountId: string;
+  lineNumber: number;
+  itemCode: string;
+  itemDescription: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+  taxRate: number;
+  taxAmount: number;
+  lineDate: Date;
+  status: string;
+  operator?: string;
+}
+
+export interface ComptableGratuite {
+  id: number;
+  accountId: string;
+  gratuitType: string;
+  gratuitCode: string;
+  amount: number;
+  accountingDate: Date;
+  accountNumber: string;
+  fiscalPeriod: string;
+  description?: string;
+  approvedBy?: string;
+  approvalDate?: Date;
+  status: string;
+  validated: boolean;
+  validationDate?: Date;
+  operator?: string;
+}
+
+export interface ImportMod {
+  id: number;
+  importId: string;
+  moduleName: string;
+  importDate: Date;
+  importType: string;
+  recordCount: number;
+  status: string;
+  errorCount?: number;
+  successCount?: number;
+  operator: string;
+  completionDate?: Date;
+  batchId?: string;
+  sourceFile?: string;
+}
+
+export interface DepotDevises {
+  id: number;
+  accountId: string;
+  currency: string;
+  depositAmount: number;
+  depositDate: Date;
+  exchangeRate: number;
+  localCurrencyAmount: number;
+  status: string;
+  operator: string;
+  transactionId?: string;
+  retrievalDate?: Date;
+  notes?: string;
+}
+
+export interface PmsPrintParam {
+  id: number;
+  parameterId: string;
+  parameterName: string;
+  parameterValue: string;
+  parameterType: string;
+  effectiveDate: Date;
+  expirationDate?: Date;
+  printerId?: string;
+  printerModel?: string;
+  pageSize?: string;
+  orientation?: string;
+  copies?: number;
+  status: string;
+  operator?: string;
+}
+
+export interface DetailsPartici {
+  id: number;
+  participantId: number;
+  accountId: string;
+  detailType: string;
+  detailValue: string;
+  detailDate: Date;
+  activityCode?: string;
+  amount?: number;
+  quantity?: number;
+  status: string;
+  operator?: string;
+  notes?: string;
+  validated: boolean;
+}
+
+export interface SoldeDevises {
+  id: number;
+  accountId: string;
+  currency: string;
+  balance: number;
+  balanceDate: Date;
+  lastMovementDate?: Date;
+  lastMovementType?: string;
+  status: string;
+  localCurrencyEquivalent: number;
+  exchangeRate: number;
+  operator?: string;
+}
+
+export interface PvDiscountReasons {
+  id: number;
+  reasonCode: string;
+  reasonLabel: string;
+  reasonCategory: string;
+  discountPercentage?: number;
+  discountAmount?: number;
+  maxDiscountAmount?: number;
+  requiresApproval: boolean;
+  approverLevel?: string;
+  effectiveDate: Date;
+  expirationDate?: Date;
+  status: string;
+  displayOrder?: number;
+  notes?: string;
+}
+
+export interface Commentaire {
+  id: number;
+  entityType: string;
+  entityId: string;
+  commentText: string;
+  commentDate: Date;
+  commentType: string;
+  userId: string;
+  userName?: string;
+  category?: string;
+  priority?: string;
+  status: string;
+  parentCommentId?: number;
+  attachments?: string[];
+  visibility?: string;
+}
+
+export interface ValeurCreditBarDefaut {
+  id: number;
+  barLocationId: string;
+  creditType: string;
+  defaultCreditAmount: number;
+  currency: string;
+  effectiveDate: Date;
+  expirationDate?: Date;
+  clientCategory?: string;
+  roomType?: string;
+  packageCode?: string;
+  minimumCreditAmount?: number;
+  maximumCreditAmount?: number;
+  status: string;
+  operator?: string;
+  notes?: string;
+}
+
+export interface ClientGm {
+  id: number;
+  clientId: string;
+  accountNumber: string;
+  clientType: string;
+  firstName: string;
+  lastName: string;
+  companyName?: string;
+  dateOfBirth?: Date;
+  nationality?: string;
+  idDocumentType?: string;
+  idDocumentNumber?: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  city?: string;
+  postalCode?: string;
+  country?: string;
+  phoneNumber?: string;
+  mobileNumber?: string;
+  email?: string;
+  registrationDate: Date;
+  lastVisitDate?: Date;
+  status: string;
+  vipStatus?: string;
+  loyaltyProgram?: string;
+  loyaltyPoints?: number;
+  preferredLanguage?: string;
+  marketingConsent: boolean;
+  notes?: string;
+}
+
+export interface Vendeurs {
+  id: number;
+  vendorId: string;
+  vendorCode: string;
+  firstName: string;
+  lastName: string;
+  displayName?: string;
+  position: string;
+  department?: string;
+  hireDate: Date;
+  departureDate?: Date;
+  status: string;
+  email?: string;
+  phoneNumber?: string;
+  commissionRate?: number;
+  targetSales?: number;
+  currentSales?: number;
+  lastSaleDate?: Date;
+  performanceRating?: string;
+  supervisor?: string;
+  notes?: string;
+}
+
+export interface Troncon {
+  id: number;
+  tronconCode: string;
+  accountId?: string;
+  segmentType: string;
+  startDate: Date;
+  endDate?: Date;
+  description?: string;
+  status: string;
+  amount?: number;
+  quantity?: number;
+  operator?: string;
+  parentTronconId?: number;
+  validated: boolean;
+  validationDate?: Date;
+}
+
+export interface DateComptable {
+  id: number;
+  comptableDate: Date;
+  fiscalPeriod: string;
+  fiscalYear: number;
+  periodType: string;
+  periodStartDate: Date;
+  periodEndDate: Date;
+  status: string;
+  closureDate?: Date;
+  closedBy?: string;
+  validated: boolean;
+  validationDate?: Date;
+  notes?: string;
+  operator?: string;
+}
+
 export const TABLE_NAMES = {
   GM_RECHERCHE: "gm-recherche_____gmr",
   DEPOT_GARANTIE: "depot_garantie___dga",
@@ -516,6 +925,30 @@ export const TABLE_NAMES = {
   DEPOT_OBJETS: "depot_objets_____doa",
   HEURE_DE_PASSAGE: "heure_de_passage",
   TABLE_947: "Table_947",
+  TABLE_1059: "Table_1059",
+  HEBERGEMENT: "hebergement______heb",
+  HEB_CIRCUIT: "heb_circuit______hci",
+  CC_TOTAL_PAR_TYPE: "cc_total_par_type",
+  CC_TYPE_DETAIL: "cc_type_detail",
+  LIGNES_DE_SOLDE: "lignes_de_solde__sld",
+  CC_TOTAL: "cc_total",
+  PARTICIPANTS: "participants_____par",
+  VOYAGES: "voyages__________voy",
+  BL_DETAIL: "bl_detail",
+  COMPTABLE_GRATUITE: "comptable_gratuite",
+  IMPORT_MOD: "import_mod",
+  DEPOT_DEVISES: "depot_devises____dda",
+  PMS_PRINT_PARAM: "pms_print_param",
+  DETAILS_PARTICI: "details_partici__dpa",
+  SOLDE_DEVISES: "solde_devises____sda",
+  PV_DISCOUNT_REASONS: "pv_discount_reasons",
+  COMMENTAIRE: "commentaire______com",
+  VALEUR_CREDIT_BAR_DEFAUT: "valeur_credit_bar_defaut",
+  CLIENT_GM: "client_gm",
+  VENDEURS: "vendeurs_________ven",
+  TRONCON: "troncon__________tro",
+  HISTO_FUSION_SEPARATION_LOG: "histo__fusionseparation_log",
+  DATE_COMPTABLE: "date_comptable___dat",
 } as const;
 
 export const ACCOUNT_MERGE_ACTIONS = {
