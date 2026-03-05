@@ -99,7 +99,7 @@ describe("fusionSeparationHistoryStore", () => {
       await useFusionSeparationHistoryStore.getState().writeHistoryEntry(MOCK_ENTRY_1)
 
       const state = useFusionSeparationHistoryStore.getState()
-      expect(apiClient.post).toHaveBeenCalledWith("/api/fusion-separation-history/entries", { entry: MOCK_ENTRY_1 })
+      expect(apiClient.post).toHaveBeenCalledWith("/api/histo-fusionseparation-saisie", { entry: MOCK_ENTRY_1 })
       expect(state.historyEntries).toEqual([MOCK_ENTRY_1])
       expect(state.isLoading).toBe(false)
       expect(state.error).toBeNull()
@@ -153,7 +153,7 @@ describe("fusionSeparationHistoryStore", () => {
       await useFusionSeparationHistoryStore.getState().loadHistoryEntries()
 
       const state = useFusionSeparationHistoryStore.getState()
-      expect(apiClient.get).toHaveBeenCalledWith("/api/fusion-separation-history/entries", { params: undefined })
+      expect(apiClient.get).toHaveBeenCalledWith("/api/histo-fusionseparation-saisie", { params: undefined })
       expect(state.historyEntries).toEqual(MOCK_HISTORY_ENTRIES.slice(0, 3))
       expect(state.isLoading).toBe(false)
       expect(state.error).toBeNull()
@@ -172,7 +172,7 @@ describe("fusionSeparationHistoryStore", () => {
       await useFusionSeparationHistoryStore.getState().loadHistoryEntries(filters)
 
       const state = useFusionSeparationHistoryStore.getState()
-      expect(apiClient.get).toHaveBeenCalledWith("/api/fusion-separation-history/entries", { params: filters })
+      expect(apiClient.get).toHaveBeenCalledWith("/api/histo-fusionseparation-saisie", { params: filters })
       expect(state.historyEntries).toEqual(filteredEntries)
     })
 

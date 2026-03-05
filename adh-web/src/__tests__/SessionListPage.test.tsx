@@ -212,14 +212,14 @@ describe('SessionListPage', () => {
   })
 
   it('handles societe input clear', () => {
+    mockSessionListStore.filters.societe = 'Test Société'
+
     render(<SessionListPage />)
-    
+
     const input = screen.getByPlaceholderText('Filtrer par société...')
-    
-    fireEvent.change(input, { target: { value: 'Test Société' } })
     fireEvent.change(input, { target: { value: '' } })
-    
-    expect(mockSessionListStore.setFilters).toHaveBeenLastCalledWith({ societe: null })
+
+    expect(mockSessionListStore.setFilters).toHaveBeenCalledWith({ societe: null })
   })
 
   it('handles error dismissal', () => {

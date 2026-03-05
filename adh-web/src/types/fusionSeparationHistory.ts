@@ -15,7 +15,6 @@ export interface FusionSeparationHistoryEntry {
 }
 
 export interface FusionSeparationHistoryState {
-  // SPEC-FIX: Removed historyEntries - spec shows R:0 (no read operations, write-only table)
   isLoading: boolean
   error: string | null
   currentEntry: FusionSeparationHistoryEntry | null
@@ -28,7 +27,6 @@ export interface FusionSeparationHistoryWriteRequest {
   entry: FusionSeparationHistoryEntry
 }
 
-// SPEC-FIX: Removed getEntries endpoint - spec indicates W:1 R:0 L:0 (write-only, no read operations)
 export type FusionSeparationHistoryApiEndpoints = {
   writeEntry: ApiResponse<FusionSeparationHistoryWriteRequest, void>
 }

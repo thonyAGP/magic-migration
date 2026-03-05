@@ -62,6 +62,12 @@ export const useHistoryCleanupStore = create<HistoryCleanupStore>((set, get) => 
         if (criteria.filiationReference !== undefined) {
           queryParams.append('filiationReference', criteria.filiationReference.toString())
         }
+        if (criteria.comptePointeOld !== undefined) { // SPEC-FIX: added missing criteria
+          queryParams.append('comptePointeOld', criteria.comptePointeOld.toString())
+        }
+        if (criteria.filiationPointeOld !== undefined) { // SPEC-FIX: added missing criteria
+          queryParams.append('filiationPointeOld', criteria.filiationPointeOld.toString())
+        }
 
         const url = `/api/historyCleanup/fusionSeparationSaisie?${queryParams.toString()}`
         const response = await apiClient.delete<DeleteHistoFusionSeparationSaisieResponse>(url)
@@ -129,7 +135,9 @@ export const useHistoryCleanupStore = create<HistoryCleanupStore>((set, get) => 
           criteria.chronoEF || 
           criteria.societe || 
           criteria.compteReference !== undefined || 
-          criteria.filiationReference !== undefined
+          criteria.filiationReference !== undefined ||
+          criteria.comptePointeOld !== undefined || // SPEC-FIX: added missing criteria validation
+          criteria.filiationPointeOld !== undefined // SPEC-FIX: added missing criteria validation
         )
 
         const isValid = hasAnyCriteria && (

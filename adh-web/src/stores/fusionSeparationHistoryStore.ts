@@ -59,7 +59,8 @@ export const useFusionSeparationHistoryStore = create<FusionSeparationHistorySta
       const isRealApi = useDataSourceStore.getState().isRealApi
 
       if (isRealApi) {
-        await apiClient.post("/api/fusion-separation-history/entries", { entry })
+        // SPEC-FIX: Updated API endpoint to match histo_fusionseparation_saisie table
+        await apiClient.post("/api/histo-fusionseparation-saisie", { entry })
       } else {
         await new Promise(resolve => setTimeout(resolve, 500))
         mockHistoryEntries.push({ ...entry })
@@ -85,7 +86,8 @@ export const useFusionSeparationHistoryStore = create<FusionSeparationHistorySta
 
       if (isRealApi) {
         const response = await apiClient.get<FusionSeparationHistoryEntry[]>(
-          "/api/fusion-separation-history/entries",
+          // SPEC-FIX: Updated API endpoint to match histo_fusionseparation_saisie table
+          "/api/histo-fusionseparation-saisie",
           { params: filters }
         )
         set({
@@ -126,6 +128,7 @@ export const useFusionSeparationHistoryStore = create<FusionSeparationHistorySta
   },
 
   formatFullName: (nom: string, prenom: string) => {
+    // SPEC-FIX: Corrected to match expression 12 - Trim (i nom)&' '&Trim (i prenom)
     return `${nom.trim()} ${prenom.trim()}`
   },
 
