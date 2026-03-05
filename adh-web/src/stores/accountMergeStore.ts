@@ -7,7 +7,6 @@ import type {
   MergeValidation,
   ValidateMergeResponse,
   ExecuteMergeResponse,
-  FetchMergeHistoryResponse,
   RollbackMergeResponse,
   PrintMergeTicketResponse,
 } from "@/types/accountMerge";
@@ -16,10 +15,10 @@ import { apiClient } from "@/services/api/apiClient";
 
 type AccountMergeStore = AccountMergeState & AccountMergeActions & {
   reset: () => void;
-  reseau: string | null; // Magic: W0 reseau (EZ)
-  chronoHisto: number | null; // Magic: W0 chrono histo (FN)
-  reprise: boolean; // Magic: W0 reprise (FJ)
-  repriseConfirmee: boolean; // Magic: W0 reprise confirmee (FQ)
+  reseau: string | null;
+  chronoHisto: number | null;
+  reprise: boolean;
+  repriseConfirmee: boolean;
   setReseau: (value: string | null) => void;
   setChronoHisto: (value: number | null) => void;
   setReprise: (value: boolean) => void;
@@ -104,6 +103,114 @@ const initialState: AccountMergeState & Pick<AccountMergeStore, "reseau" | "chro
   repriseConfirmee: false,
 };
 
+const handleMergeExecution = async (
+  sourceAccountId: string,
+  targetAccountId: string,
+  state: AccountMergeStore,
+  set: (partial: Partial<AccountMergeStore>) => void,
+  get: () => AccountMergeStore
+) => {
+  const chronoValue = state.chronoHisto ?? 6;
+  const repriseAuto = state.reprise;
+  const sansInterface = false;
+  const globalFlag78 = false;
+  const logCodeExists = false;
+  const repriseConfirmed = state.repriseConfirmee;
+  const compteRemplace = false;
+  const filiationGarantie = true;
+
+  if (state.currentStep === "F") { 
+    throw new Error("Merge already finalized"); // RM-004
+  }
+
+  if (state.currentStep !== "F") { // RM-005
+    if (!logCodeExists) { // RM-006
+      if (chronoValue === 6 || repriseAuto) { // RM-010
+        if (!sansInterface) { // RM-012
+          if (!globalFlag78) { // RM-013
+            if (repriseConfirmed) { // RM-011
+              if (!compteRemplace) { // RM-009
+                if (filiationGarantie) { // RM-007
+                  const mergeStatus = repriseConfirmed ? "PASSED" : "RETRY"; // RM-008
+
+                  set({ mergeProgress: 25, currentStep: "transferring" });
+                  await new Promise((resolve) => setTimeout(resolve, 500));
+
+                  set({ mergeProgress: 50, currentStep: "updating" });
+                  await new Promise((resolve) => setTimeout(resolve, 500));
+
+                  set({ mergeProgress: 75, currentStep: "recording" });
+                  await new Promise((resolve) => setTimeout(resolve, 500));
+
+                  const isRealApi = useDataSourceStore.getState().isRealApi;
+
+                  if (isRealApi) {
+                    const response = await apiClient.post<ExecuteMergeResponse>(
+                      "/api/accountMerge/execute",
+                      {
+                        sourceAccountId,
+                        targetAccountId,
+                      }
+                    );
+
+                    if (!response.success) {
+                      throw new Error(response.error || "Merge execution failed");
+                    }
+
+                    set({
+                      mergeProgress: 100,
+                      currentStep: "completed",
+                      isLoading: false,
+                      mergeHistories: [...state.mergeHistories, response.data],
+                    });
+                  } else {
+                    await new Promise((resolve) => setTimeout(resolve, 800));
+
+                    const newHistory: MergeHistory = {
+                      id: Date.now(),
+                      sourceAccount: sourceAccountId,
+                      targetAccount: targetAccountId,
+                      mergeDate: new Date(),
+                      operator: "Current User",
+                      status: mergeStatus,
+                    };
+
+                    set({
+                      mergeProgress: 100,
+                      currentStep: "completed",
+                      isLoading: false,
+                      mergeHistories: [...state.mergeHistories, newHistory],
+                    });
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+const handleValidationSuccess = (
+  validation: MergeValidation,
+  sourceAccountId: string,
+  targetAccountId: string,
+  set: (partial: Partial<AccountMergeStore>) => void
+) => {
+  set({
+    validationState: validation,
+    reseau: validation.networkStatus,
+    chronoHisto: 6,
+    reprise: false,
+    repriseConfirmee: false,
+    sourceAccount: { ...mockSourceAccount, accountNumber: sourceAccountId },
+    targetAccount: { ...mockTargetAccount, accountNumber: targetAccountId },
+    currentStep: "validated",
+    isLoading: false,
+  });
+};
+
 export const useAccountMergeStore = create<AccountMergeStore>((set, get) => ({
   ...initialState,
 
@@ -124,21 +231,13 @@ export const useAccountMergeStore = create<AccountMergeStore>((set, get) => ({
 
         const validation = response.data;
 
-        if (validation.validationStatus === "V") { throw new Error("Closure in progress, merge not allowed"); } // RM-002
+        if (validation.validationStatus === "V") { 
+          throw new Error("Closure in progress, merge not allowed"); // RM-002
+        }
 
         if (validation.validationStatus !== "V") { // RM-003
           if (validation.networkStatus !== "R") { // RM-001
-            set({
-              validationState: validation,
-              reseau: validation.networkStatus,
-              chronoHisto: 6,
-              reprise: false,
-              repriseConfirmee: false,
-              sourceAccount: mockSourceAccount,
-              targetAccount: mockTargetAccount,
-              currentStep: "validated",
-              isLoading: false,
-            });
+            handleValidationSuccess(validation, sourceAccountId, targetAccountId, set);
           } else {
             throw new Error("Network blocked, merge not allowed");
           }
@@ -152,21 +251,13 @@ export const useAccountMergeStore = create<AccountMergeStore>((set, get) => ({
           validationStatus: "PASSED",
         };
 
-        if (mockValidationState.validationStatus === "V") { throw new Error("Closure in progress, merge not allowed"); } // RM-002
+        if (mockValidationState.validationStatus === "V") { 
+          throw new Error("Closure in progress, merge not allowed"); // RM-002
+        }
 
         if (mockValidationState.validationStatus !== "V") { // RM-003
           if (mockValidationState.networkStatus !== "R") { // RM-001
-            set({
-              validationState: mockValidationState,
-              reseau: mockValidationState.networkStatus,
-              chronoHisto: 6,
-              reprise: false,
-              repriseConfirmee: false,
-              sourceAccount: { ...mockSourceAccount, accountNumber: sourceAccountId },
-              targetAccount: { ...mockTargetAccount, accountNumber: targetAccountId },
-              currentStep: "validated",
-              isLoading: false,
-            });
+            handleValidationSuccess(mockValidationState, sourceAccountId, targetAccountId, set);
           } else {
             throw new Error("Network blocked, merge not allowed");
           }
@@ -183,85 +274,8 @@ export const useAccountMergeStore = create<AccountMergeStore>((set, get) => ({
     set({ isLoading: true, error: null, mergeProgress: 0 });
 
     try {
-      const isRealApi = useDataSourceStore.getState().isRealApi;
       const state = get();
-
-      const chronoValue = state.chronoHisto ?? 6;
-      const repriseAuto = state.reprise;
-      const sansInterface = false;
-      const globalFlag78 = false;
-      const logCodeExists = false;
-      const repriseConfirmed = state.repriseConfirmee;
-      const compteRemplace = false;
-      const filiationGarantie = true;
-
-      if (state.currentStep === "F") { throw new Error("Merge already finalized"); } // RM-004
-
-      if (state.currentStep !== "F") { // RM-005
-        if (!logCodeExists) { // RM-006
-          if (chronoValue === 6 || repriseAuto) { // RM-010
-            if (!sansInterface) { // RM-012
-              if (!globalFlag78) { // RM-013
-                if (repriseConfirmed) { // RM-011
-                  if (!compteRemplace) { // RM-009
-                    if (filiationGarantie) { // RM-007
-                      const mergeStatus = repriseConfirmed ? "PASSED" : "RETRY"; // RM-008
-
-                      set({ mergeProgress: 25, currentStep: "transferring" });
-                      await new Promise((resolve) => setTimeout(resolve, 500));
-
-                      set({ mergeProgress: 50, currentStep: "updating" });
-                      await new Promise((resolve) => setTimeout(resolve, 500));
-
-                      set({ mergeProgress: 75, currentStep: "recording" });
-                      await new Promise((resolve) => setTimeout(resolve, 500));
-
-                      if (isRealApi) {
-                        const response = await apiClient.post<ExecuteMergeResponse>(
-                          "/api/accountMerge/execute",
-                          {
-                            sourceAccountId,
-                            targetAccountId,
-                          }
-                        );
-
-                        if (!response.success) {
-                          throw new Error(response.error || "Merge execution failed");
-                        }
-
-                        set({
-                          mergeProgress: 100,
-                          currentStep: "completed",
-                          isLoading: false,
-                          mergeHistories: [...state.mergeHistories, response.data],
-                        });
-                      } else {
-                        await new Promise((resolve) => setTimeout(resolve, 800));
-
-                        const newHistory: MergeHistory = {
-                          id: Date.now(),
-                          sourceAccount: sourceAccountId,
-                          targetAccount: targetAccountId,
-                          mergeDate: new Date(),
-                          operator: "Current User",
-                          status: mergeStatus,
-                        };
-
-                        set({
-                          mergeProgress: 100,
-                          currentStep: "completed",
-                          isLoading: false,
-                          mergeHistories: [...state.mergeHistories, newHistory],
-                        });
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+      await handleMergeExecution(sourceAccountId, targetAccountId, state, set, get);
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : "Unknown error occurred";
       set({ error: errorMessage, isLoading: false, mergeProgress: 0 });

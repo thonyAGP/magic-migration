@@ -2,11 +2,13 @@ import { useState, useCallback } from "react"
 import { Button, Dialog, Input } from "@/components/ui"
 import { cn } from "@/lib/utils"
 import { useHistoryCleanupStore } from "@/stores/historyCleanupStore"
-import type { HistoFusionSeparationCriteria, DeletionResult } from "@/types/historyCleanup"
+import type { HistoFusionSeparationCriteria } from "@/types/historyCleanup"
 
 interface DeletionServicePanelProps {
   className?: string
 }
+
+type ValidationStatus = "idle" | "validating" | "valid" | "invalid"
 
 export const DeletionServicePanel = ({ className }: DeletionServicePanelProps) => {
   const {
@@ -22,38 +24,38 @@ export const DeletionServicePanel = ({ className }: DeletionServicePanelProps) =
   const [compteReference, setCompteReference] = useState("")
   const [filiationReference, setFiliationReference] = useState("")
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
-  const [validationStatus, setValidationStatus] = useState<"idle" | "validating" | "valid" | "invalid">("idle")
+  const [validationStatus, setValidationStatus] = useState<ValidationStatus>("idle")
+
+  const parseNumericValue = useCallback((value: string): number | undefined => {
+    if (!value.trim()) return undefined
+    const parsed = parseInt(value.trim())
+    return isNaN(parsed) ? undefined : parsed
+  }, [])
 
   const buildCriteria = useCallback((): HistoFusionSeparationCriteria => {
     const criteria: HistoFusionSeparationCriteria = {}
     
-    if (chronoEF.trim()) {
-      const parsed = parseInt(chronoEF.trim())
-      if (!isNaN(parsed)) {
-        criteria.chronoEF = parsed
-      }
+    const chronoEFParsed = parseNumericValue(chronoEF)
+    if (chronoEFParsed !== undefined) {
+      criteria.chronoEF = chronoEFParsed
     }
     
     if (societe.trim()) {
       criteria.societe = societe.trim()
     }
     
-    if (compteReference.trim()) {
-      const parsed = parseInt(compteReference.trim())
-      if (!isNaN(parsed)) {
-        criteria.compteReference = parsed
-      }
+    const compteReferenceParsed = parseNumericValue(compteReference)
+    if (compteReferenceParsed !== undefined) {
+      criteria.compteReference = compteReferenceParsed
     }
     
-    if (filiationReference.trim()) {
-      const parsed = parseInt(filiationReference.trim())
-      if (!isNaN(parsed)) {
-        criteria.filiationReference = parsed
-      }
+    const filiationReferenceParsed = parseNumericValue(filiationReference)
+    if (filiationReferenceParsed !== undefined) {
+      criteria.filiationReference = filiationReferenceParsed
     }
     
     return criteria
-  }, [chronoEF, societe, compteReference, filiationReference])
+  }, [chronoEF, societe, compteReference, filiationReference, parseNumericValue])
 
   const handleValidateCriteria = useCallback(async () => {
     const criteria = buildCriteria()
@@ -73,6 +75,14 @@ export const DeletionServicePanel = ({ className }: DeletionServicePanelProps) =
     }
   }, [buildCriteria, validateDeletionCriteria])
 
+  const resetForm = useCallback(() => {
+    setChronoEF("")
+    setSociete("")
+    setCompteReference("")
+    setFiliationReference("")
+    setValidationStatus("idle")
+  }, [])
+
   const handleDeleteClick = useCallback(() => {
     if (validationStatus === "valid") {
       setShowConfirmDialog(true)
@@ -87,17 +97,20 @@ export const DeletionServicePanel = ({ className }: DeletionServicePanelProps) =
     try {
       await deleteHistoFusionSeparationSaisie(criteria)
       setShowConfirmDialog(false)
-      setChronoEF("")
-      setSociete("")
-      setCompteReference("")
-      setFiliationReference("")
-      setValidationStatus("idle")
+      resetForm()
     } catch {
       setShowConfirmDialog(false)
     }
-  }, [buildCriteria, deleteHistoFusionSeparationSaisie])
+  }, [buildCriteria, deleteHistoFusionSeparationSaisie, resetForm])
 
-  const getStatusColor = () => {
+  const handleInputChange = useCallback((setter: (value: string) => void) => 
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setter(e.target.value)
+      setValidationStatus("idle")
+    }, []
+  )
+
+  const getStatusColor = (): string => {
     switch (validationStatus) {
       case "validating":
         return "text-blue-600"
@@ -110,7 +123,7 @@ export const DeletionServicePanel = ({ className }: DeletionServicePanelProps) =
     }
   }
 
-  const getStatusText = () => {
+  const getStatusText = (): string => {
     switch (validationStatus) {
       case "validating":
         return "Validation en cours..."
@@ -120,6 +133,19 @@ export const DeletionServicePanel = ({ className }: DeletionServicePanelProps) =
         return "Critères invalides ou aucune donnée trouvée"
       default:
         return "Saisissez vos critères de suppression"
+    }
+  }
+
+  const getStatusIndicatorColor = (): string => {
+    switch (validationStatus) {
+      case "validating":
+        return "bg-blue-500"
+      case "valid":
+        return "bg-green-500"
+      case "invalid":
+        return "bg-red-500"
+      default:
+        return "bg-gray-300"
     }
   }
 
@@ -137,10 +163,7 @@ export const DeletionServicePanel = ({ className }: DeletionServicePanelProps) =
               <Input
                 type="number"
                 value={chronoEF}
-                onChange={(e) => {
-                  setChronoEF(e.target.value)
-                  setValidationStatus("idle")
-                }}
+                onChange={handleInputChange(setChronoEF)}
                 placeholder="Numéro chronologique"
                 disabled={isLoading}
                 className="w-full"
@@ -154,10 +177,7 @@ export const DeletionServicePanel = ({ className }: DeletionServicePanelProps) =
               <Input
                 type="text"
                 value={societe}
-                onChange={(e) => {
-                  setSociete(e.target.value)
-                  setValidationStatus("idle")
-                }}
+                onChange={handleInputChange(setSociete)}
                 placeholder="Code société"
                 disabled={isLoading}
                 className="w-full"
@@ -171,10 +191,7 @@ export const DeletionServicePanel = ({ className }: DeletionServicePanelProps) =
               <Input
                 type="number"
                 value={compteReference}
-                onChange={(e) => {
-                  setCompteReference(e.target.value)
-                  setValidationStatus("idle")
-                }}
+                onChange={handleInputChange(setCompteReference)}
                 placeholder="Numéro de compte"
                 disabled={isLoading}
                 className="w-full"
@@ -188,10 +205,7 @@ export const DeletionServicePanel = ({ className }: DeletionServicePanelProps) =
               <Input
                 type="number"
                 value={filiationReference}
-                onChange={(e) => {
-                  setFiliationReference(e.target.value)
-                  setValidationStatus("idle")
-                }}
+                onChange={handleInputChange(setFiliationReference)}
                 placeholder="Numéro de filiation"
                 disabled={isLoading}
                 className="w-full"
@@ -202,12 +216,7 @@ export const DeletionServicePanel = ({ className }: DeletionServicePanelProps) =
 
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className={cn("w-3 h-3 rounded-full", {
-              "bg-blue-500": validationStatus === "validating",
-              "bg-green-500": validationStatus === "valid",
-              "bg-red-500": validationStatus === "invalid",
-              "bg-gray-300": validationStatus === "idle"
-            })} />
+            <div className={cn("w-3 h-3 rounded-full", getStatusIndicatorColor())} />
             <span className={cn("text-sm font-medium", getStatusColor())}>
               {getStatusText()}
             </span>

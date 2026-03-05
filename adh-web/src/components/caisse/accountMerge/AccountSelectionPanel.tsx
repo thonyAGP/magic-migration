@@ -16,6 +16,26 @@ interface AccountSelectionPanelProps {
   className?: string;
 }
 
+const formatDate = (date: Date): string => new Date(date).toLocaleDateString();
+
+const formatBalance = (balance: number): string => `${balance.toFixed(2)} €`;
+
+const renderAccountDetails = (account: Account, title: string) => (
+  <div className="bg-white rounded-lg shadow p-6">
+    <h3 className="text-md font-semibold mb-3">{title}</h3>
+    <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+      <dt className="text-gray-600">Numéro de compte:</dt>
+      <dd className="font-medium">{account.accountNumber}</dd>
+      <dt className="text-gray-600">Solde:</dt>
+      <dd className="font-medium">{formatBalance(account.balance)}</dd>
+      <dt className="text-gray-600">Statut:</dt>
+      <dd className="font-medium">{account.status}</dd>
+      <dt className="text-gray-600">Date de création:</dt>
+      <dd className="font-medium">{formatDate(account.createdDate)}</dd>
+    </dl>
+  </div>
+);
+
 export const AccountSelectionPanel = ({
   sourceAccountInput,
   targetAccountInput,
@@ -83,41 +103,9 @@ export const AccountSelectionPanel = ({
         </div>
       </div>
 
-      {sourceAccount && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-md font-semibold mb-3">Compte source</h3>
-          <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-            <dt className="text-gray-600">Numéro de compte:</dt>
-            <dd className="font-medium">{sourceAccount.accountNumber}</dd>
-            <dt className="text-gray-600">Solde:</dt>
-            <dd className="font-medium">{sourceAccount.balance.toFixed(2)} €</dd>
-            <dt className="text-gray-600">Statut:</dt>
-            <dd className="font-medium">{sourceAccount.status}</dd>
-            <dt className="text-gray-600">Date de création:</dt>
-            <dd className="font-medium">
-              {new Date(sourceAccount.createdDate).toLocaleDateString()}
-            </dd>
-          </dl>
-        </div>
-      )}
+      {sourceAccount && renderAccountDetails(sourceAccount, "Compte source")}
 
-      {targetAccount && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-md font-semibold mb-3">Compte cible</h3>
-          <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-            <dt className="text-gray-600">Numéro de compte:</dt>
-            <dd className="font-medium">{targetAccount.accountNumber}</dd>
-            <dt className="text-gray-600">Solde:</dt>
-            <dd className="font-medium">{targetAccount.balance.toFixed(2)} €</dd>
-            <dt className="text-gray-600">Statut:</dt>
-            <dd className="font-medium">{targetAccount.status}</dd>
-            <dt className="text-gray-600">Date de création:</dt>
-            <dd className="font-medium">
-              {new Date(targetAccount.createdDate).toLocaleDateString()}
-            </dd>
-          </dl>
-        </div>
-      )}
+      {targetAccount && renderAccountDetails(targetAccount, "Compte cible")}
 
       {validationState && (
         <div className="bg-white rounded-lg shadow p-6">

@@ -19,7 +19,7 @@ export const MergeExecutionPanel = ({ className }: MergeExecutionPanelProps) => 
     reset,
   } = useAccountMergeStore();
 
-  const handleExecuteMerge = useCallback(async () => {
+  const handleExecuteAccountMerge = useCallback(async () => {
     if (!sourceAccount || !targetAccount) {
       return;
     }
@@ -30,11 +30,11 @@ export const MergeExecutionPanel = ({ className }: MergeExecutionPanelProps) => 
     }
   }, [sourceAccount, targetAccount, executeMerge]);
 
-  const handleCancel = useCallback(() => {
+  const handleCancelAccountMerge = useCallback(() => {
     reset();
   }, [reset]);
 
-  const canExecute = sourceAccount && targetAccount && !isLoading;
+  const canExecuteAccountMerge = sourceAccount && targetAccount && !isLoading;
 
   return (
     <div className={cn("space-y-6", className)}>
@@ -67,14 +67,14 @@ export const MergeExecutionPanel = ({ className }: MergeExecutionPanelProps) => 
 
       <div className="flex gap-3">
         <Button
-          onClick={handleExecuteMerge}
-          disabled={!canExecute}
+          onClick={handleExecuteAccountMerge}
+          disabled={!canExecuteAccountMerge}
           className="flex-1"
         >
           {isLoading ? "Fusion en cours..." : "Exécuter la fusion"}
         </Button>
         <Button
-          onClick={handleCancel}
+          onClick={handleCancelAccountMerge}
           variant="outline"
           disabled={isLoading}
         >

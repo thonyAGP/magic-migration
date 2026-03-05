@@ -1,22 +1,27 @@
-import { apiClient } from "@/services/api/apiClient"
 import type { ApiResponse } from "@/services/api/apiClient"
+import { apiClient } from "@/services/api/apiClient"
 import type { 
-  DeleteHistoFusionSeparationSaisieRequest, 
-  DeleteHistoFusionSeparationSaisieResponse,
   HistoFusionSeparationCriteria,
-  DeletionResult
+  DeletionResult,
+  DeleteHistoFusionSeparationSaisieResponse
 } from "@/types/historyCleanup"
+
+const buildQueryParams = (criteria: HistoFusionSeparationCriteria): URLSearchParams => {
+  const queryParams = new URLSearchParams()
+
+  if (criteria.chronoEF) queryParams.append('chronoEF', criteria.chronoEF.toString())
+  if (criteria.societe) queryParams.append('societe', criteria.societe)
+  if (criteria.compteReference) queryParams.append('compteReference', criteria.compteReference.toString())
+  if (criteria.filiationReference) queryParams.append('filiationReference', criteria.filiationReference.toString())
+
+  return queryParams
+}
 
 export const historyCleanupService = {
   deleteHistoFusionSeparationSaisie: async (
     criteria: HistoFusionSeparationCriteria
   ): Promise<DeletionResult> => {
-    const queryParams = new URLSearchParams()
-
-    if (criteria.chronoEF) queryParams.append('chronoEF', criteria.chronoEF.toString())
-    if (criteria.societe) queryParams.append('societe', criteria.societe)
-    if (criteria.compteReference) queryParams.append('compteReference', criteria.compteReference.toString())
-    if (criteria.filiationReference) queryParams.append('filiationReference', criteria.filiationReference.toString())
+    const queryParams = buildQueryParams(criteria)
 
     const response: DeleteHistoFusionSeparationSaisieResponse = await apiClient.delete(
       `/api/historyCleanup/fusionSeparationSaisie?${queryParams.toString()}`

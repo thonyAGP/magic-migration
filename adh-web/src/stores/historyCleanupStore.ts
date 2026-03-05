@@ -14,14 +14,14 @@ type HistoryCleanupStore = HistoryCleanupState & HistoryCleanupActions & {
   reset: () => void
 }
 
-const initialState: HistoryCleanupState = {
+const initialHistoryCleanupState: HistoryCleanupState = {
   isLoading: false,
   error: null,
   deletionCriteria: null,
   deletionResult: null
 }
 
-const mockDeletionResults: DeletionResult[] = [
+const mockHistoryCleanupResults: DeletionResult[] = [
   {
     recordsDeleted: 125,
     success: true,
@@ -39,8 +39,58 @@ const mockDeletionResults: DeletionResult[] = [
   }
 ]
 
+const buildHistoryCleanupQueryParams = (criteria: HistoFusionSeparationCriteria): URLSearchParams => {
+  const queryParams = new URLSearchParams()
+  
+  if (criteria.chronoEF !== undefined) {
+    queryParams.append('chronoEF', criteria.chronoEF.toString())
+  }
+  if (criteria.societe) {
+    queryParams.append('societe', criteria.societe)
+  }
+  if (criteria.compteReference !== undefined) {
+    queryParams.append('compteReference', criteria.compteReference.toString())
+  }
+  if (criteria.filiationReference !== undefined) {
+    queryParams.append('filiationReference', criteria.filiationReference.toString())
+  }
+  if (criteria.comptePointeOld !== undefined) {
+    queryParams.append('comptePointeOld', criteria.comptePointeOld.toString())
+  }
+  if (criteria.filiationPointeOld !== undefined) {
+    queryParams.append('filiationPointeOld', criteria.filiationPointeOld.toString())
+  }
+  
+  return queryParams
+}
+
+const validateHistoryCleanupCriteriaMock = (criteria: HistoFusionSeparationCriteria): boolean => {
+  const hasAnyCriteria = !!(
+    criteria.chronoEF || 
+    criteria.societe || 
+    criteria.compteReference !== undefined || 
+    criteria.filiationReference !== undefined ||
+    criteria.comptePointeOld !== undefined ||
+    criteria.filiationPointeOld !== undefined
+  )
+
+  return hasAnyCriteria && (!criteria.societe || criteria.societe.length >= 2)
+}
+
+const generateMockHistoryCleanupResult = (): DeletionResult => {
+  const mockResult = mockHistoryCleanupResults[
+    Math.floor(Math.random() * mockHistoryCleanupResults.length)
+  ]
+
+  return {
+    ...mockResult,
+    timestamp: new Date().toISOString(),
+    recordsDeleted: Math.floor(Math.random() * 200) + 50
+  }
+}
+
 export const useHistoryCleanupStore = create<HistoryCleanupStore>((set, get) => ({
-  ...initialState,
+  ...initialHistoryCleanupState,
 
   deleteHistoFusionSeparationSaisie: async (criteria: HistoFusionSeparationCriteria): Promise<DeletionResult> => {
     set({ isLoading: true, error: null, deletionCriteria: criteria })
@@ -49,26 +99,7 @@ export const useHistoryCleanupStore = create<HistoryCleanupStore>((set, get) => 
       const isRealApi = useDataSourceStore.getState().isRealApi
 
       if (isRealApi) {
-        const queryParams = new URLSearchParams()
-        if (criteria.chronoEF !== undefined) {
-          queryParams.append('chronoEF', criteria.chronoEF.toString())
-        }
-        if (criteria.societe) {
-          queryParams.append('societe', criteria.societe)
-        }
-        if (criteria.compteReference !== undefined) {
-          queryParams.append('compteReference', criteria.compteReference.toString())
-        }
-        if (criteria.filiationReference !== undefined) {
-          queryParams.append('filiationReference', criteria.filiationReference.toString())
-        }
-        if (criteria.comptePointeOld !== undefined) {
-          queryParams.append('comptePointeOld', criteria.comptePointeOld.toString())
-        }
-        if (criteria.filiationPointeOld !== undefined) {
-          queryParams.append('filiationPointeOld', criteria.filiationPointeOld.toString())
-        }
-
+        const queryParams = buildHistoryCleanupQueryParams(criteria)
         const url = `/api/historyCleanup/fusionSeparationSaisie?${queryParams.toString()}`
         const response = await apiClient.delete<DeleteHistoFusionSeparationSaisieResponse>(url)
 
@@ -85,15 +116,7 @@ export const useHistoryCleanupStore = create<HistoryCleanupStore>((set, get) => 
       } else {
         await new Promise(resolve => setTimeout(resolve, 1200))
 
-        const mockResult = mockDeletionResults[
-          Math.floor(Math.random() * mockDeletionResults.length)
-        ]
-
-        const result: DeletionResult = {
-          ...mockResult,
-          timestamp: new Date().toISOString(),
-          recordsDeleted: Math.floor(Math.random() * 200) + 50
-        }
+        const result = generateMockHistoryCleanupResult()
 
         set({ 
           deletionResult: result,
@@ -131,18 +154,7 @@ export const useHistoryCleanupStore = create<HistoryCleanupStore>((set, get) => 
       } else {
         await new Promise(resolve => setTimeout(resolve, 800))
 
-        const hasAnyCriteria = !!(
-          criteria.chronoEF || 
-          criteria.societe || 
-          criteria.compteReference !== undefined || 
-          criteria.filiationReference !== undefined ||
-          criteria.comptePointeOld !== undefined ||
-          criteria.filiationPointeOld !== undefined
-        )
-
-        const isValid = hasAnyCriteria && (
-          !criteria.societe || criteria.societe.length >= 2
-        )
+        const isValid = validateHistoryCleanupCriteriaMock(criteria)
 
         set({ isLoading: false })
         return isValid
@@ -158,6 +170,6 @@ export const useHistoryCleanupStore = create<HistoryCleanupStore>((set, get) => 
   },
 
   reset: () => {
-    set(initialState)
+    set(initialHistoryCleanupState)
   }
 }))

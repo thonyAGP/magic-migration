@@ -10,6 +10,29 @@ interface CompletionPanelProps {
   className?: string;
 }
 
+const formatDateTime = (date: Date): string => new Date(date).toLocaleString("fr-FR");
+
+const getStatusConfig = (status: string) => {
+  const isSuccess = status.toLowerCase() === "success";
+  
+  return {
+    isSuccess,
+    containerClasses: isSuccess 
+      ? "bg-green-50 border border-green-200" 
+      : "bg-red-50 border border-red-200",
+    indicatorClasses: isSuccess ? "bg-green-500" : "bg-red-500",
+    textClasses: isSuccess ? "text-green-900" : "text-red-900",
+    label: isSuccess ? "Fusion réussie" : "Fusion échouée"
+  };
+};
+
+const AccountMergeInfoRow = ({ label, value }: { label: string; value: string }) => (
+  <div className="flex flex-col gap-1">
+    <span className="text-sm text-gray-600">{label}</span>
+    <span className="font-medium">{value}</span>
+  </div>
+);
+
 export const CompletionPanel = ({
   mergeHistory,
   onPrintTicket,
@@ -17,7 +40,7 @@ export const CompletionPanel = ({
   isLoading = false,
   className,
 }: CompletionPanelProps) => {
-  const isSuccess = mergeHistory.status.toLowerCase() === "success";
+  const statusConfig = getStatusConfig(mergeHistory.status);
 
   return (
     <div className={cn("flex flex-col gap-6 p-6 bg-white rounded-lg shadow", className)}>
@@ -26,42 +49,40 @@ export const CompletionPanel = ({
         
         <div className={cn(
           "flex items-center gap-2 p-4 rounded-lg",
-          isSuccess ? "bg-green-50 border border-green-200" : "bg-red-50 border border-red-200"
+          statusConfig.containerClasses
         )}>
           <div className={cn(
             "w-3 h-3 rounded-full",
-            isSuccess ? "bg-green-500" : "bg-red-500"
+            statusConfig.indicatorClasses
           )} />
           <span className={cn(
             "font-medium",
-            isSuccess ? "text-green-900" : "text-red-900"
+            statusConfig.textClasses
           )}>
-            {isSuccess ? "Fusion réussie" : "Fusion échouée"}
+            {statusConfig.label}
           </span>
         </div>
 
         <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
-          <div className="flex flex-col gap-1">
-            <span className="text-sm text-gray-600">Compte source</span>
-            <span className="font-medium">{mergeHistory.sourceAccount}</span>
-          </div>
+          <AccountMergeInfoRow
+            label="Compte source"
+            value={mergeHistory.sourceAccount}
+          />
           
-          <div className="flex flex-col gap-1">
-            <span className="text-sm text-gray-600">Compte cible</span>
-            <span className="font-medium">{mergeHistory.targetAccount}</span>
-          </div>
+          <AccountMergeInfoRow
+            label="Compte cible"
+            value={mergeHistory.targetAccount}
+          />
           
-          <div className="flex flex-col gap-1">
-            <span className="text-sm text-gray-600">Date de fusion</span>
-            <span className="font-medium">
-              {new Date(mergeHistory.mergeDate).toLocaleString("fr-FR")}
-            </span>
-          </div>
+          <AccountMergeInfoRow
+            label="Date de fusion"
+            value={formatDateTime(mergeHistory.mergeDate)}
+          />
           
-          <div className="flex flex-col gap-1">
-            <span className="text-sm text-gray-600">Opérateur</span>
-            <span className="font-medium">{mergeHistory.operator}</span>
-          </div>
+          <AccountMergeInfoRow
+            label="Opérateur"
+            value={mergeHistory.operator}
+          />
         </div>
       </div>
 

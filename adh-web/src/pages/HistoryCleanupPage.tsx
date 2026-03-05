@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils"
 import { useHistoryCleanupStore } from "@/stores/historyCleanupStore"
 import type { HistoFusionSeparationCriteria } from "@/types/historyCleanup"
 
+type ValidationStatus = "idle" | "valid" | "invalid"
+
 export const HistoryCleanupPage = () => {
   const {
     isLoading,
@@ -21,7 +23,7 @@ export const HistoryCleanupPage = () => {
   const [compteReference, setCompteReference] = useState("")
   const [filiationReference, setFiliationReference] = useState("")
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
-  const [validationStatus, setValidationStatus] = useState<"idle" | "valid" | "invalid">("idle")
+  const [validationStatus, setValidationStatus] = useState<ValidationStatus>("idle")
 
   useEffect(() => {
     return () => {
@@ -29,32 +31,32 @@ export const HistoryCleanupPage = () => {
     }
   }, [reset])
 
+  const parseNumericValue = (value: string): number | undefined => {
+    if (!value.trim()) return undefined
+    const parsed = parseInt(value.trim())
+    return isNaN(parsed) ? undefined : parsed
+  }
+
   const buildCriteria = useCallback((): HistoFusionSeparationCriteria => {
     const criteria: HistoFusionSeparationCriteria = {}
     
-    if (chronoEF.trim()) {
-      const parsed = parseInt(chronoEF.trim())
-      if (!isNaN(parsed)) {
-        criteria.chronoEF = parsed
-      }
+    const chronoEFParsed = parseNumericValue(chronoEF)
+    if (chronoEFParsed !== undefined) {
+      criteria.chronoEF = chronoEFParsed
     }
     
     if (societe.trim()) {
       criteria.societe = societe.trim()
     }
     
-    if (compteReference.trim()) {
-      const parsed = parseInt(compteReference.trim())
-      if (!isNaN(parsed)) {
-        criteria.compteReference = parsed
-      }
+    const compteReferenceParsed = parseNumericValue(compteReference)
+    if (compteReferenceParsed !== undefined) {
+      criteria.compteReference = compteReferenceParsed
     }
     
-    if (filiationReference.trim()) {
-      const parsed = parseInt(filiationReference.trim())
-      if (!isNaN(parsed)) {
-        criteria.filiationReference = parsed
-      }
+    const filiationReferenceParsed = parseNumericValue(filiationReference)
+    if (filiationReferenceParsed !== undefined) {
+      criteria.filiationReference = filiationReferenceParsed
     }
     
     return criteria
@@ -98,6 +100,28 @@ export const HistoryCleanupPage = () => {
 
   const hasCriteria = chronoEF || societe || compteReference || filiationReference
   const canDelete = validationStatus === "valid" && !isLoading
+
+  const getStatusColor = (status: ValidationStatus): string => {
+    switch (status) {
+      case "valid":
+        return "bg-green-500"
+      case "invalid":
+        return "bg-red-500"
+      default:
+        return "bg-gray-300"
+    }
+  }
+
+  const getStatusText = (status: ValidationStatus): string => {
+    switch (status) {
+      case "valid":
+        return "Criteria Valid"
+      case "invalid":
+        return "Invalid Criteria"
+      default:
+        return "Not Validated"
+    }
+  }
 
   return (
     <ScreenLayout className="p-6">
@@ -191,14 +215,10 @@ export const HistoryCleanupPage = () => {
               <div className="flex items-center gap-3">
                 <div className={cn(
                   "w-3 h-3 rounded-full",
-                  validationStatus === "valid" && "bg-green-500",
-                  validationStatus === "invalid" && "bg-red-500",
-                  validationStatus === "idle" && "bg-gray-300"
+                  getStatusColor(validationStatus)
                 )} />
                 <span className="text-sm font-medium">
-                  Status: {validationStatus === "valid" ? "Criteria Valid" : 
-                           validationStatus === "invalid" ? "Invalid Criteria" : 
-                           "Not Validated"}
+                  Status: {getStatusText(validationStatus)}
                 </span>
               </div>
 

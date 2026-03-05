@@ -4,10 +4,22 @@ import { cn } from "@/lib/utils"
 import { useFusionSeparationHistoryStore } from "@/stores/fusionSeparationHistoryStore"
 import type { FusionSeparationHistoryEntry } from "@/types/fusionSeparationHistory"
 
-const typeEFOptions = ["FUSION", "SEPARATION"] as const
+const TYPE_EF_OPTIONS = ["FUSION", "SEPARATION"] as const
 
 interface HistoryFormPanelProps {
   className?: string
+}
+
+const validateNumericField = (value: string, fieldName: string): string | null => {
+  if (!value.trim()) return `${fieldName} is required`
+  const num = parseInt(value, 10)
+  if (isNaN(num)) return `${fieldName} must be a valid number`
+  return null
+}
+
+const validateTextField = (value: string, fieldName: string): string | null => {
+  if (!value.trim()) return `${fieldName} is required`
+  return null
 }
 
 export const HistoryFormPanel = ({ className }: HistoryFormPanelProps) => {
@@ -28,40 +40,21 @@ export const HistoryFormPanel = ({ className }: HistoryFormPanelProps) => {
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [validationError, setValidationError] = useState("")
 
-  const validateForm = useCallback(() => {
-    if (!chronoEF.trim()) return "Chrono EF is required"
-    if (!societe.trim()) return "Société is required"
-    if (!compteReference.trim()) return "Compte Reference is required"
-    if (!filiationReference.trim()) return "Filiation Reference is required"
-    if (!comptePointeOld.trim()) return "Compte Pointe Old is required"
-    if (!filiationPointeOld.trim()) return "Filiation Pointe Old is required"
-    if (!comptePointeNew.trim()) return "Compte Pointe New is required"
-    if (!filiationPointeNew.trim()) return "Filiation Pointe New is required"
-    if (!nom.trim()) return "Nom is required"
-    if (!prenom.trim()) return "Prénom is required"
+  const validateForm = useCallback((): string | null => {
+    const validations = [
+      validateNumericField(chronoEF, "Chrono EF"),
+      validateTextField(societe, "Société"),
+      validateNumericField(compteReference, "Compte Reference"),
+      validateNumericField(filiationReference, "Filiation Reference"),
+      validateNumericField(comptePointeOld, "Compte Pointe Old"),
+      validateNumericField(filiationPointeOld, "Filiation Pointe Old"),
+      validateNumericField(comptePointeNew, "Compte Pointe New"),
+      validateNumericField(filiationPointeNew, "Filiation Pointe New"),
+      validateTextField(nom, "Nom"),
+      validateTextField(prenom, "Prénom")
+    ]
     
-    const chronoEFNum = parseInt(chronoEF, 10)
-    if (isNaN(chronoEFNum)) return "Chrono EF must be a valid number"
-    
-    const compteRefNum = parseInt(compteReference, 10)
-    if (isNaN(compteRefNum)) return "Compte Reference must be a valid number"
-    
-    const filiationRefNum = parseInt(filiationReference, 10)
-    if (isNaN(filiationRefNum)) return "Filiation Reference must be a valid number"
-    
-    const compteOldNum = parseInt(comptePointeOld, 10)
-    if (isNaN(compteOldNum)) return "Compte Pointe Old must be a valid number"
-    
-    const filiationOldNum = parseInt(filiationPointeOld, 10)
-    if (isNaN(filiationOldNum)) return "Filiation Pointe Old must be a valid number"
-    
-    const compteNewNum = parseInt(comptePointeNew, 10)
-    if (isNaN(compteNewNum)) return "Compte Pointe New must be a valid number"
-    
-    const filiationNewNum = parseInt(filiationPointeNew, 10)
-    if (isNaN(filiationNewNum)) return "Filiation Pointe New must be a valid number"
-    
-    return null
+    return validations.find(error => error !== null) || null
   }, [chronoEF, societe, compteReference, filiationReference, comptePointeOld, filiationPointeOld, comptePointeNew, filiationPointeNew, nom, prenom])
 
   const clearForm = useCallback(() => {
@@ -204,7 +197,7 @@ export const HistoryFormPanel = ({ className }: HistoryFormPanelProps) => {
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required
           >
-            {typeEFOptions.map((option) => (
+            {TYPE_EF_OPTIONS.map((option) => (
               <option key={option} value={option}>
                 {option}
               </option>

@@ -7,6 +7,18 @@ import type { FusionSeparationHistoryEntry } from "@/types/fusionSeparationHisto
 
 const typeEFOptions = ["FUSION", "SEPARATION"] as const
 
+const validateNumber = (value: string, fieldName: string): string => {
+  if (!value.trim()) return `${fieldName} is required`
+  const num = parseInt(value)
+  if (isNaN(num) || num <= 0) return `${fieldName} must be a positive number`
+  return ""
+}
+
+const validateText = (value: string, fieldName: string): string => {
+  if (!value.trim()) return `${fieldName} is required`
+  return ""
+}
+
 export const FusionSeparationHistoryPage = () => {
   const {
     historyEntries,
@@ -31,7 +43,6 @@ export const FusionSeparationHistoryPage = () => {
   const [typeEF, setTypeEF] = useState<string>("FUSION")
   const [nom, setNom] = useState("")
   const [prenom, setPrenom] = useState("")
-
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [validationError, setValidationError] = useState("")
 
@@ -42,38 +53,36 @@ export const FusionSeparationHistoryPage = () => {
     }
   }, [loadHistoryEntries, reset])
 
-  const validateForm = useCallback(() => {
-    if (!chronoEF.trim()) return "Chrono EF is required"
-    if (!societe.trim()) return "Société is required"
-    if (!compteReference.trim()) return "Compte Reference is required"
-    if (!filiationReference.trim()) return "Filiation Reference is required"
-    if (!comptePointeOld.trim()) return "Compte Pointe Old is required"
-    if (!filiationPointeOld.trim()) return "Filiation Pointe Old is required"
-    if (!comptePointeNew.trim()) return "Compte Pointe New is required"
-    if (!filiationPointeNew.trim()) return "Filiation Pointe New is required"
-    if (!nom.trim()) return "Nom is required"
-    if (!prenom.trim()) return "Prénom is required"
+  const validateForm = useCallback((): string => {
+    const chronoEFError = validateNumber(chronoEF, "Chrono EF")
+    if (chronoEFError) return chronoEFError
 
-    const chronoNum = parseInt(chronoEF)
-    if (isNaN(chronoNum) || chronoNum <= 0) return "Chrono EF must be a positive number"
+    const societeError = validateText(societe, "Société")
+    if (societeError) return societeError
 
-    const compteRefNum = parseInt(compteReference)
-    if (isNaN(compteRefNum) || compteRefNum <= 0) return "Compte Reference must be a positive number"
+    const compteRefError = validateNumber(compteReference, "Compte Reference")
+    if (compteRefError) return compteRefError
 
-    const filiationRefNum = parseInt(filiationReference)
-    if (isNaN(filiationRefNum) || filiationRefNum <= 0) return "Filiation Reference must be a positive number"
+    const filiationRefError = validateNumber(filiationReference, "Filiation Reference")
+    if (filiationRefError) return filiationRefError
 
-    const compteOldNum = parseInt(comptePointeOld)
-    if (isNaN(compteOldNum) || compteOldNum <= 0) return "Compte Pointe Old must be a positive number"
+    const compteOldError = validateNumber(comptePointeOld, "Compte Pointe Old")
+    if (compteOldError) return compteOldError
 
-    const filiationOldNum = parseInt(filiationPointeOld)
-    if (isNaN(filiationOldNum) || filiationOldNum <= 0) return "Filiation Pointe Old must be a positive number"
+    const filiationOldError = validateNumber(filiationPointeOld, "Filiation Pointe Old")
+    if (filiationOldError) return filiationOldError
 
-    const compteNewNum = parseInt(comptePointeNew)
-    if (isNaN(compteNewNum) || compteNewNum <= 0) return "Compte Pointe New must be a positive number"
+    const compteNewError = validateNumber(comptePointeNew, "Compte Pointe New")
+    if (compteNewError) return compteNewError
 
-    const filiationNewNum = parseInt(filiationPointeNew)
-    if (isNaN(filiationNewNum) || filiationNewNum <= 0) return "Filiation Pointe New must be a positive number"
+    const filiationNewError = validateNumber(filiationPointeNew, "Filiation Pointe New")
+    if (filiationNewError) return filiationNewError
+
+    const nomError = validateText(nom, "Nom")
+    if (nomError) return nomError
+
+    const prenomError = validateText(prenom, "Prénom")
+    if (prenomError) return prenomError
 
     return ""
   }, [chronoEF, societe, compteReference, filiationReference, comptePointeOld, filiationPointeOld, comptePointeNew, filiationPointeNew, nom, prenom])
@@ -127,60 +136,22 @@ export const FusionSeparationHistoryPage = () => {
     }
   }, [chronoEF, societe, compteReference, filiationReference, comptePointeOld, filiationPointeOld, comptePointeNew, filiationPointeNew, typeEF, nom, prenom, validateForm, writeHistoryEntry, setCurrentEntry, clearForm])
 
-  const handleChronoEFChange = useCallback((value: string) => {
-    setChronoEF(value)
+  const handleFieldChange = useCallback((setter: (value: string) => void) => (value: string) => {
+    setter(value)
     setValidationError("")
   }, [])
 
-  const handleSocieteChange = useCallback((value: string) => {
-    setSociete(value)
-    setValidationError("")
-  }, [])
-
-  const handleCompteReferenceChange = useCallback((value: string) => {
-    setCompteReference(value)
-    setValidationError("")
-  }, [])
-
-  const handleFiliationReferenceChange = useCallback((value: string) => {
-    setFiliationReference(value)
-    setValidationError("")
-  }, [])
-
-  const handleComptePointeOldChange = useCallback((value: string) => {
-    setComptePointeOld(value)
-    setValidationError("")
-  }, [])
-
-  const handleFiliationPointeOldChange = useCallback((value: string) => {
-    setFiliationPointeOld(value)
-    setValidationError("")
-  }, [])
-
-  const handleComptePointeNewChange = useCallback((value: string) => {
-    setComptePointeNew(value)
-    setValidationError("")
-  }, [])
-
-  const handleFiliationPointeNewChange = useCallback((value: string) => {
-    setFiliationPointeNew(value)
-    setValidationError("")
-  }, [])
-
-  const handleTypeEFChange = useCallback((value: string) => {
-    setTypeEF(value)
-    setValidationError("")
-  }, [])
-
-  const handleNomChange = useCallback((value: string) => {
-    setNom(value)
-    setValidationError("")
-  }, [])
-
-  const handlePrenomChange = useCallback((value: string) => {
-    setPrenom(value)
-    setValidationError("")
-  }, [])
+  const handleChronoEFChange = useCallback(handleFieldChange(setChronoEF), [handleFieldChange])
+  const handleSocieteChange = useCallback(handleFieldChange(setSociete), [handleFieldChange])
+  const handleCompteReferenceChange = useCallback(handleFieldChange(setCompteReference), [handleFieldChange])
+  const handleFiliationReferenceChange = useCallback(handleFieldChange(setFiliationReference), [handleFieldChange])
+  const handleComptePointeOldChange = useCallback(handleFieldChange(setComptePointeOld), [handleFieldChange])
+  const handleFiliationPointeOldChange = useCallback(handleFieldChange(setFiliationPointeOld), [handleFieldChange])
+  const handleComptePointeNewChange = useCallback(handleFieldChange(setComptePointeNew), [handleFieldChange])
+  const handleFiliationPointeNewChange = useCallback(handleFieldChange(setFiliationPointeNew), [handleFieldChange])
+  const handleTypeEFChange = useCallback(handleFieldChange(setTypeEF), [handleFieldChange])
+  const handleNomChange = useCallback(handleFieldChange(setNom), [handleFieldChange])
+  const handlePrenomChange = useCallback(handleFieldChange(setPrenom), [handleFieldChange])
 
   if (isLoading) {
     return (

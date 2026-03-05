@@ -1,10 +1,9 @@
 import { create } from "zustand"
 import type { FusionSeparationHistoryState, FusionSeparationHistoryEntry } from "@/types/fusionSeparationHistory"
-import type { ApiResponse } from "@/services/api/apiClient"
 import { apiClient } from "@/services/api/apiClient"
 import { useDataSourceStore } from "@/stores/dataSourceStore"
 
-const mockHistoryEntries: FusionSeparationHistoryEntry[] = [
+const mockFusionSeparationHistoryEntries: FusionSeparationHistoryEntry[] = [
   {
     chronoEF: 1001,
     societe: "ACME Corp",
@@ -46,6 +45,41 @@ const mockHistoryEntries: FusionSeparationHistoryEntry[] = [
   }
 ]
 
+interface FusionSeparationHistoryFilters {
+  societe?: string
+  compteReference?: number
+  typeEF?: string
+}
+
+const applyFusionSeparationHistoryFilters = (
+  entries: FusionSeparationHistoryEntry[],
+  filters: FusionSeparationHistoryFilters
+): FusionSeparationHistoryEntry[] => {
+  let filteredEntries = [...entries]
+
+  if (filters.societe) {
+    filteredEntries = filteredEntries.filter(entry =>
+      entry.societe.toLowerCase().includes(filters.societe!.toLowerCase())
+    )
+  }
+  if (filters.compteReference !== undefined) {
+    filteredEntries = filteredEntries.filter(entry =>
+      entry.compteReference === filters.compteReference
+    )
+  }
+  if (filters.typeEF) {
+    filteredEntries = filteredEntries.filter(entry =>
+      entry.typeEF === filters.typeEF
+    )
+  }
+
+  return filteredEntries
+}
+
+const handleApiError = (error: unknown): string => {
+  return error instanceof Error ? error.message : "An unknown error occurred"
+}
+
 export const useFusionSeparationHistoryStore = create<FusionSeparationHistoryState>((set, get) => ({
   historyEntries: [],
   isLoading: false,
@@ -62,7 +96,7 @@ export const useFusionSeparationHistoryStore = create<FusionSeparationHistorySta
         await apiClient.post("/api/histo-fusionseparation-saisie", { entry })
       } else {
         await new Promise(resolve => setTimeout(resolve, 500))
-        mockHistoryEntries.push({ ...entry })
+        mockFusionSeparationHistoryEntries.push({ ...entry })
       }
 
       const currentEntries = get().historyEntries
@@ -71,13 +105,13 @@ export const useFusionSeparationHistoryStore = create<FusionSeparationHistorySta
         isLoading: false
       })
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to write history entry"
+      const errorMessage = handleApiError(error)
       set({ error: errorMessage, isLoading: false })
       throw error
     }
   },
 
-  loadHistoryEntries: async (filters?: { societe?: string; compteReference?: number; typeEF?: string }) => {
+  loadHistoryEntries: async (filters?: FusionSeparationHistoryFilters) => {
     set({ isLoading: true, error: null })
 
     try {
@@ -93,25 +127,9 @@ export const useFusionSeparationHistoryStore = create<FusionSeparationHistorySta
           isLoading: false
         })
       } else {
-        let filteredEntries = [...mockHistoryEntries]
-
-        if (filters) {
-          if (filters.societe) {
-            filteredEntries = filteredEntries.filter(entry =>
-              entry.societe.toLowerCase().includes(filters.societe!.toLowerCase())
-            )
-          }
-          if (filters.compteReference !== undefined) {
-            filteredEntries = filteredEntries.filter(entry =>
-              entry.compteReference === filters.compteReference
-            )
-          }
-          if (filters.typeEF) {
-            filteredEntries = filteredEntries.filter(entry =>
-              entry.typeEF === filters.typeEF
-            )
-          }
-        }
+        const filteredEntries = filters
+          ? applyFusionSeparationHistoryFilters(mockFusionSeparationHistoryEntries, filters)
+          : [...mockFusionSeparationHistoryEntries]
 
         set({
           historyEntries: filteredEntries,
@@ -119,7 +137,7 @@ export const useFusionSeparationHistoryStore = create<FusionSeparationHistorySta
         })
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to load history entries"
+      const errorMessage = handleApiError(error)
       set({ error: errorMessage, isLoading: false })
       throw error
     }

@@ -10,7 +10,7 @@ import type {
   PrintMergeTicketRequest,
 } from "@/types/accountMerge"
 
-interface HistoFusSepLog {
+interface AccountMergeLog {
   id?: number
   mergeId: number
   timestamp: Date
@@ -18,7 +18,7 @@ interface HistoFusSepLog {
   details: string
 }
 
-interface HistoFusSepDet {
+interface AccountMergeDetail {
   id?: number
   mergeId: number
   accountId: string
@@ -27,7 +27,7 @@ interface HistoFusSepDet {
   newValue: string
 }
 
-interface HistoFusSep {
+interface AccountMergeRecord {
   id?: number
   mergeId: number
   sourceAccountId: string
@@ -36,7 +36,7 @@ interface HistoFusSep {
   status: string
 }
 
-interface HistoFusSepSaisie {
+interface AccountMergeInput {
   id?: number
   sessionId: string
   accountId: string
@@ -55,17 +55,43 @@ interface PrinterInfo {
   isDefault: boolean
 }
 
+const buildQueryString = (params: Record<string, string | Date | unknown>): string => {
+  const urlParams = new URLSearchParams()
+  
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      const stringValue = value instanceof Date ? value.toISOString() : String(value)
+      urlParams.append(key, stringValue)
+    }
+  })
+  
+  return urlParams.toString()
+}
+
+const validateAccountId = (accountId: string, context: string): void => {
+  if (!accountId || accountId.trim().length === 0) {
+    throw new Error(`Account ID is required for ${context}`)
+  }
+}
+
+const validateMergeId = (mergeId: number, context: string): void => {
+  if (mergeId <= 0) {
+    throw new Error(`Valid merge ID is required for ${context}`)
+  }
+}
+
+const validatePrintType = (printType: string): void => {
+  if (printType !== "separation" && printType !== "fusion") {
+    throw new Error("Print type must be either 'separation' or 'fusion'")
+  }
+}
+
 const validateMerge = async (
   sourceAccountId: string,
   targetAccountId: string
 ): Promise<ApiResponse<MergeValidation>> => {
-  const params = new URLSearchParams({
-    sourceAccountId,
-    targetAccountId,
-  })
-  return apiClient.get<MergeValidation>(
-    `/api/accountMerge/validation?${params.toString()}`
-  )
+  const queryString = buildQueryString({ sourceAccountId, targetAccountId })
+  return apiClient.get<MergeValidation>(`/api/accountMerge/validation?${queryString}`)
 }
 
 const executeMerge = async (
@@ -76,44 +102,32 @@ const executeMerge = async (
     sourceAccountId,
     targetAccountId,
   }
-  return apiClient.post<MergeHistory>(
-    "/api/accountMerge/execute",
-    payload
-  )
+  return apiClient.post<MergeHistory>("/api/accountMerge/execute", payload)
 }
 
 const fetchMergeHistory = async (
   filters?: FetchMergeHistoryRequest
 ): Promise<ApiResponse<MergeHistory[]>> => {
-  const params = new URLSearchParams()
-
-  if (filters?.accountId) {
-    params.append("accountId", filters.accountId)
+  if (!filters) {
+    return apiClient.get<MergeHistory[]>("/api/accountMerge/history")
   }
 
-  if (filters?.dateFrom) {
-    params.append(
-      "dateFrom",
-      filters.dateFrom instanceof Date
-        ? filters.dateFrom.toISOString()
-        : String(filters.dateFrom)
-    )
+  const queryParams: Record<string, string | Date> = {}
+  
+  if (filters.accountId) {
+    queryParams.accountId = filters.accountId
+  }
+  if (filters.dateFrom) {
+    queryParams.dateFrom = filters.dateFrom
+  }
+  if (filters.dateTo) {
+    queryParams.dateTo = filters.dateTo
   }
 
-  if (filters?.dateTo) {
-    params.append(
-      "dateTo",
-      filters.dateTo instanceof Date
-        ? filters.dateTo.toISOString()
-        : String(filters.dateTo)
-    )
-  }
-
-  const queryString = params.toString()
-  const path =
-    queryString.length > 0
-      ? `/api/accountMerge/history?${queryString}`
-      : "/api/accountMerge/history"
+  const queryString = buildQueryString(queryParams)
+  const path = queryString.length > 0 
+    ? `/api/accountMerge/history?${queryString}`
+    : "/api/accountMerge/history"
 
   return apiClient.get<MergeHistory[]>(path)
 }
@@ -136,52 +150,64 @@ const printMergeTicket = async (
   return apiClient.post<void>("/api/accountMerge/print-ticket", payload)
 }
 
-const writeHistoFusSepLog = async (logData: Omit<HistoFusSepLog, "id">): Promise<ApiResponse<HistoFusSepLog>> => {
-  return apiClient.post<HistoFusSepLog>("/api/accountMerge/histo-log", logData)
+const writeAccountMergeLog = async (
+  logData: Omit<AccountMergeLog, "id">
+): Promise<ApiResponse<AccountMergeLog>> => {
+  return apiClient.post<AccountMergeLog>("/api/accountMerge/histo-log", logData)
 }
 
-const readHistoFusSepDet = async (mergeId: number): Promise<ApiResponse<HistoFusSepDet[]>> => {
-  return apiClient.get<HistoFusSepDet[]>(`/api/accountMerge/histo-detail/${mergeId}`)
+const readAccountMergeDetail = async (
+  mergeId: number
+): Promise<ApiResponse<AccountMergeDetail[]>> => {
+  return apiClient.get<AccountMergeDetail[]>(`/api/accountMerge/histo-detail/${mergeId}`)
 }
 
-const writeHistoFusSepDet = async (detailData: Omit<HistoFusSepDet, "id">): Promise<ApiResponse<HistoFusSepDet>> => {
-  return apiClient.post<HistoFusSepDet>("/api/accountMerge/histo-detail", detailData)
+const writeAccountMergeDetail = async (
+  detailData: Omit<AccountMergeDetail, "id">
+): Promise<ApiResponse<AccountMergeDetail>> => {
+  return apiClient.post<AccountMergeDetail>("/api/accountMerge/histo-detail", detailData)
 }
 
-const writeHistoFusSep = async (histoData: Omit<HistoFusSep, "id">): Promise<ApiResponse<HistoFusSep>> => {
-  return apiClient.post<HistoFusSep>("/api/accountMerge/histo", histoData)
+const writeAccountMergeRecord = async (
+  recordData: Omit<AccountMergeRecord, "id">
+): Promise<ApiResponse<AccountMergeRecord>> => {
+  return apiClient.post<AccountMergeRecord>("/api/accountMerge/histo", recordData)
 }
 
-const writeHistoFusSepSaisie = async (saisieData: Omit<HistoFusSepSaisie, "id">): Promise<ApiResponse<HistoFusSepSaisie>> => {
-  return apiClient.post<HistoFusSepSaisie>("/api/accountMerge/histo-saisie", saisieData)
+const writeAccountMergeInput = async (
+  inputData: Omit<AccountMergeInput, "id">
+): Promise<ApiResponse<AccountMergeInput>> => {
+  return apiClient.post<AccountMergeInput>("/api/accountMerge/histo-saisie", inputData)
 }
 
-const deleteHistoFusSepSaisie = async (sessionId: string): Promise<ApiResponse<void>> => {
+const deleteAccountMergeInput = async (sessionId: string): Promise<ApiResponse<void>> => {
   return apiClient.delete<void>(`/api/accountMerge/histo-saisie/${sessionId}`)
 }
 
-const fetchAccountTitle = async (accountId: string): Promise<ApiResponse<AccountTitle>> => { // CALLEE 43: Recuperation du titre
-  if (!accountId || accountId.trim().length === 0) {
-    throw new Error("Account ID is required for title retrieval")
-  }
+const fetchAccountTitle = async (accountId: string): Promise<ApiResponse<AccountTitle>> => {
+  // CALLEE 43: Recuperation du titre
+  validateAccountId(accountId, "title retrieval")
   return apiClient.get<AccountTitle>(`/api/accountMerge/account-title/${accountId}`)
 }
 
-const readHistoFusSepLog = async (mergeId: number): Promise<ApiResponse<HistoFusSepLog[]>> => {
-  return apiClient.get<HistoFusSepLog[]>(`/api/accountMerge/histo-log/${mergeId}`)
+const readAccountMergeLog = async (
+  mergeId: number
+): Promise<ApiResponse<AccountMergeLog[]>> => {
+  return apiClient.get<AccountMergeLog[]>(`/api/accountMerge/histo-log/${mergeId}`)
 }
 
-const printSeparationOrFusion = async (mergeId: number, printType: "separation" | "fusion"): Promise<ApiResponse<void>> => { // CALLEE 36: Print Separation ou fusion
-  if (mergeId <= 0) {
-    throw new Error("Valid merge ID is required for printing")
-  }
-  if (printType !== "separation" && printType !== "fusion") {
-    throw new Error("Print type must be either 'separation' or 'fusion'")
-  }
+const printSeparationOrFusion = async (
+  mergeId: number,
+  printType: "separation" | "fusion"
+): Promise<ApiResponse<void>> => {
+  // CALLEE 36: Print Separation ou fusion
+  validateMergeId(mergeId, "printing")
+  validatePrintType(printType)
   return apiClient.post<void>("/api/accountMerge/print", { mergeId, printType })
 }
 
-const getPrinter = async (): Promise<ApiResponse<PrinterInfo>> => { // CALLEE 180: Printer choice
+const getPrinter = async (): Promise<ApiResponse<PrinterInfo>> => {
+  // CALLEE 180: Printer choice
   const response = await apiClient.get<PrinterInfo>("/api/accountMerge/printer")
   if (response.success && !response.data) {
     throw new Error("No printer available")
@@ -193,7 +219,8 @@ const setListingNumber = async (listingNumber: string): Promise<ApiResponse<void
   return apiClient.post<void>("/api/accountMerge/set-listing-number", { listingNumber })
 }
 
-const resetCurrentPrinter = async (): Promise<ApiResponse<void>> => { // CALLEE 182: Raz Current Printer
+const resetCurrentPrinter = async (): Promise<ApiResponse<void>> => {
+  // CALLEE 182: Raz Current Printer
   const response = await apiClient.post<void>("/api/accountMerge/reset-printer", {})
   if (!response.success) {
     throw new Error("Failed to reset current printer")
@@ -207,14 +234,14 @@ export const accountMergeApi = {
   fetchMergeHistory,
   rollbackMerge,
   printMergeTicket,
-  writeHistoFusSepLog,
-  readHistoFusSepDet,
-  writeHistoFusSepDet,
-  writeHistoFusSep,
-  writeHistoFusSepSaisie,
-  deleteHistoFusSepSaisie,
+  writeHistoFusSepLog: writeAccountMergeLog,
+  readHistoFusSepDet: readAccountMergeDetail,
+  writeHistoFusSepDet: writeAccountMergeDetail,
+  writeHistoFusSep: writeAccountMergeRecord,
+  writeHistoFusSepSaisie: writeAccountMergeInput,
+  deleteHistoFusSepSaisie: deleteAccountMergeInput,
   fetchAccountTitle,
-  readHistoFusSepLog,
+  readHistoFusSepLog: readAccountMergeLog,
   printSeparationOrFusion,
   getPrinter,
   setListingNumber,

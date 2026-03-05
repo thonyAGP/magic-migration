@@ -1,8 +1,36 @@
-import { useEffect, useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAccountMergeStore } from "@/stores/accountMergeStore";
 import { ScreenLayout } from "@/components/layout";
 import { Button, Input } from "@/components/ui";
 import { cn } from "@/lib/utils";
+
+const getValidationStepStatuses = (currentStep: string) => ({
+  isValidated: currentStep === "validated" || currentStep === "transferring" || currentStep === "updating" || currentStep === "finalizing" || currentStep === "completed",
+  isMergeInProgress: currentStep === "transferring" || currentStep === "updating" || currentStep === "finalizing",
+  isMergeCompleted: currentStep === "completed"
+});
+
+const ValidationStatusIndicator = ({ isValid, label }: { isValid: boolean; label: string }) => (
+  <div className="flex items-center gap-2">
+    <div className={cn("h-3 w-3 rounded-full", isValid ? "bg-success" : "bg-destructive")} />
+    <span className="text-sm">{label}</span>
+  </div>
+);
+
+const ProgressBar = ({ progress }: { progress: number }) => (
+  <div className="space-y-2">
+    <div className="flex justify-between text-sm">
+      <span>Progress</span>
+      <span>{progress}%</span>
+    </div>
+    <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+      <div
+        className="h-full bg-primary transition-all duration-300"
+        style={{ width: `${progress}%` }}
+      />
+    </div>
+  </div>
+);
 
 export const AccountMergePage = () => {
   const {
@@ -16,14 +44,14 @@ export const AccountMergePage = () => {
     currentStep,
     validateMergeConditions,
     executeMerge,
-    createMergeHistory,
-    rollbackMerge,
     printMergeTicket,
     reset,
   } = useAccountMergeStore();
 
   const [sourceAccountInput, setSourceAccountInput] = useState("");
   const [targetAccountInput, setTargetAccountInput] = useState("");
+
+  const { isValidated, isMergeInProgress, isMergeCompleted } = getValidationStepStatuses(currentStep);
 
   useEffect(() => {
     return () => {
@@ -70,10 +98,6 @@ export const AccountMergePage = () => {
     setSourceAccountInput("");
     setTargetAccountInput("");
   }, [reset]);
-
-  const isValidated = currentStep === "validated" || currentStep === "transferring" || currentStep === "updating" || currentStep === "finalizing" || currentStep === "completed";
-  const isMergeInProgress = currentStep === "transferring" || currentStep === "updating" || currentStep === "finalizing";
-  const isMergeCompleted = currentStep === "completed";
 
   return (
     <ScreenLayout className="p-6">
@@ -146,35 +170,18 @@ export const AccountMergePage = () => {
               </div>
             </div>
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <div
-                  className={cn(
-                    "h-3 w-3 rounded-full",
-                    validationState?.isClosureInProgress ? "bg-destructive" : "bg-success"
-                  )}
-                />
-                <span className="text-sm">
-                  Closure Status: {validationState?.isClosureInProgress ? "In Progress" : "Not In Progress"}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div
-                  className={cn(
-                    "h-3 w-3 rounded-full",
-                    validationState?.networkStatus === "R" ? "bg-destructive" : "bg-success"
-                  )}
-                />
-                <span className="text-sm">Network Status: {validationState?.networkStatus}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div
-                  className={cn(
-                    "h-3 w-3 rounded-full",
-                    validationState?.validationStatus === "PASSED" ? "bg-success" : "bg-destructive"
-                  )}
-                />
-                <span className="text-sm">Validation Status: {validationState?.validationStatus}</span>
-              </div>
+              <ValidationStatusIndicator
+                isValid={!validationState?.isClosureInProgress}
+                label={`Closure Status: ${validationState?.isClosureInProgress ? "In Progress" : "Not In Progress"}`}
+              />
+              <ValidationStatusIndicator
+                isValid={validationState?.networkStatus !== "R"}
+                label={`Network Status: ${validationState?.networkStatus}`}
+              />
+              <ValidationStatusIndicator
+                isValid={validationState?.validationStatus === "PASSED"}
+                label={`Validation Status: ${validationState?.validationStatus}`}
+              />
             </div>
           </div>
         )}
@@ -184,16 +191,7 @@ export const AccountMergePage = () => {
             <h2 className="text-xl font-semibold">Merge Execution</h2>
             {isMergeInProgress && (
               <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Progress</span>
-                  <span>{mergeProgress}%</span>
-                </div>
-                <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
-                  <div
-                    className="h-full bg-primary transition-all duration-300"
-                    style={{ width: `${mergeProgress}%` }}
-                  />
-                </div>
+                <ProgressBar progress={mergeProgress} />
                 <div className="text-sm text-muted-foreground">
                   Current Step: {currentStep}
                 </div>

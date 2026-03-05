@@ -27,6 +27,8 @@ export interface FusionSeparationHistoryWriteRequest {
   entry: FusionSeparationHistoryEntry
 }
 
+export interface FusionSeparationHistoryGetResponse extends Array<FusionSeparationHistoryEntry> {}
+
 export type FusionSeparationHistoryApiEndpoints = {
-  writeEntry: (request: FusionSeparationHistoryWriteRequest) => Promise<void> // SPEC-FIX
+  writeEntry: (request: FusionSeparationHistoryWriteRequest) => Promise<ApiResponse<void>>
 }
