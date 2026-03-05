@@ -83,6 +83,7 @@ const ScreenManagementStatus = ({ currentScreen }: { currentScreen: number }) =>
   <div className="flex items-center gap-2 text-sm text-muted-foreground">
     <span>Screen:</span>
     <span className="font-mono">{currentScreen}/11</span>
+    <span className="text-xs">(422x56 DLU MDI)</span>
   </div>
 );
 
@@ -264,7 +265,7 @@ export const AccountMergePage = () => {
     return chronoHisto !== 'F';
   }, []);
 
-  // RM-006: Negation de (W0 code LOG existe [BB])
+  // RM-006: Negation de (W0 code LOG existe [BB]) (condition inversee)
   const executeRM006 = useCallback((account: unknown): boolean => {
     if (!account || typeof account !== 'object' || !('codeLog' in account)) {
       return true;
@@ -289,7 +290,7 @@ export const AccountMergePage = () => {
     return repriseConfirmee ? 'DONE' : 'RETRY';
   }, []);
 
-  // RM-008: Negation de (W0 reprise confirmee [BD])
+  // RM-008: Negation de (W0 reprise confirmee [BD]) (condition inversee)
   const executeRM008 = useCallback((account: unknown): boolean => {
     if (!account || typeof account !== 'object' || !('repriseConfirmee' in account)) {
       return true;
@@ -298,7 +299,7 @@ export const AccountMergePage = () => {
     return !repriseConfirmee;
   }, []);
 
-  // RM-009: Negation de (W0 Compte remplace à l... [BI])
+  // RM-009: Negation de (W0 Compte remplace à l... [BI]) (condition inversee)
   const executeRM009 = useCallback((account: unknown): boolean => {
     if (!account || typeof account !== 'object' || !('compteRemplace' in account)) {
       return true;
@@ -328,7 +329,7 @@ export const AccountMergePage = () => {
     return true;
   }, []);
 
-  // RM-012: Negation de P0.Sans interface [J]
+  // RM-012: Negation de P0.Sans interface [J] (condition inversee)
   const executeRM012 = useCallback((account: unknown): boolean => {
     if (!account || typeof account !== 'object' || !('sansInterface' in account)) {
       return true;
@@ -337,7 +338,7 @@ export const AccountMergePage = () => {
     return !sansInterface;
   }, []);
 
-  // RM-013: Negation de VG78
+  // RM-013: Negation de VG78 (condition inversee)
   const executeRM013 = useCallback((state: unknown): boolean => {
     if (!state || typeof state !== 'object' || !('vg78' in state)) {
       return true;
@@ -365,7 +366,7 @@ export const AccountMergePage = () => {
       return {
         rm005: { passed: rm005, description: "Chrono histo different de 'F'" },
         rm006: { passed: rm006, description: "Code LOG n'existe pas" },
-        rm007: { passed: rm007 === 'PASSED', status: rm007, description: "Filiation garantie validation" },
+        rm007: { passed: rm007 === 'PASSED' || rm007 === 'DONE', status: rm007, description: "Filiation garantie validation" },
         rm008: { passed: rm008, description: "Reprise non confirmee" },
         rm009: { passed: rm009, description: "Compte non remplace" },
         rm010: { passed: rm010, description: "Status BK=6 ou Reprise Auto" },
@@ -766,9 +767,4 @@ export const AccountMergePage = () => {
                 isValid={businessRulesResult.rm005.passed}
                 label={`RM-005: ${businessRulesResult.rm005.description}`}
               />
-              <ValidationStatusIndicator
-                isValid={businessRulesResult.rm006.passed}
-                label={`RM-006: ${businessRulesResult.rm006.description}`}
-              />
-              <ValidationStatusIndicator
-                isValid={businessR
+              <Validation
