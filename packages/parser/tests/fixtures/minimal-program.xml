@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Program ISN="100" Name="TestProgram">
+  <TasksTree>
+    <Task ISN="1" TaskID="1.0" Level="0">
+    </Task>
+  </TasksTree>
+</Program>
