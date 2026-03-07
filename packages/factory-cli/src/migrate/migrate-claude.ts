@@ -81,6 +81,9 @@ export interface ClaudeCallResult {
 // ─── Main entry point (transparent switch) ───────────────────────
 
 export const callClaude = async (options: ClaudeCallOptions): Promise<ClaudeCallResult> => {
+  const promptSize = Buffer.byteLength(options.prompt, 'utf8');
+  console.log(`[migrate-claude] callClaude mode=${_mode} model=${options.model ?? 'default'} prompt=${promptSize} bytes${options.logLabel ? ` label=${options.logLabel}` : ''}`);
+
   let result: ClaudeCallResult;
 
   if (_mode === 'api') {
@@ -90,6 +93,9 @@ export const callClaude = async (options: ClaudeCallOptions): Promise<ClaudeCall
   } else {
     result = await callClaudeCli(options);
   }
+
+  const tokenInfo = result.tokens ? ` tokens=${result.tokens.input}in/${result.tokens.output}out` : '';
+  console.log(`[migrate-claude] callClaude done in ${result.durationMs}ms output=${result.output.length} chars${tokenInfo}`);
 
   // Accumulate tokens if tracker is active
   if (_tokenAccumulator && result.tokens) {
@@ -166,6 +172,8 @@ const callClaudeCli = async (options: ClaudeCallOptions): Promise<ClaudeCallResu
     const cmd = process.platform === 'win32'
       ? `type "${tmpFile}" | ${cliBin} --print --output-format json ${modelArgs}`
       : `${cliBin} --print --output-format json ${modelArgs} < "${tmpFile}"`;
+
+    console.log(`[migrate-claude] CLI exec: ${cliBin} --print --output-format json ${modelArgs} (timeout: ${timeout}ms, prompt: ${promptSize} bytes)`);
 
     const { stdout } = await execAsync(cmd, {
       timeout,
@@ -347,6 +355,9 @@ export const callClaudeWithRetry = async (
   let currentOptions = { ...options };
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    if (attempt > 0) {
+      console.log(`[migrate-claude] Retry attempt ${attempt + 1}/${maxAttempts} (model: ${currentModel ?? 'default'})`);
+    }
     try {
       return await callClaude(currentOptions);
     } catch (err) {

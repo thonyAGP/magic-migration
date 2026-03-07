@@ -10,6 +10,7 @@ import { buildReviewPrompt } from '../migrate-prompts.js';
 import { buildContext } from '../migrate-context.js';
 import { getModelForPhase, MigratePhase as MP } from '../migrate-types.js';
 import type { MigrateConfig, AnalysisDocument, ReviewReport } from '../migrate-types.js';
+import { checkCoverageForProgram } from './phase-coverage.js';
 
 export interface ReviewResult {
   report: ReviewReport;
@@ -80,20 +81,35 @@ export const runReviewPhase = async (
 
     return { report, duration: Date.now() - start, tokens };
   } catch {
-    // Fallback: compute basic coverage from contract
-    const rulesTotal = ctx.contract?.rules.length ?? 0;
-    const filesCount = Object.keys(generatedFiles).length;
-    const coveragePct = filesCount >= 4 ? 80 : Math.round((filesCount / 6) * 100);
+    // Fallback: use deterministic programmatic coverage checker
+    const coverageReport = checkCoverageForProgram(programId, config, analysis);
 
+    if (coverageReport) {
+      const rulesFound = coverageReport.rules.filter(r => r.found).length;
+      return {
+        report: {
+          programId,
+          programName: analysis.domainPascal,
+          coveragePct: coverageReport.coveragePct,
+          rulesImplemented: rulesFound,
+          rulesTotal: coverageReport.rules.length,
+          missingRules: coverageReport.gaps,
+          recommendations: ['Programmatic coverage check (Claude review unavailable)'],
+        },
+        duration: Date.now() - start,
+      };
+    }
+
+    // Ultimate fallback: no contract available
     return {
       report: {
         programId,
         programName: analysis.domainPascal,
-        coveragePct,
-        rulesImplemented: Math.round(rulesTotal * coveragePct / 100),
-        rulesTotal,
-        missingRules: [],
-        recommendations: ['Manual review recommended - Claude review failed'],
+        coveragePct: 0,
+        rulesImplemented: 0,
+        rulesTotal: 0,
+        missingRules: ['No contract found for programmatic check'],
+        recommendations: ['Create contract first, then re-run review'],
       },
       duration: Date.now() - start,
     };

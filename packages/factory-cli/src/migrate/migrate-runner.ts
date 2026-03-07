@@ -63,6 +63,8 @@ export const formatDuration = (ms: number): string => {
 export const PHASE_DISPLAY_NAMES: Record<MigratePhase, string> = {
   [MP.SPEC]: 'Génération spécification',
   [MP.CONTRACT]: 'Analyse contrat',
+  [MP.PARSE]: 'Parsing XML → IR',
+  [MP.DATA_MODEL]: 'Inférence schéma',
   [MP.ANALYZE]: 'Analyse complète',
   [MP.TYPES]: 'Types TypeScript',
   [MP.STORE]: 'Store Zustand',

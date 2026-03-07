@@ -24,6 +24,8 @@ import type { PhaseRecord, PhaseStatus, ProgramMigration } from './migrate-types
 export const PHASE_WEIGHTS: Record<MigratePhase, number> = {
   [MigratePhase.SPEC]: 1,
   [MigratePhase.CONTRACT]: 1,
+  [MigratePhase.PARSE]: 2,
+  [MigratePhase.DATA_MODEL]: 2,
   [MigratePhase.ANALYZE]: 3,
   [MigratePhase.TYPES]: 2,
   [MigratePhase.STORE]: 8,
@@ -36,8 +38,10 @@ export const PHASE_WEIGHTS: Record<MigratePhase, number> = {
   [MigratePhase.FIX_TSC]: 5,
   [MigratePhase.VERIFY_TESTS]: 2,
   [MigratePhase.FIX_TESTS]: 5,
+  [MigratePhase.REMEDIATE]: 5,
   [MigratePhase.INTEGRATE]: 0.5,
   [MigratePhase.REVIEW]: 2.5,
+  [MigratePhase.REFACTOR]: 5,
 };
 
 export interface MigrateTrackerData {
