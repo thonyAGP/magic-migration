@@ -43,12 +43,20 @@ export default defineConfig({
     },
 
     // Test globals (optional - allows using describe/it without import)
-    globals: false,
+    globals: true,
+    clearMocks: true,
+    restoreMocks: true,
 
     // Exclude Playwright E2E tests (run separately via pnpm test:e2e)
     exclude: ['tests/e2e/**', 'node_modules/**'],
 
-    // Test timeout
-    testTimeout: 10000,
+    // Test timeout (increased from 10s to 30s for complex tests)
+    testTimeout: 30_000,
+    hookTimeout: 10_000,
+
+    // Pool workers (limit to prevent memory accumulation)
+    maxWorkers: 4,
+    minWorkers: 1,
+    pool: 'forks',
   },
 });

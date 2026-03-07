@@ -8,7 +8,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { execFile } from 'node:child_process';
+import { execFile, spawn, execSync } from 'node:child_process';
 import { promisify } from 'node:util';
 import { callClaude, parseFileResponse } from '../migrate-claude.js';
 import { buildFixTscPrompt, buildFixTestsPrompt } from '../migrate-prompts.js';
@@ -87,6 +87,7 @@ export const runVerifyTscPhase = async (config: MigrateConfig): Promise<VerifyTs
   // Ensure node_modules exist in target dir
   const nodeModules = path.join(config.targetDir, 'node_modules');
   if (!fs.existsSync(nodeModules)) {
+    console.log(`[phase-verify] node_modules missing, installing dependencies...`);
     try {
       await execFileAsync('npm', ['install', '--no-audit', '--no-fund'], {
         cwd: config.targetDir,
@@ -94,6 +95,7 @@ export const runVerifyTscPhase = async (config: MigrateConfig): Promise<VerifyTs
         maxBuffer: 4 * 1024 * 1024,
         ...EXEC_OPTS,
       });
+      console.log(`[phase-verify] npm install completed in ${Date.now() - start}ms`);
     } catch {
       // Fall back to pnpm if npm fails
       try {
@@ -103,10 +105,12 @@ export const runVerifyTscPhase = async (config: MigrateConfig): Promise<VerifyTs
           maxBuffer: 4 * 1024 * 1024,
           ...EXEC_OPTS,
         });
+        console.log(`[phase-verify] pnpm install completed in ${Date.now() - start}ms`);
       } catch { /* continue anyway - TSC may still work with skipLibCheck */ }
     }
   }
 
+  console.log(`[phase-verify] Running: npx tsc --noEmit --pretty false (cwd: ${config.targetDir})`);
   try {
     await execFileAsync('npx', ['tsc', '--noEmit', '--pretty', 'false'], {
       cwd: config.targetDir,
@@ -114,12 +118,16 @@ export const runVerifyTscPhase = async (config: MigrateConfig): Promise<VerifyTs
       maxBuffer: 2 * 1024 * 1024,
       ...EXEC_OPTS,
     });
-    return { clean: true, errors: [], errorCount: 0, duration: Date.now() - start };
+    const duration = Date.now() - start;
+    console.log(`[phase-verify] TSC clean in ${duration}ms`);
+    return { clean: true, errors: [], errorCount: 0, duration };
   } catch (err: unknown) {
     const execErr = err as { stdout?: string; stderr?: string };
     const output = (execErr.stdout ?? '') + (execErr.stderr ?? '');
     const errors = parseTscErrors(output);
-    return { clean: false, errors, errorCount: errors.length, duration: Date.now() - start };
+    const duration = Date.now() - start;
+    console.log(`[phase-verify] TSC found ${errors.length} errors in ${duration}ms`);
+    return { clean: false, errors, errorCount: errors.length, duration };
   }
 };
 
@@ -225,18 +233,109 @@ export const runVerifyTestsPhase = async (
 ): Promise<VerifyTestsResult> => {
   const start = Date.now();
   const filterArgs = domainFilter ? ['--', domainFilter] : [];
+  const VERIFY_TIMEOUT_MS = 120_000;
+
+  const args = ['vitest', 'run', '--reporter', 'json', ...filterArgs];
+  console.log(`[phase-verify] Running: npx ${args.join(' ')} (cwd: ${config.targetDir}, timeout: ${VERIFY_TIMEOUT_MS}ms)`);
 
   try {
-    const { stdout } = await execFileAsync('npx', [
-      'vitest', 'run', '--reporter', 'json', ...filterArgs,
-    ], {
+    const output = await spawnWithForceKill('npx', args, {
       cwd: config.targetDir,
-      timeout: 180_000,
-      maxBuffer: 4 * 1024 * 1024,
-      ...EXEC_OPTS,
+      timeoutMs: VERIFY_TIMEOUT_MS,
     });
 
-    const report = JSON.parse(stdout);
+    const duration = Date.now() - start;
+    console.log(`[phase-verify] Vitest completed in ${duration}ms (stdout: ${output.stdout.length} chars, stderr: ${output.stderr.length} chars, killed: ${output.timedOut})`);
+
+    if (output.timedOut) {
+      console.warn(`[phase-verify] Vitest was force-killed after ${VERIFY_TIMEOUT_MS}ms timeout`);
+      return {
+        pass: false,
+        failures: [{ testFile: 'unknown', testName: 'vitest run', error: `Vitest timed out after ${VERIFY_TIMEOUT_MS}ms (force-killed)` }],
+        totalTests: 0,
+        passedTests: 0,
+        duration,
+      };
+    }
+
+    const combined = output.stdout + output.stderr;
+    const parseResult = parseVitestJsonOutput(combined);
+
+    console.log(`[phase-verify] Results: ${parseResult.passedTests} passed, ${parseResult.failures.length} failed, ${parseResult.totalTests} total`);
+    return { ...parseResult, duration };
+  } catch (err: unknown) {
+    const duration = Date.now() - start;
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(`[phase-verify] Vitest error after ${duration}ms: ${errMsg}`);
+
+    return {
+      pass: false,
+      failures: [{ testFile: 'unknown', testName: 'vitest run', error: errMsg.slice(0, 500) }],
+      totalTests: 0,
+      passedTests: 0,
+      duration,
+    };
+  }
+};
+
+/** Spawn a process with a hard force-kill timeout (handles Windows vitest hang). */
+const spawnWithForceKill = (
+  cmd: string,
+  args: string[],
+  opts: { cwd: string; timeoutMs: number },
+): Promise<{ stdout: string; stderr: string; exitCode: number | null; timedOut: boolean }> => {
+  return new Promise((resolve) => {
+    const child = spawn(cmd, args, {
+      cwd: opts.cwd,
+      stdio: ['ignore', 'pipe', 'pipe'],
+      shell: process.platform === 'win32',
+      windowsHide: true,
+    });
+
+    let stdout = '';
+    let stderr = '';
+    let timedOut = false;
+
+    child.stdout.on('data', (d: Buffer) => { stdout += d.toString(); });
+    child.stderr.on('data', (d: Buffer) => { stderr += d.toString(); });
+
+    // Force kill after timeout (handles Windows vitest hang)
+    const timer = setTimeout(() => {
+      timedOut = true;
+      try { child.kill('SIGTERM'); } catch { /* ignore */ }
+      // On Windows, also kill the process tree
+      if (process.platform === 'win32' && child.pid) {
+        try { execSync(`taskkill /PID ${child.pid} /T /F`, { windowsHide: true, timeout: 5000 }); } catch { /* ignore */ }
+      }
+    }, opts.timeoutMs);
+
+    child.on('close', (code) => {
+      clearTimeout(timer);
+      resolve({ stdout, stderr, exitCode: code, timedOut });
+    });
+
+    child.on('error', (err) => {
+      clearTimeout(timer);
+      resolve({ stdout, stderr: stderr + '\n' + err.message, exitCode: null, timedOut });
+    });
+  });
+};
+
+/** Parse vitest JSON reporter output, handling both clean and error exit cases. */
+const parseVitestJsonOutput = (output: string): Omit<VerifyTestsResult, 'duration'> => {
+  // Try to find and parse JSON from output
+  const jsonStart = output.indexOf('{');
+  if (jsonStart < 0) {
+    return {
+      pass: false,
+      failures: [{ testFile: 'unknown', testName: 'vitest run', error: `No JSON output found (${output.length} chars)` }],
+      totalTests: 0,
+      passedTests: 0,
+    };
+  }
+
+  try {
+    const report = JSON.parse(output.slice(jsonStart));
     const failures: TestFailure[] = [];
     let totalTests = 0;
     let passedTests = 0;
@@ -256,42 +355,13 @@ export const runVerifyTestsPhase = async (
       }
     }
 
-    return { pass: failures.length === 0, failures, totalTests, passedTests, duration: Date.now() - start };
-  } catch (err: unknown) {
-    const execErr = err as { stdout?: string; stderr?: string };
-    const output = (execErr.stdout ?? '') + (execErr.stderr ?? '');
-
-    // Try parsing JSON even from error output
-    try {
-      const jsonStart = output.indexOf('{');
-      if (jsonStart >= 0) {
-        const report = JSON.parse(output.slice(jsonStart));
-        const failures: TestFailure[] = [];
-        let total = 0;
-        let passed = 0;
-
-        for (const suite of report.testResults ?? []) {
-          for (const test of suite.assertionResults ?? []) {
-            total++;
-            if (test.status === 'passed') passed++;
-            else failures.push({
-              testFile: suite.name,
-              testName: test.fullName ?? test.title,
-              error: test.failureMessages?.join('\n') ?? 'Unknown',
-            });
-          }
-        }
-
-        return { pass: false, failures, totalTests: total, passedTests: passed, duration: Date.now() - start };
-      }
-    } catch { /* ignore parse failure */ }
-
+    return { pass: failures.length === 0, failures, totalTests, passedTests };
+  } catch {
     return {
       pass: false,
       failures: [{ testFile: 'unknown', testName: 'vitest run', error: output.slice(0, 500) }],
       totalTests: 0,
       passedTests: 0,
-      duration: Date.now() - start,
     };
   }
 };
@@ -382,12 +452,15 @@ export const runVerifyFixLoop = async (
   let testsPass = false;
   let tscPasses = 0;
   let testPasses = 0;
-  const testMaxPasses = Math.min(maxPasses, 3);
+  const testMaxPasses = Math.min(maxPasses, 2);
 
   // Progress: TSC loop = 0..0.7, Tests loop = 0.7..1.0 of verify phase
   const tscWeight = 0.7;
 
   // TSC verify+fix loop
+  let lastErrorCount = -1;
+  let passesWithNoImprovement = 0;
+
   for (let i = 0; i < maxPasses; i++) {
     tscPasses++;
     const passProgress = tscWeight * (i / maxPasses);
@@ -404,6 +477,18 @@ export const runVerifyFixLoop = async (
         { pass: i + 1, maxPasses, errors: 0, clean: true, verifyProgress: tscWeight });
       break;
     }
+
+    if (i > 0 && tscResult.errorCount === lastErrorCount) {
+      passesWithNoImprovement++;
+      if (passesWithNoImprovement >= 2) {
+        emitVerify(config, ET.PHASE_STARTED, `⏸ Convergence atteinte après ${i} passes (${tscResult.errorCount} erreurs stables)`, MP.VERIFY_TSC,
+          { pass: i + 1, maxPasses, errors: tscResult.errorCount, converged: true, verifyProgress: tscWeight });
+        break;
+      }
+    } else {
+      passesWithNoImprovement = 0;
+    }
+    lastErrorCount = tscResult.errorCount;
 
     emitVerify(config, ET.PHASE_STARTED, `⚠ ${tscResult.errorCount} erreur${tscResult.errorCount > 1 ? 's' : ''} TypeScript détectée${tscResult.errorCount > 1 ? 's' : ''}`, MP.FIX_TSC,
       { pass: i + 1, maxPasses, errors: tscResult.errorCount, verifyProgress: afterVerifyProgress });

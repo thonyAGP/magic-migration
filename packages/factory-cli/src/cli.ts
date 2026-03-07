@@ -141,6 +141,20 @@ const run = async () => {
       break;
     }
 
+    case 'scenario': {
+      // NEW: Display Scenario B module dashboard (functional modules)
+      const modulesDir = getArg('dir') ?? 'ADH';
+      const modulesTrackerFile = path.join(migrationDir, modulesDir, 'tracker.json');
+      if (!fs.existsSync(modulesTrackerFile)) {
+        console.error(`Tracker not found: ${modulesTrackerFile}`);
+        process.exit(1);
+      }
+      const { renderModuleDashboard } = await import('./dashboard/module-dashboard.js');
+      const dashboard = renderModuleDashboard(modulesTrackerFile);
+      console.log(dashboard);
+      break;
+    }
+
     case 'dashboard': {
       if (!fs.existsSync(trackerFile)) {
         console.error('No tracker found. Run `migration-factory init` first.');
@@ -936,8 +950,8 @@ const run = async () => {
       const migrateDir = getArg('dir') ?? 'ADH';
       const migrateTargetDir = getArg('target') ?? path.join(projectDir, 'adh-web');
       const migrateDryRun = hasFlag('dry-run');
-      const migrateParallel = Number(getArg('parallel') ?? 1);
-      const migratePasses = Number(getArg('passes') ?? 5);
+      const migrateParallel = Number(getArg('parallel') ?? 0);
+      const migratePasses = Number(getArg('passes') ?? 3);
       const migrateModel = getArg('model');
       const migrateMode = (getArg('mode') ?? 'cli') as 'api' | 'cli';
       const specDir = path.join(projectDir, '.openspec', 'specs');
@@ -1008,6 +1022,7 @@ const run = async () => {
       } else {
         // Default: full migration
         const migrateBatch = getArg('batch');
+        const migrateModule = getArg('module');
         const migratePrograms = getArg('programs');
         const migrateBatchName = getArg('batch-name');
 
@@ -1015,7 +1030,46 @@ const run = async () => {
         let batchId = migrateBatch ?? 'auto';
         let batchName = migrateBatchName ?? 'Auto';
 
-        if (migratePrograms) {
+        // NEW: Support --module flag for functional module migration
+        if (migrateModule) {
+          const { loadModules, getModule, getUnsatisfiedDependencies } = await import('./core/module-mapper.js');
+          const batchTrackerFile = path.join(migrationDir, migrateDir, 'tracker.json');
+          if (!fs.existsSync(batchTrackerFile)) {
+            console.error(`Tracker not found: ${batchTrackerFile}`);
+            process.exit(1);
+          }
+          const tracker = readTracker(batchTrackerFile);
+          const module = getModule(migrateModule);
+
+          if (!module) {
+            const modules = loadModules();
+            console.error(`Module "${migrateModule}" not found.`);
+            console.error(`Available modules: ${modules.map((m) => m.id).join(', ')}`);
+            process.exit(1);
+          }
+
+          // Check dependencies satisfied
+          const unsatisfied = getUnsatisfiedDependencies(module, tracker);
+          if (unsatisfied.length > 0 && !hasFlag('force')) {
+            console.error(`\n❌ Module dependencies not satisfied: ${unsatisfied.join(', ')}`);
+            console.error(`   Complete these modules first or use --force to bypass.\n`);
+            process.exit(1);
+          }
+
+          programIds = module.programs;
+          batchId = module.id;
+          batchName = module.name;
+
+          console.log(`\n🎯 Migrating module: ${module.name}`);
+          console.log(`   Programmes: ${programIds.length}`);
+          console.log(`   Batches source: ${module.batches.join(', ')}`);
+          console.log(`   Vague: ${module.wave}`);
+          console.log(`   Dépendances: ${module.dependencies.join(', ') || 'aucune'}`);
+          if (unsatisfied.length > 0) {
+            console.log(`   ⚠️  FORCE mode: bypassing dependencies ${unsatisfied.join(', ')}`);
+          }
+          console.log('');
+        } else if (migratePrograms) {
           programIds = migratePrograms.split(',').map(s => s.trim()).filter(Boolean);
           batchId = migrateBatchName ?? `custom-${Date.now()}`;
           batchName = migrateBatchName ?? 'Custom migration';
@@ -1036,11 +1090,19 @@ const run = async () => {
           batchName = batch.name;
         } else {
           console.error('Usage: migrate --batch <id> --target <dir> [--parallel 4] [--passes 5] [--dry-run]');
+          console.error('       migrate --module <id> --target <dir> [--parallel 4] [--force] [--dry-run]');
           console.error('       migrate --programs "69,70,71" --batch-name "Custom" --target <dir>');
           console.error('       migrate phase <name> --programs "69,70,71"');
           console.error('       migrate status [--dir ADH]');
           console.error('       migrate batch-create --id B2 --name "Name" --programs "69,70,71"');
+          console.error('\nModules disponibles: MOD_DIVERS, MOD_SESSIONS, MOD_VENTES, MOD_EXTRAIT, MOD_CHANGE_GARANTIES, MOD_ECO_FACTURES');
           process.exit(1);
+        }
+
+        if (migrateParallel === 0) {
+          const { resolveParallelCount } = await import('./migrate/migrate-runner.js');
+          const resolved = resolveParallelCount(migrateParallel, programIds.length);
+          console.log(`\n⚙️  Parallel mode: AUTO (${resolved} workers for ${programIds.length} programs)\n`);
         }
 
         console.log(`\nMigrate${migrateDryRun ? ' (DRY-RUN)' : ''}: ${batchId} - ${batchName} (${programIds.length} programs, parallel=${migrateParallel})\n`);

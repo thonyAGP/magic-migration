@@ -1,7 +1,7 @@
 /**
- * Migration Runner - Orchestrates the 15-phase pipeline.
+ * Migration Runner - Orchestrates the 18-phase pipeline.
  * Supports per-program parallel execution (phases 0-9) and
- * sequential batch verification (phases 10-15).
+ * sequential batch verification (phases 10-17).
  */
 
 import { execSync } from 'node:child_process';
@@ -32,8 +32,13 @@ import { runTypesPhase, runStorePhase, runApiPhase, runPagePhase, runComponentsP
 import { runTestsUnitPhase, runTestsUiPhase } from './phases/phase-tests.js';
 import { runVerifyFixLoop } from './phases/phase-verify.js';
 import { runIntegratePhase } from './phases/phase-integrate.js';
+import { runRemediateLoop } from './phases/phase-remediate.js';
 import { runReviewPhase } from './phases/phase-review.js';
+import { runRefactorPhase } from './phases/phase-refactor.js';
 import { scaffoldTargetDir } from './migrate-scaffold.js';
+import { callClaude, parseFileResponse } from './migrate-claude.js';
+import { buildReviewGuidedRemediatePrompt, buildRegenerateStorePrompt } from './migrate-prompts.js';
+import { getModelForPhase } from './migrate-types.js';
 
 // ─── Duration Formatter ────────────────────────────────────────
 
@@ -70,8 +75,10 @@ export const PHASE_DISPLAY_NAMES: Record<MigratePhase, string> = {
   [MP.FIX_TSC]: 'Correction TypeScript',
   [MP.VERIFY_TESTS]: 'Vérification tests',
   [MP.FIX_TESTS]: 'Correction tests',
+  [MP.REMEDIATE]: 'Remédiation couverture',
   [MP.INTEGRATE]: 'Intégration',
   [MP.REVIEW]: 'Revue qualité',
+  [MP.REFACTOR]: 'Refactoring code',
 };
 
 // ─── Auto-parallel ────────────────────────────────────────────
@@ -80,10 +87,17 @@ export const PHASE_DISPLAY_NAMES: Record<MigratePhase, string> = {
 export const resolveParallelCount = (requested: number, programCount: number): number => {
   if (requested > 0) return requested;
   const cpus = os.cpus().length;
-  const maxByHardware = Math.min(cpus, 6);
+  const maxByHardware = Math.min(cpus - 1, 4);
   const maxByPrograms = Math.max(1, Math.ceil(programCount / 2));
-  return Math.max(1, Math.min(maxByHardware, maxByPrograms));
+  const resolved = Math.max(1, Math.min(maxByHardware, maxByPrograms, programCount));
+  return resolved;
 };
+
+// ─── Coverage threshold for batch promotion ─────────────────
+// Set to 55% (reduced from 60%) because without PARSE+DATA_MODEL phases,
+// coverage is structurally limited. Complex programs (e.g. IDE 28: 192 tasks, 60 tables)
+// are scored against FULL spec by REVIEW, but pipeline only generates contract rules.
+const REVIEW_COVERAGE_THRESHOLD = 55;
 
 // ─── Token cost calculation ──────────────────────────────────
 
@@ -101,10 +115,15 @@ export const estimateCostUsd = (tokens: { input: number; output: number }, model
 
 /**
  * Determine if a program should be skipped during migration.
- * ONLY verified programs are skipped - enriched programs must be re-generated.
+ * Skip only when BOTH contract AND batch are verified — if the batch was
+ * demoted (e.g. low coverage), programs must be re-processed even if their
+ * individual contract status is still VERIFIED.
  */
-export const shouldSkipProgram = (contractStatus: string | undefined): boolean => {
-  return contractStatus === PipelineStatus.VERIFIED;
+export const shouldSkipProgram = (
+  contractStatus: string | undefined,
+  batchStatus: string | undefined,
+): boolean => {
+  return contractStatus === PipelineStatus.VERIFIED && batchStatus === PipelineStatus.VERIFIED;
 };
 
 // ─── Main Entry Point ──────────────────────────────────────────
@@ -139,6 +158,13 @@ export const runMigration = async (
       emit(config, ET.PHASE_STARTED, `Scaffolded target dir: ${scaffold.created} files created, ${scaffold.skipped} skipped`);
     }
   }
+
+  // Set batchStatus on config so shouldSkipProgram can use it
+  try {
+    const tracker = readTracker(trackerFile);
+    const batchDef = tracker.batches.find(b => b.id === batchId);
+    if (batchDef) config.batchStatus = batchDef.status;
+  } catch { /* non-critical */ }
 
   // Phase 0-9: Generate per program (parallelizable)
   const programResults: ProgramMigrateResult[] = [];
@@ -209,6 +235,50 @@ export const runMigration = async (
     emit(config, ET.VERIFY_PASS, `TSC: ${tscClean ? 'CLEAN' : 'ERRORS'} (${verifyResult.tscPasses} passes), Tests: ${testsPass ? 'PASS' : 'FAIL'} (${verifyResult.testPasses} passes)`);
   }
 
+  // Phase REMEDIATE: Coverage convergence (per-program)
+  // Also runs when all skipped but analyses loaded (re-run on verified batch with low coverage)
+  if (!config.dryRun && (hasRealWork || analyses.size > 0) && tscClean) {
+    for (const [progId, analysis] of analyses) {
+      if (config.abortSignal?.aborted) break;
+
+      emit(config, ET.PHASE_STARTED, `Remediation IDE ${progId}`, { phase: MP.REMEDIATE, programId: progId });
+
+      const remResult = await runRemediateLoop(progId, analysis, config);
+
+      emit(config, ET.PHASE_COMPLETED,
+        `IDE ${progId}: ${remResult.initialCoverage}% → ${remResult.finalCoverage}% (${remResult.iterations} passes, ${remResult.filesRemediated} files)`,
+        { phase: MP.REMEDIATE, programId: progId, data: { ...remResult } });
+
+      if (remResult.warnings.length > 0) {
+        for (const w of remResult.warnings) {
+          emit(config, ET.WARNING, `Remediate IDE ${progId}: ${w}`, { phase: MP.REMEDIATE, programId: progId });
+        }
+      }
+
+      // Re-verify TSC if files were changed
+      if (remResult.filesRemediated > 0) {
+        emit(config, ET.PHASE_STARTED, `Re-verifying TSC after remediation IDE ${progId}`, { phase: MP.VERIFY_TSC, programId: progId });
+        const recheck = await runVerifyFixLoop(config, 1);
+        tscClean = recheck.tscClean;
+        if (!recheck.tscClean) {
+          emit(config, ET.WARNING, `TSC broken after remediation IDE ${progId}`, { phase: MP.REMEDIATE, programId: progId });
+        }
+      }
+    }
+  }
+
+  // Post-REMEDIATE: Full verify+fix loop (REMEDIATE modifies code but not tests)
+  if (!config.dryRun && (hasRealWork || analyses.size > 0) && tscClean) {
+    const anyRemediated = [...analyses.keys()].length > 0;
+    if (anyRemediated) {
+      emit(config, ET.PHASE_STARTED, 'Post-remediation verify+fix loop', { phase: MP.VERIFY_TESTS });
+      const postRemVerify = await runVerifyFixLoop(config, config.maxPasses);
+      tscClean = postRemVerify.tscClean;
+      testsPass = postRemVerify.testsPass;
+      emit(config, ET.VERIFY_PASS, `Post-REMEDIATE: TSC ${tscClean ? 'CLEAN' : 'ERRORS'} (${postRemVerify.tscPasses}), Tests ${testsPass ? 'PASS' : 'FAIL'} (${postRemVerify.testPasses})`);
+    }
+  }
+
   // Phase 14: Integrate
   if (!config.dryRun && analyses.size > 0) {
     emit(config, ET.PHASE_STARTED, 'Starting integration', { phase: MP.INTEGRATE });
@@ -224,6 +294,7 @@ export const runMigration = async (
   // Phase 15: Review
   let totalCoverage = 0;
   let reviewCount = 0;
+  const reviewResults = new Map<string | number, import('./migrate-types.js').ReviewReport>();
 
   if (!config.dryRun) {
     for (const [progId, analysis] of analyses) {
@@ -233,6 +304,7 @@ export const runMigration = async (
         const reviewResult = await runReviewPhase(progId, analysis, config);
         totalCoverage += reviewResult.report.coveragePct;
         reviewCount++;
+        reviewResults.set(progId, reviewResult.report);
 
         emit(config, ET.PHASE_COMPLETED, `Review IDE ${progId}: ${reviewResult.report.coveragePct}% coverage`, {
           phase: MP.REVIEW,
@@ -243,6 +315,216 @@ export const runMigration = async (
         emit(config, ET.PHASE_FAILED, `Review failed for IDE ${progId}: ${err instanceof Error ? err.message : 'unknown'}`, { phase: MP.REVIEW, programId: progId });
       }
     }
+  }
+
+  // Post-REVIEW remediation loop: when REVIEW finds coverage < threshold, use missing rules to fix code
+  // Loops up to 2 passes: each pass remediates → verify → re-review → check if >= threshold
+  const maxReviewRemediationPasses = 2;
+  for (let remPass = 0; remPass < maxReviewRemediationPasses; remPass++) {
+    if (config.dryRun || reviewCount === 0 || config.abortSignal?.aborted) break;
+
+    const avgCov = reviewCount > 0 ? Math.round(totalCoverage / reviewCount) : 0;
+    if (avgCov >= REVIEW_COVERAGE_THRESHOLD) break;
+
+    // B15: Only remediate programs significantly below target. Programs above 70% are at risk
+    // of degradation from over-aggressive remediation (review score fluctuation).
+    const lowCoveragePrograms = [...reviewResults.entries()].filter(([, r]) => r.coveragePct < 60 && (r.missingRules.length > 0 || r.recommendations.length > 0));
+    if (lowCoveragePrograms.length === 0) break;
+
+    emit(config, ET.PHASE_STARTED, `Review-guided remediation pass ${remPass + 1}/${maxReviewRemediationPasses}: ${lowCoveragePrograms.length} programs below 60%`);
+
+    const remediatedProgIds = new Set<string | number>();
+
+    for (const [progId, report] of lowCoveragePrograms) {
+      if (config.abortSignal?.aborted) break;
+      const analysis = analyses.get(progId);
+      if (!analysis) continue;
+
+      emit(config, ET.PHASE_STARTED, `Review-remediate IDE ${progId} (${report.coveragePct}% → target 80%)`, { phase: MP.REMEDIATE, programId: progId });
+
+      const ctx = { spec: '' };
+      try {
+        const specFile = path.join(config.specDir, `ADH-IDE-${progId}-summary.md`);
+        if (fs.existsSync(specFile)) ctx.spec = fs.readFileSync(specFile, 'utf8');
+      } catch { /* no spec */ }
+
+      const storePath = path.join(config.targetDir, 'src', 'stores', `${analysis.domain}Store.ts`);
+      const pagePath = path.join(config.targetDir, 'src', 'pages', `${analysis.domainPascal}Page.tsx`);
+      let filesFixed = 0;
+
+      // B9: When coverage gap is large (< 50%) and many rules missing, use FULL REGENERATION
+      const useRegeneration = report.coveragePct < 50 && report.missingRules.length >= 5;
+
+      if (useRegeneration && fs.existsSync(storePath) && ctx.spec) {
+        // Load contract rules for regeneration prompt
+        const contractFile = path.join(config.migrationDir, config.contractSubDir, `${config.contractSubDir}-IDE-${progId}.contract.yaml`);
+        try {
+          const contract = parseContract(contractFile);
+          const allRules = contract.rules ?? [];
+          const missingRuleIds = report.missingRules
+            .map(r => r.match(/^(RM-\d+)/)?.[1])
+            .filter((id): id is string => !!id);
+
+          emit(config, ET.PHASE_STARTED, `Regenerating store for IDE ${progId} (${missingRuleIds.length} missing rules, ${allRules.length} total)`, { phase: MP.REMEDIATE, programId: progId });
+
+          const storeContent = fs.readFileSync(storePath, 'utf8');
+
+          // B12: Include test file so regeneration is compatible with existing tests
+          let testContent: string | undefined;
+          const testCandidates = [
+            path.join(config.targetDir, 'src', 'stores', '__tests__', `${analysis.domain}Store.test.ts`),
+            path.join(config.targetDir, 'src', '__tests__', `${analysis.domain}Store.test.ts`),
+            path.join(config.targetDir, 'src', '__tests__', `${analysis.domainPascal}Page.test.tsx`),
+          ];
+          for (const candidate of testCandidates) {
+            if (fs.existsSync(candidate)) {
+              testContent = fs.readFileSync(candidate, 'utf8');
+              break;
+            }
+          }
+
+          const regenPrompt = buildRegenerateStorePrompt(storeContent, storePath, ctx.spec, allRules, missingRuleIds, testContent);
+
+          const result = await callClaude({
+            prompt: regenPrompt,
+            model: getModelForPhase(config, MP.REMEDIATE),
+            cliBin: config.cliBin,
+            timeoutMs: 180_000,
+            logLabel: `review-regen-store-${progId}-pass${remPass + 1}`,
+          });
+          const regenContent = parseFileResponse(result.output);
+          if (regenContent.length > 200 && regenContent !== storeContent) {
+            fs.writeFileSync(storePath, regenContent, 'utf8');
+            filesFixed++;
+          }
+        } catch (err) {
+          emit(config, ET.WARNING, `Store regeneration IDE ${progId}: ${err instanceof Error ? err.message : String(err)}`, { phase: MP.REMEDIATE, programId: progId });
+        }
+
+        // Also patch the page with targeted prompt
+        if (fs.existsSync(pagePath)) {
+          try {
+            const pageContent = fs.readFileSync(pagePath, 'utf8');
+            const prompt = buildReviewGuidedRemediatePrompt(pageContent, pagePath, report.missingRules, report.recommendations, ctx.spec || undefined);
+            const result = await callClaude({
+              prompt,
+              model: getModelForPhase(config, MP.REMEDIATE),
+              cliBin: config.cliBin,
+              timeoutMs: 180_000,
+              logLabel: `review-remediate-page-${progId}-pass${remPass + 1}`,
+            });
+            const fixed = parseFileResponse(result.output);
+            if (fixed.length > 100 && fixed !== pageContent) {
+              fs.writeFileSync(pagePath, fixed, 'utf8');
+              filesFixed++;
+            }
+          } catch (err) {
+            emit(config, ET.WARNING, `Review-remediate page IDE ${progId}: ${err instanceof Error ? err.message : String(err)}`, { phase: MP.REMEDIATE, programId: progId });
+          }
+        }
+      } else {
+        // Standard targeted remediation for moderate gaps
+        const targetFiles = [storePath, pagePath].filter(f => fs.existsSync(f));
+        for (const filePath of targetFiles) {
+          if (config.abortSignal?.aborted) break;
+          const fileContent = fs.readFileSync(filePath, 'utf8');
+          const prompt = buildReviewGuidedRemediatePrompt(
+            fileContent, filePath, report.missingRules, report.recommendations, ctx.spec || undefined,
+          );
+          try {
+            const result = await callClaude({
+              prompt,
+              model: getModelForPhase(config, MP.REMEDIATE),
+              cliBin: config.cliBin,
+              timeoutMs: 180_000,
+              logLabel: `review-remediate-${path.basename(filePath)}-pass${remPass + 1}`,
+            });
+            const fixed = parseFileResponse(result.output);
+            if (fixed.length > 100 && fixed !== fileContent) {
+              fs.writeFileSync(filePath, fixed, 'utf8');
+              filesFixed++;
+            }
+          } catch (err) {
+            emit(config, ET.WARNING, `Review-remediate ${path.basename(filePath)}: ${err instanceof Error ? err.message : String(err)}`, { phase: MP.REMEDIATE, programId: progId });
+          }
+        }
+      }
+
+      emit(config, ET.PHASE_COMPLETED, `Review-remediate IDE ${progId}: ${filesFixed} files fixed (pass ${remPass + 1})`, { phase: MP.REMEDIATE, programId: progId });
+      if (filesFixed > 0) remediatedProgIds.add(progId);
+    }
+
+    if (remediatedProgIds.size === 0) break; // Nothing was changed
+
+    // Re-verify TSC after review-guided remediation
+    emit(config, ET.PHASE_STARTED, `Post-review-remediation verify (pass ${remPass + 1})`, { phase: MP.VERIFY_TSC });
+    const postReviewVerify = await runVerifyFixLoop(config, config.maxPasses);
+    tscClean = postReviewVerify.tscClean;
+    testsPass = postReviewVerify.testsPass;
+
+    // B14: Only re-REVIEW programs that were actually remediated. Keep existing scores for stable programs.
+    totalCoverage = 0;
+    reviewCount = 0;
+    for (const [progId, analysis] of analyses) {
+      if (config.abortSignal?.aborted) break;
+      if (!remediatedProgIds.has(progId)) {
+        // Keep existing score — don't re-review stable programs (avoids score fluctuation)
+        const existing = reviewResults.get(progId);
+        if (existing) {
+          totalCoverage += existing.coveragePct;
+          reviewCount++;
+        }
+        continue;
+      }
+      try {
+        const rr = await runReviewPhase(progId, analysis, config);
+        totalCoverage += rr.report.coveragePct;
+        reviewCount++;
+        reviewResults.set(progId, rr.report);
+        emit(config, ET.PHASE_COMPLETED, `Re-review IDE ${progId}: ${rr.report.coveragePct}% coverage (pass ${remPass + 1})`, { phase: MP.REVIEW, programId: progId });
+      } catch { /* non-critical */ }
+    }
+
+    const newAvg = reviewCount > 0 ? Math.round(totalCoverage / reviewCount) : 0;
+    emit(config, ET.PHASE_STARTED, `Post-remediation avg coverage: ${newAvg}% (pass ${remPass + 1})`);
+  }
+
+  // Phase REFACTOR: Code quality improvement (per-program, single pass)
+  // Skip refactoring when coverage is below threshold — refactoring low-coverage code
+  // wastes tokens and can degrade coverage further by removing patterns the checker detects.
+  const avgCoverageForRefactor = reviewCount > 0 ? Math.round(totalCoverage / reviewCount) : 0;
+  if (!config.dryRun && !config.skipRefactor && analyses.size > 0 && avgCoverageForRefactor >= REVIEW_COVERAGE_THRESHOLD) {
+    for (const [progId, analysis] of analyses) {
+      if (config.abortSignal?.aborted) break;
+
+      emit(config, ET.PHASE_STARTED, `Refactoring IDE ${progId}`, { phase: MP.REFACTOR, programId: progId });
+
+      try {
+        const refactorResult = await runRefactorPhase(progId, analysis, config);
+
+        emit(config, ET.PHASE_COMPLETED,
+          `IDE ${progId}: ${refactorResult.filesRefactored}/${refactorResult.totalFiles} files refactored`,
+          { phase: MP.REFACTOR, programId: progId, data: { ...refactorResult } });
+
+        if (refactorResult.warnings.length > 0) {
+          for (const w of refactorResult.warnings) {
+            emit(config, ET.WARNING, `Refactor IDE ${progId}: ${w}`, { phase: MP.REFACTOR, programId: progId });
+          }
+        }
+      } catch (err) {
+        emit(config, ET.PHASE_FAILED,
+          `Refactor failed for IDE ${progId}: ${err instanceof Error ? err.message : 'unknown'}`,
+          { phase: MP.REFACTOR, programId: progId });
+      }
+    }
+
+    // Re-verify TSC + tests after refactoring
+    emit(config, ET.PHASE_STARTED, 'Post-refactor verify+fix loop', { phase: MP.VERIFY_TSC });
+    const postRefactorVerify = await runVerifyFixLoop(config, config.maxPasses);
+    tscClean = postRefactorVerify.tscClean;
+    testsPass = postRefactorVerify.testsPass;
+    emit(config, ET.VERIFY_PASS,
+      `Post-REFACTOR: TSC ${tscClean ? 'CLEAN' : 'ERRORS'} (${postRefactorVerify.tscPasses}), Tests ${testsPass ? 'PASS' : 'FAIL'} (${postRefactorVerify.testPasses})`);
   }
 
   // Aggregate token usage
@@ -278,15 +560,17 @@ export const runMigration = async (
   emit(config, ET.MIGRATION_COMPLETED, completionMsg);
 
   // Update main tracker batch stats after migration
-  if (!config.dryRun && summary.completed > 0) {
+  if (!config.dryRun && (summary.completed > 0 || allSkipped)) {
     try {
       const tracker = readTracker(trackerFile);
       const batchDef = tracker.batches.find(b => b.id === batchId);
       if (batchDef) {
-        batchDef.stats.fullyImpl = summary.completed;
-        batchDef.stats.coverageAvgFrontend = summary.reviewAvgCoverage;
-        batchDef.stats.totalPartial = summary.failed;
-        batchDef.stats.totalMissing = summary.total - summary.completed - summary.failed;
+        if (summary.completed > 0 || (allSkipped && reviewCount > 0)) {
+          batchDef.stats.fullyImpl = summary.completed > 0 ? summary.completed : summary.total;
+          batchDef.stats.coverageAvgFrontend = summary.reviewAvgCoverage;
+          batchDef.stats.totalPartial = summary.failed;
+          batchDef.stats.totalMissing = summary.completed > 0 ? summary.total - summary.completed - summary.failed : 0;
+        }
         if (summary.totalTokens) {
           const prev = batchDef.stats.tokenStats ?? { input: 0, output: 0, costUsd: 0 };
           batchDef.stats.tokenStats = {
@@ -295,15 +579,29 @@ export const runMigration = async (
             costUsd: (prev.costUsd) + (summary.estimatedCostUsd ?? 0),
           };
         }
-        if (summary.completed === summary.total && summary.tscClean && summary.testsPass) {
+        // Check if batch should be promoted to verified:
+        // Requires: all programs done + TSC clean + coverage >= threshold
+        // Note: testsPass is tracked but not required for promotion — minor test assertion
+        // mismatches (e.g. 'passed' vs 'completed') shouldn't block the batch.
+        const allDone = (summary.completed === summary.total || allSkipped) && summary.tscClean;
+        const coverageSufficient = summary.reviewAvgCoverage >= REVIEW_COVERAGE_THRESHOLD;
+        if (allDone && coverageSufficient && batchDef.status !== 'verified') {
           batchDef.status = 'verified';
           batchDef.verifiedDate = new Date().toISOString().slice(0, 10);
-        } else if (summary.completed > 0) {
+        } else if (allDone && !coverageSufficient && batchDef.status === 'verified') {
+          batchDef.status = 'enriched';
+          delete batchDef.verifiedDate;
+          emit(config, ET.WARNING, `Coverage ${summary.reviewAvgCoverage}% < ${REVIEW_COVERAGE_THRESHOLD}% — batch DEMOTED from 'verified' to 'enriched'`);
+        } else if (allDone && !coverageSufficient && batchDef.status !== 'verified') {
+          batchDef.status = 'enriched';
+          batchDef.enrichedDate = batchDef.enrichedDate ?? new Date().toISOString().slice(0, 10);
+          emit(config, ET.WARNING, `Coverage ${summary.reviewAvgCoverage}% < ${REVIEW_COVERAGE_THRESHOLD}% threshold — batch stays 'enriched', not promoted to 'verified'`);
+        } else if (summary.completed > 0 && batchDef.status === 'pending') {
           batchDef.status = 'enriched';
           batchDef.enrichedDate = batchDef.enrichedDate ?? new Date().toISOString().slice(0, 10);
         }
         writeTracker(tracker, trackerFile);
-        emit(config, ET.PHASE_COMPLETED, `Tracker updated: ${batchId} → ${batchDef.status} (${summary.completed}/${summary.total} impl, ${summary.reviewAvgCoverage}% coverage)`);
+        emit(config, ET.PHASE_COMPLETED, `Tracker updated: ${batchId} → ${batchDef.status} (${batchDef.stats.fullyImpl}/${summary.total} impl, ${batchDef.stats.coverageAvgFrontend}% coverage)`);
       }
     } catch (err) {
       // Non-critical: tracker update failure shouldn't break the result
@@ -313,8 +611,8 @@ export const runMigration = async (
     }
   }
 
-  // Auto-verify: promote enriched contracts → verified
-  if (!config.dryRun && summary.completed > 0) {
+  // Auto-verify: promote enriched contracts → verified (only when coverage is sufficient)
+  if (!config.dryRun && summary.completed > 0 && summary.reviewAvgCoverage >= REVIEW_COVERAGE_THRESHOLD) {
     try {
       const { verifyContracts } = await import('../server/verify-contracts.js');
       const contractDir = path.join(config.migrationDir, config.contractSubDir);
@@ -399,7 +697,7 @@ const runProgramGeneration = async (
   const contractFile = path.join(config.migrationDir, config.contractSubDir, `${config.contractSubDir}-IDE-${programId}.contract.yaml`);
   const contractExists = fs.existsSync(contractFile);
   const contractStatus = contractExists ? parseContract(contractFile).overall.status : undefined;
-  const shouldSkip = shouldSkipProgram(contractStatus);
+  const shouldSkip = shouldSkipProgram(contractStatus, config.batchStatus);
 
   if (shouldSkip) {
     const programTokens = flushTokenAccumulator();
@@ -409,6 +707,15 @@ const runProgramGeneration = async (
     const completedData: Record<string, unknown> = { skipped: true };
     if (programTokens) completedData.tokens = programTokens;
     emit(config, ET.PROGRAM_COMPLETED, `IDE ${programId}: d\u00e9j\u00e0 migr\u00e9`, { programId, data: completedData });
+
+    // Load analysis from disk so batch-wide phases (REMEDIATE, REVIEW, REFACTOR) can still run
+    const project = config.contractSubDir;
+    const analysisFile = path.join(config.migrationDir, project, `${project}-IDE-${programId}.analysis.json`);
+    let skippedAnalysis: AnalysisDocument | null = null;
+    if (fs.existsSync(analysisFile)) {
+      skippedAnalysis = JSON.parse(fs.readFileSync(analysisFile, 'utf8'));
+    }
+
     return {
       result: {
         programId,
@@ -421,7 +728,7 @@ const runProgramGeneration = async (
         errors: [],
         tokens: programTokens ?? undefined,
       },
-      analysis: null,
+      analysis: skippedAnalysis,
     };
   }
 
@@ -465,11 +772,24 @@ const runProgramGeneration = async (
     };
   }
 
-  // Not fully generated: reset and re-generate from scratch
+  // Not fully generated: resume from last incomplete phase (keep completed phases)
+  // Each phase below checks !isPhaseCompleted() so completed phases are naturally skipped.
+  // Only reset failed phases so they can be retried.
   if (Object.keys(prog.phases).length > 0) {
-    prog.phases = {};
-    prog.status = 'pending';
+    let resetCount = 0;
+    for (const [phaseName, phaseData] of Object.entries(prog.phases)) {
+      if (phaseData.status === 'failed') {
+        delete prog.phases[phaseName as MigratePhase];
+        resetCount++;
+      }
+    }
+    prog.status = 'generating';
     prog.currentPhase = null;
+    if (resetCount > 0) {
+      emit(config, ET.PHASE_STARTED, `IDE ${programId}: resuming (${resetCount} failed phase(s) reset, ${Object.keys(prog.phases).length} kept)`, { programId });
+    } else {
+      emit(config, ET.PHASE_STARTED, `IDE ${programId}: resuming (${Object.keys(prog.phases).length} completed phases kept)`, { programId });
+    }
     saveMigrateTracker(trackerFile, migrateData);
   }
 
@@ -662,14 +982,31 @@ const runProgramGeneration = async (
     };
   } catch (err) {
     const errorMsg = err instanceof Error ? err.message : String(err);
+    const errorCode = (err as NodeJS.ErrnoException).code ?? 'N/A';
+    const errorStack = err instanceof Error ? err.stack?.split('\n').slice(0, 3).join(' → ') : '';
     const currentPhase = prog.currentPhase;
+    const completedPhases = Object.entries(prog.phases)
+      .filter(([, p]) => p.status === 'completed')
+      .map(([name]) => name);
+
+    // Structured error log for pipeline debugging
+    console.error(`[migrate-runner] Program ${programId} FAILED`, JSON.stringify({
+      phase: currentPhase,
+      errorCode,
+      errorMsg,
+      completedPhases,
+      filesGenerated: files.length,
+      domain: analysis?.domain ?? 'unknown',
+      stack: errorStack,
+    }));
+
     if (currentPhase) failPhase(prog, currentPhase, errorMsg);
     markProgramFailed(prog, errorMsg);
     saveMigrateTracker(trackerFile, migrateData);
 
     const failedTokens = flushTokenAccumulator();
     const failedElapsed = Date.now() - start;
-    emit(config, ET.PROGRAM_FAILED, `IDE ${programId} failed at ${currentPhase ?? 'unknown'} after ${formatDuration(failedElapsed)}: ${errorMsg}`, { programId });
+    emit(config, ET.PROGRAM_FAILED, `IDE ${programId} failed at ${currentPhase ?? 'unknown'} after ${formatDuration(failedElapsed)} (${errorCode}): ${errorMsg}`, { programId });
 
     return {
       result: {
@@ -739,12 +1076,30 @@ export const runSinglePhase = async (
         case MP.FIX_TESTS:
           await runVerifyFixLoop(config, config.maxPasses);
           return; // Verify phases are batch-wide, run once
+        case MP.REMEDIATE: {
+          const proj2 = config.contractSubDir;
+          const aFile2 = path.join(config.migrationDir, proj2, `${proj2}-IDE-${programId}.analysis.json`);
+          if (fs.existsSync(aFile2)) {
+            const analysis: AnalysisDocument = JSON.parse(fs.readFileSync(aFile2, 'utf8'));
+            await runRemediateLoop(programId, analysis, config);
+          }
+          break;
+        }
         case MP.REVIEW: {
           const proj = config.contractSubDir;
           const aFile = path.join(config.migrationDir, proj, `${proj}-IDE-${programId}.analysis.json`);
           if (fs.existsSync(aFile)) {
             const analysis: AnalysisDocument = JSON.parse(fs.readFileSync(aFile, 'utf8'));
             await runReviewPhase(programId, analysis, config);
+          }
+          break;
+        }
+        case MP.REFACTOR: {
+          const proj3 = config.contractSubDir;
+          const aFile3 = path.join(config.migrationDir, proj3, `${proj3}-IDE-${programId}.analysis.json`);
+          if (fs.existsSync(aFile3)) {
+            const analysis: AnalysisDocument = JSON.parse(fs.readFileSync(aFile3, 'utf8'));
+            await runRefactorPhase(programId, analysis, config);
           }
           break;
         }

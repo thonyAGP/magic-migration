@@ -295,6 +295,26 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
   - 17 tests unitaires
   - **327 tests au total**
 
+### Pipeline Migration React/TypeScript (factory-cli)
+
+**18 phases:** SPEC → CONTRACT → ANALYZE → TYPES → STORE → API → PAGE → COMPONENTS → TESTS-UNIT → TESTS-UI → VERIFY-TSC → FIX-TSC → VERIFY-TESTS → FIX-TESTS → REMEDIATE → INTEGRATE → REVIEW → REFACTOR
+
+| Statut Pipeline | Signification | Critere |
+|-----------------|--------------|---------|
+| `pending` | Pas encore traite | Initial |
+| `contracted` | Contrat SPECMAP genere | Rules/tables extraites |
+| `enriched` | Code genere | Phases 0-9 terminees |
+| `verified` | TSC clean + tests pass | **NE SIGNIFIE PAS "livrable"** |
+
+**ATTENTION** : `verified` = le code compile et les tests passent. Ca ne garantit PAS la couverture fonctionnelle (voir `coveragePct` dans les rapports review). Un batch "verified" a 53% coverage n'est pas livrable.
+
+**Batch B14 - Fusion (IDE 28, 32, 33):**
+- Status tracker: `verified` (TSC clean, tests pass)
+- Coverage review: **53%** moyen
+- IDE-28 contract: 18% coverage, 9/13 rules manquantes
+- IDE-32/33 contracts: 0% coverage (programmes auxiliaires simples)
+- **Verdict: code genere et compilable, mais PAS livrable en l'etat**
+
 ### Modules en cours
 
 - [ ] **ADH** - Tests d'integration et documentation
@@ -701,6 +721,7 @@ CREATE TABLE IF NOT EXISTS variable_modifications (
 - [ ] Documentation utilisateur API
 
 ### En cours
+- [ ] **CHG-002** Quick Fixes Pipeline V7.2 - Réduire durée 10h→3-4h (en cours: 2026-03-07)
 - [x] **P1.1** Reparer connexion MCP magic-interpreter (en cours: 2026-01-10)
 
 ### Terminees
@@ -892,6 +913,7 @@ CREATE TABLE IF NOT EXISTS variable_modifications (
 > Historique complet: `.openspec/history/changelog.md`
 
 **Derniers changements:**
+- 2026-03-05: **Phase REFACTOR ajoutee au pipeline migration** - Phase 18 (apres REVIEW): refactoring automatique per-programme des fichiers generes. Single pass Claude Sonnet sur chaque fichier source (types, store, api, page, components). Focus DRY, naming consistency, dead code removal, idiomatic React/Zustand patterns. Safety: verify+fix loop post-refactor, guard length>50, desactivable via `skipRefactor: true`. Fichiers: `phase-refactor.ts` (nouveau), `migrate-types.ts`, `migrate-prompts.ts`, `migrate-runner.ts`, `migrate-tracker.ts`. **991 tests passed, 0 failed.**
 - 2026-02-07: **Infrastructure SQL Metadata complete** - (1) Extract-SqlMetadata.ps1 extrait colonnes, PK, FK, indexes, sample values depuis SQL Server, (2) 4 outils MCP `magic_sql_*` (tables, table_info, search_column, search_value), (3) Schema KB v11 avec tables sql_*, FTS5 sur colonnes, (4) KbIndexRunner `import-sql-metadata`, (5) Generate-TableDocs.ps1 genere 692 fichiers MD, (6) Search-TableColumn.ps1 recherche PowerShell. **Resultat: PHU2512 - 692 tables, 6973 colonnes, 1216 indexes documentes. Plus jamais besoin de deviner un nom de colonne.**
 - 2026-02-07: **OpenSpec liste complete 29 projets Magic** - Ajout des 23 projets manquants (Import, GES, WEL, MAI, PBS, POO, REQ, EXB, PTR, EXF, CAP, CAB, QUA, LOG, PUG, EXM, Menu, FIN, RET, NET, TST, TPE, UTILS). Total: 4043 programmes indexes.
 - 2026-01-30: **Spec Quality V7.3 - 3 ameliorations majeures** - (1) **Viewer mockup renderer** : nouveau preprocesseur FORM-DATA dans viewer.html qui dessine les ecrans Magic (style Windows XP, champs positionnes, boutons) a partir des blocs JSON. (2) **Algorigramme metier** : Phase5-Synthesis extrait les conditions IF depuis decoded.json (by_type.CONDITION) pour generer des noeuds de decision (losanges jaunes OUI/NON) au lieu de chaines lineaires. Teste sur ADH IDE 237 : 6 decisions extraites. (3) **Validation 23 criteres** : 3 nouveaux checks dans Validate-SpecContentV72.ps1 - NR_VAR_NAMING (pas de 'Variable X' sans nom), NR_RAW_FIELD_REF (pas de {0,N} brut), NR_ALGO_DECISIONS (min 2 noeuds decision). **Resultat ADH-IDE-237 : 24/24 PASS (100%)**
@@ -932,4 +954,4 @@ CREATE TABLE IF NOT EXISTS variable_modifications (
 - 2026-01-22: Parser Magic V3 deterministe 100%
 
 ---
-*Derniere mise a jour: 2026-01-28 (Post Workflow APEX 4-Phase)*
+*Derniere mise a jour: 2026-03-05 (Phase REFACTOR pipeline + documentation B14)*
