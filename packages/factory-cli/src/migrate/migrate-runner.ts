@@ -1045,6 +1045,22 @@ export const runSinglePhase = async (
         case MP.CONTRACT:
           runContractPhase(programId, config);
           break;
+        case MP.PARSE: {
+          const { runParsePhase } = await import('./phases/phase-parse.js');
+          const parseResult = await runParsePhase(Number(programId), config);
+          if (!parseResult.success) {
+            throw new Error(`Parse failed: ${parseResult.errors.join(', ')}`);
+          }
+          break;
+        }
+        case MP.DATA_MODEL: {
+          const { runDataModelPhase } = await import('./phases/phase-data-model.js');
+          const dataModelResult = await runDataModelPhase(programIds.map(Number), config);
+          if (!dataModelResult.success) {
+            throw new Error('Data model generation failed');
+          }
+          break;
+        }
         case MP.ANALYZE:
           await runAnalyzePhase(programId, config);
           break;
