@@ -39,6 +39,28 @@ importers:
         specifier: ^8.48.0
         version: 8.56.0(eslint@10.0.0(jiti@2.6.1))(typescript@5.9.3)
 
+  packages/data-model:
+    dependencies:
+      '@magic-migration/parser':
+        specifier: workspace:*
+        version: link:../parser
+      zod:
+        specifier: ^3.23.8
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^22.10.2
+        version: 22.19.11
+      '@vitest/coverage-v8':
+        specifier: ^2.1.8
+        version: 2.1.9(vitest@2.1.9(@types/node@22.19.11)(happy-dom@20.7.0)(jsdom@28.1.0)(lightningcss@1.31.1)(msw@2.12.10(@types/node@22.19.11)(typescript@5.9.3)))
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.19.11)(happy-dom@20.7.0)(jsdom@28.1.0)(lightningcss@1.31.1)(msw@2.12.10(@types/node@22.19.11)(typescript@5.9.3))
+
   packages/factory-cli:
     dependencies:
       '@anthropic-ai/sdk':
@@ -6934,7 +6956,7 @@ snapshots:
 
   happy-dom@20.7.0:
     dependencies:
-      '@types/node': 24.10.13
+      '@types/node': 22.19.11
       '@types/whatwg-mimetype': 3.0.2
       '@types/ws': 8.18.1
       entities: 7.0.1
