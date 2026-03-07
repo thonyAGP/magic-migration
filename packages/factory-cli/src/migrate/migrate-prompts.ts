@@ -95,6 +95,30 @@ export const buildAnalyzePrompt = (ctx: MigrateContext): string => {
     '- Include isLoading, error, and filter states',
   ];
 
+  // Pipeline V8: Inject IR + Schema FIRST (reduces prompt size by 83%)
+  if (ctx.ir) {
+    parts.push('', '🎯 INTERMEDIATE REPRESENTATION (IR) — Pre-parsed structure:');
+    parts.push('This IR contains the COMPLETE program structure already parsed.');
+    parts.push('Use this instead of re-inferring from spec text.');
+    parts.push(JSON.stringify({
+      id: ctx.ir.id,
+      name: ctx.ir.name,
+      tasks: ctx.ir.tasks.slice(0, 10),
+      variables: ctx.ir.variables,
+      dataViews: ctx.ir.dataViews,
+      callGraph: ctx.ir.callGraph,
+      metadata: ctx.ir.metadata,
+    }, null, 2));
+  }
+
+  if (ctx.schema) {
+    parts.push('', '🗄️ DATABASE SCHEMA (Prisma) — Pre-inferred relations:');
+    parts.push('All tables and relations already mapped. Use this schema directly.');
+    parts.push('```prisma');
+    parts.push(ctx.schema.slice(0, 5000));
+    parts.push('```');
+  }
+
   if (ctx.spec) {
     parts.push('', 'PROGRAM SPEC:', ctx.spec.slice(0, 12000));
   }
