@@ -9,16 +9,15 @@ export default defineConfig({
   },
   test: {
     globals: true,
-    environment: 'jsdom',
+    environment: 'happy-dom',
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
     testTimeout: 15000,
-    pool: 'vmThreads',
-    poolOptions: {
-      vmThreads: {
-        maxThreads: 4,
-        minThreads: 1,
-      },
+    pool: 'forks',
+    maxWorkers: 2,
+    minWorkers: 1,
+    forks: {
+      execArgv: ['--max-old-space-size=4096'],
     },
     alias: {
       'react-router-dom': resolve(__dirname, './src/test/mocks/react-router-dom.tsx'),

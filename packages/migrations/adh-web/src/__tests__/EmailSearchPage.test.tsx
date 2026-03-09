@@ -289,7 +289,8 @@ describe('EmailSearchPage', () => {
     const addButton = screen.getByText('Ajouter');
     fireEvent.click(addButton);
 
-    const emailInput = screen.getByLabelText('Email');
+    const dialog = screen.getByRole('dialog');
+    const emailInput = dialog.querySelector('input[id="Email"]') as HTMLInputElement;
     fireEvent.change(emailInput, { target: { value: 'new@example.com' } });
 
     const saveButton = screen.getAllByText('Créer')[0];
