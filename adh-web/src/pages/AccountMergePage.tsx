@@ -1,9 +1,8 @@
-```tsx
 import { useCallback, useEffect, useState } from "react";
 import type { BusinessRulesResult } from "@/types/accountMerge";
 import { useAccountMergeStore } from "@/stores/accountMergeStore";
 import { ScreenLayout } from "@/components/layout";
-import { Button, Input, Dialog } from "@/components/ui";
+import { Button, Input } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
 const getValidationStepStatuses = (currentStep: string) => ({
@@ -49,35 +48,6 @@ const TaskProgressIndicator = ({ currentTask, totalTasks }: { currentTask: numbe
   </div>
 );
 
-const BusinessRuleDetailDialog = ({ 
-  isOpen, 
-  onClose, 
-  businessRulesResult 
-}: { 
-  isOpen: boolean; 
-  onClose: () => void; 
-  businessRulesResult: BusinessRulesResult | null;
-}) => (
-  <Dialog open={isOpen} onOpenChange={onClose}>
-    <div className="max-w-3xl max-h-96 overflow-y-auto">
-      <div className="space-y-4">
-        <h2 className="text-xl font-bold">Business Rules Details</h2>
-        {businessRulesResult && Object.entries(businessRulesResult).map(([ruleId, rule]) => (
-          <div key={ruleId} className="border rounded-lg p-4 space-y-2">
-            <div className="flex items-center gap-2">
-              <div className={cn("h-3 w-3 rounded-full", rule.passed ? "bg-success" : "bg-destructive")} />
-              <span className="font-medium">{ruleId.toUpperCase()}</span>
-            </div>
-            <p className="text-sm text-muted-foreground">{rule.description}</p>
-            {rule.status && (
-              <p className="text-xs bg-muted p-2 rounded">Status: {rule.status}</p>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  </Dialog>
-);
 
 const ScreenManagementStatus = ({ currentScreen }: { currentScreen: number }) => (
   <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -218,7 +188,6 @@ export const AccountMergePage = () => {
     validateMergeConditions,
     executeMerge,
     printMergeTicket,
-    rollbackMerge,
     reset,
     checkBusinessRules,
     validateNetworkStatus,
@@ -242,7 +211,7 @@ export const AccountMergePage = () => {
   const [sourceAccountInput, setSourceAccountInput] = useState("");
   const [targetAccountInput, setTargetAccountInput] = useState("");
   const [businessRulesResult, setBusinessRulesResult] = useState<BusinessRulesResult | null>(null);
-  const [showDetailedRules, setShowDetailedRules] = useState(false);
+  const [, setShowDetailedRules] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [hasClosureBlocking, setHasClosureBlocking] = useState(false);
@@ -576,21 +545,6 @@ export const AccountMergePage = () => {
     handleRuleValidationError
   ]);
 
-  const handleRollbackMerge = useCallback(async () => {
-    if (!mergeHistories.length) {
-      return;
-    }
-    
-    const latestMerge = mergeHistories[mergeHistories.length - 1];
-    
-    try {
-      if (rollbackMerge) {
-        await rollbackMerge(latestMerge.id);
-      }
-    } catch (err) {
-      console.error("Rollback failed:", err);
-    }
-  }, [mergeHistories, rollbackMerge]);
 
   const handlePrintTicket = useCallback(async () => {
     if (mergeHistories.length === 0) {
@@ -639,8 +593,6 @@ export const AccountMergePage = () => {
       setBusinessRulesResult(rulesResult);
     }
   }, [sourceAccount, targetAccount, evaluateAllBusinessRules]);
-
-  const totalTasks = 192;
 
   return (
     <ScreenLayout className="p-6">
@@ -767,4 +719,51 @@ export const AccountMergePage = () => {
                 isValid={businessRulesResult.rm005.passed}
                 label={`RM-005: ${businessRulesResult.rm005.description}`}
               />
-              <Validation
+            </div>
+          </div>
+        )}
+
+        {isValidated && !isMergeCompleted && (
+          <div className="rounded-lg border bg-card p-6 space-y-4">
+            <h2 className="text-xl font-semibold">Merge Execution</h2>
+            {isMergeInProgress && (
+              <div className="space-y-3">
+                <ProgressBar progress={mergeProgress} />
+                <TaskProgressIndicator currentTask={currentTask} totalTasks={192} />
+                <p className="text-sm text-muted-foreground">Current Step: {currentStep}</p>
+              </div>
+            )}
+            <div className="flex gap-3">
+              <Button
+                onClick={handleExecuteMerge}
+                disabled={isMergeInProgress || isLoading}
+                className="flex-1"
+              >
+                {isMergeInProgress ? "Executing..." : "Execute Merge"}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={reset}
+                disabled={isMergeInProgress}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {isMergeCompleted && (
+          <div className="rounded-lg border bg-card p-6 space-y-4">
+            <h2 className="text-xl font-semibold">Merge Completed</h2>
+            <p>Merge completed successfully!</p>
+            <p>Account {sourceAccount?.accountNumber} has been merged into {targetAccount?.accountNumber}</p>
+            <div className="flex gap-3">
+              <Button onClick={handlePrintTicket}>Print Ticket</Button>
+              <Button variant="outline" onClick={handleClose}>Close</Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </ScreenLayout>
+  )
+}

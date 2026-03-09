@@ -70,49 +70,6 @@ type AccountMergeStore = AccountMergeState & AccountMergeActions & {
   validateClosureBlocking: () => boolean;
 };
 
-const mockMergeHistories: MergeHistory[] = [
-  {
-    id: 1,
-    sourceAccount: "ACC001",
-    targetAccount: "ACC002",
-    mergeDate: new Date("2024-01-15T10:30:00"),
-    operator: "John Doe",
-    status: "completed",
-  },
-  {
-    id: 2,
-    sourceAccount: "ACC003",
-    targetAccount: "ACC004",
-    mergeDate: new Date("2024-01-16T14:20:00"),
-    operator: "Jane Smith",
-    status: "in-progress",
-  },
-  {
-    id: 3,
-    sourceAccount: "ACC005",
-    targetAccount: "ACC006",
-    mergeDate: new Date("2024-01-17T09:15:00"),
-    operator: "Mike Johnson",
-    status: "failed",
-  },
-  {
-    id: 4,
-    sourceAccount: "ACC007",
-    targetAccount: "ACC008",
-    mergeDate: new Date("2024-01-18T16:45:00"),
-    operator: "Sarah Wilson",
-    status: "completed",
-  },
-  {
-    id: 5,
-    sourceAccount: "ACC009",
-    targetAccount: "ACC010",
-    mergeDate: new Date("2024-01-19T11:00:00"),
-    operator: "David Brown",
-    status: "rollback",
-  },
-];
-
 const mockSourceAccount: Account = {
   accountNumber: "ACC001",
   balance: 1250.75,
@@ -125,12 +82,6 @@ const mockTargetAccount: Account = {
   balance: 3450.20,
   status: "active",
   createdDate: new Date("2022-03-15"),
-};
-
-const mockValidation: MergeValidation = {
-  isClosureInProgress: false,
-  networkStatus: "OK",
-  validationStatus: "PASSED",
 };
 
 const initialState: AccountMergeState & Pick<AccountMergeStore, "reseau" | "chronoHisto" | "reprise" | "repriseConfirmee" | "w0Reprise" | "w0RepriseConfirmee" | "w0ChronoHisto" | "w0CodeLog" | "w0FiliationGarantie" | "w0CompteRemplace" | "p0RepriseAuto" | "p0SansInterface" | "globalFlag78" | "alwaysActiveFlag" | "validation"> = {
@@ -266,7 +217,7 @@ const handleMergeExecution = async (
       targetAccount: targetAccountId,
       mergeDate: new Date(),
       operator: "Current User",
-      status: mergeStatus === "DONE" ? "completed" : mergeStatus === "RETRY" ? "retry" : "passed",
+      status: (mergeStatus === "DONE" || mergeStatus === "PASSED") ? "completed" : mergeStatus === "RETRY" ? "retry" : "passed",
     };
 
     set({

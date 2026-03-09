@@ -11,9 +11,6 @@ export const SessionConcurrencyPage = () => {
     error,
     conflictDetected,
     conflictingSession,
-    checkConcurrency,
-    registerSession,
-    releaseSession,
     forceOpenSession,
     reset
   } = useSessionConcurrencyStore()
@@ -27,18 +24,7 @@ export const SessionConcurrencyPage = () => {
     sessionDetails,
     terminalInfo,
     timestampInfo,
-    allowedAccess,
-    deniedAccess,
-    forceAccess,
-    sessionActive,
-    sessionInactive,
-    concurrencyCheck,
-    registrationStatus,
-    releaseStatus,
-    forceStatus,
-    dialogOpen,
-    confirmAction,
-    cancelAction
+    dialogOpen
   } = {
     sessions: activeSessions,
     loadingSessions: isLoading,
@@ -48,18 +34,7 @@ export const SessionConcurrencyPage = () => {
     sessionDetails: conflictingSession,
     terminalInfo: conflictingSession?.terminalId || "",
     timestampInfo: conflictingSession?.timestamp || new Date(),
-    allowedAccess: !conflictDetected,
-    deniedAccess: conflictDetected,
-    forceAccess: false,
-    sessionActive: conflictingSession !== null,
-    sessionInactive: conflictingSession === null,
-    concurrencyCheck: checkConcurrency,
-    registrationStatus: "idle",
-    releaseStatus: "idle",
-    forceStatus: "idle",
-    dialogOpen: conflictDetected,
-    confirmAction: "force",
-    cancelAction: "cancel"
+    dialogOpen: conflictDetected
   }
 
   useEffect(() => {
@@ -96,7 +71,7 @@ export const SessionConcurrencyPage = () => {
     }).format(timestamp)
   }, [])
 
-  if (loadingSessions) {
+  if (loadingSessions && !conflictWarning) {
     return (
       <ScreenLayout className="flex items-center justify-center">
         <div className="text-center">

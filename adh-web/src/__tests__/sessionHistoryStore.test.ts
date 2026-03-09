@@ -58,9 +58,7 @@ const mockSessionCurrencies: SessionCurrency[] = [
   }
 ]
 
-const mockApiClient = {
-  get: vi.fn()
-}
+const mockApiClient = vi.hoisted(() => ({ get: vi.fn() }))
 
 vi.mock("@/services/api/apiClient", () => ({
   apiClient: mockApiClient
@@ -85,10 +83,11 @@ describe("sessionHistoryStore", () => {
 
       await store.loadSessions("COMPANY_001")
 
-      expect(store.isLoading).toBe(false)
-      expect(store.error).toBe(null)
-      expect(store.sessions.length).toBeGreaterThan(0)
-      expect(store.societe).toBe("COMPANY_001")
+      const updatedState = useSessionHistoryStore.getState()
+      expect(updatedState.isLoading).toBe(false)
+      expect(updatedState.error).toBe(null)
+      expect(updatedState.sessions.length).toBeGreaterThan(0)
+      expect(updatedState.societe).toBe("COMPANY_001")
     })
 
     it("should apply date range filters correctly", async () => {
