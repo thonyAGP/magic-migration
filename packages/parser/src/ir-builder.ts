@@ -3,16 +3,18 @@
  * Assembles tasks tree, resolves variables, builds call-graph
  */
 
-import type { 
-  ProgramIR, 
-  TaskNode, 
-  LocalVariable, 
+import type {
+  ProgramIR,
+  TaskNode,
+  Handler,
+  LogicLine,
+  LocalVariable,
   DataView,
   CallGraph,
   Complexity,
   ParseResult
 } from './ir-types.js';
-import type { ParsedProgram, TaskXML, DataViewXML } from './xml-parser.js';
+import type { ParsedProgram, TaskXML, EventHandlerXML, LogicLineXML, DataViewXML } from './xml-parser.js';
 import { parseProgramXML, toArray, isDisabled } from './xml-parser.js';
 import { fieldToLetter } from './variable-resolver.js';
 
@@ -30,7 +32,7 @@ export const buildProgramIR = (
 
   try {
     const parsed = parseProgramXML(xmlPath);
-    
+
     const tasks = buildTasksTree(parsed);
     const variables = extractVariables(parsed);
     const dataViews = extractDataViews(parsed);
@@ -39,7 +41,7 @@ export const buildProgramIR = (
 
     const ir: ProgramIR = {
       id: programId,
-      name: parsed.Program['@_Name'] || `Program_${programId}`,
+      name: parsed.Program?.['@_Name'] || `Program_${programId}`,
       publicName,
       tasks,
       variables: {
@@ -74,46 +76,94 @@ export const buildProgramIR = (
   }
 };
 
-/**
- * Build tasks tree from parsed XML
- */
+// ─── Tasks ───────────────────────────────────────────────────────────────────
+
 const buildTasksTree = (parsed: ParsedProgram): TaskNode[] => {
-  const tasksXML = toArray(parsed.Program.TasksTree?.Task);
-  return tasksXML.map(buildTaskNode);
+  const tasksXML = toArray(parsed.Program?.TasksTree?.Task);
+  return tasksXML.map(t => buildTaskNode(t));
 };
 
-/**
- * Build single task node recursively
- */
 const buildTaskNode = (taskXML: TaskXML, level = 0): TaskNode => {
   const children = toArray(taskXML.Task).map(child => buildTaskNode(child, level + 1));
-  
+  const handlers = buildHandlers(taskXML);
+  const totalLines = handlers.reduce((s, h) => s + h.lines.length, 0);
+
   return {
-    id: parseInt(taskXML['@_ISN'], 10),
-    taskId: taskXML['@_TaskID'],
+    id: parseInt(String(taskXML['@_ISN']), 10) || 0,
+    taskId: String(taskXML['@_TaskID'] || ''),
     level,
     children,
-    handlers: [],
+    handlers,
     logic: [],
     disabled: isDisabled(taskXML),
     metadata: {
-      lineCount: 0,
+      lineCount: totalLines,
       complexity: 'LOW',
     },
   };
 };
 
-/**
- * Extract local variables and convert to letters
- */
+// ─── Handlers ────────────────────────────────────────────────────────────────
+
+const buildHandlers = (taskXML: TaskXML): Handler[] => {
+  const handlersXML = toArray(taskXML.EventHandlers?.EventHandler);
+  return handlersXML
+    .filter(h => !isDisabled(h))
+    .map((h, i) => ({
+      id: i + 1,
+      event: String(h['@_Event'] || ''),
+      lines: buildLogicLines(toArray(h.LogicLines?.LogicLine)),
+      disabled: isDisabled(h),
+    }));
+};
+
+const buildLogicLines = (linesXML: LogicLineXML[]): LogicLine[] => {
+  return linesXML
+    .filter(l => !isDisabled(l))
+    .map((l, i) => {
+      const idStr = String(l['@_ID'] || i + 1);
+      const id = parseInt(idStr, 10) || i + 1;
+      const callTargetStr = l['@_CallTask'];
+      const callTarget = callTargetStr !== undefined
+        ? parseInt(String(callTargetStr), 10)
+        : undefined;
+      const expression = l['@_Expression'];
+
+      let type: LogicLine['type'] = 'OTHER';
+      if (callTarget !== undefined && !isNaN(callTarget)) {
+        type = 'CALL';
+      } else if (expression?.startsWith('Update:')) {
+        type = 'ASSIGNMENT';
+      } else if (expression?.startsWith('Select:')) {
+        type = 'SELECT';
+      } else if (expression?.startsWith('DataViewSrc:')) {
+        type = 'UPDATE';
+      } else if (expression) {
+        type = 'ASSIGNMENT';
+      }
+
+      return {
+        id,
+        lineNumber: i + 1,
+        type,
+        expression,
+        callTarget: type === 'CALL' ? callTarget : undefined,
+        disabled: isDisabled(l),
+        rawXml: '',
+      };
+    });
+};
+
+// ─── Variables ───────────────────────────────────────────────────────────────
+
 const extractVariables = (parsed: ParsedProgram): LocalVariable[] => {
-  const varsXML = toArray(parsed.Program.Variables?.Variable);
-  
+  const varsXML = toArray(parsed.Program?.Variables?.Variable);
+
   return varsXML.map(v => {
-    const fieldId = parseInt(v['@_ID'], 10);
+    const fieldId = parseInt(String(v['@_ID']), 10) || 0;
     return {
       fieldId,
-      letter: fieldToLetter(fieldId),
+      letter: fieldId > 0 ? fieldToLetter(fieldId) : '?',
       name: v['@_Name'],
       type: v['@_Type'] as LocalVariable['type'],
       scope: (v['@_Scope'] as LocalVariable['scope']) || 'TASK',
@@ -121,34 +171,48 @@ const extractVariables = (parsed: ParsedProgram): LocalVariable[] => {
   });
 };
 
-/**
- * Extract data views (tables)
- */
+// ─── DataViews ───────────────────────────────────────────────────────────────
+
 const extractDataViews = (parsed: ParsedProgram): DataView[] => {
-  const viewsXML = toArray(parsed.Program.DataView);
-  
+  const viewsXML = toArray(parsed.Program?.DataView);
+
   return viewsXML.map(v => ({
-    id: parseInt(v['@_ISN'], 10),
-    tableId: parseInt(v['@_TableISN'], 10),
+    id: parseInt(String(v['@_ISN']), 10) || 0,
+    tableId: parseInt(String(v['@_TableISN']), 10) || 0,
     tableName: `Table_${v['@_TableISN']}`,
     columns: [],
   }));
 };
 
-/**
- * Build call-graph (stub - to be enhanced)
- */
+// ─── Call Graph ───────────────────────────────────────────────────────────────
+
 const buildCallGraph = (tasks: TaskNode[]): CallGraph => {
+  const callees = new Set<number>();
+
+  const walkTasks = (nodes: TaskNode[]) => {
+    for (const task of nodes) {
+      for (const handler of task.handlers) {
+        for (const line of handler.lines) {
+          if (line.type === 'CALL' && line.callTarget !== undefined) {
+            callees.add(line.callTarget);
+          }
+        }
+      }
+      walkTasks(task.children);
+    }
+  };
+
+  walkTasks(tasks);
+
   return {
     callers: [],
-    callees: [],
+    callees: Array.from(callees),
     depth: 0,
   };
 };
 
-/**
- * Compute program complexity
- */
+// ─── Complexity ───────────────────────────────────────────────────────────────
+
 const computeComplexity = (tasks: TaskNode[], dataViews: DataView[]): Complexity => {
   if (tasks.length > 50 || dataViews.length > 20) return 'HIGH';
   if (tasks.length > 20 || dataViews.length > 10) return 'MEDIUM';

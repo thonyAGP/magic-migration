@@ -34,6 +34,26 @@ describe('IR Builder', () => {
       expect(result.errors).toEqual([]);
     });
 
+    it('should build IR from real ADH XML (Prg_69.xml)', () => {
+      const xmlPath = 'D:/Data/Migration/XPA/PMS/ADH/Source/Prg_69.xml';
+      if (!fs.existsSync(xmlPath)) return; // skip if source not available
+
+      const result = buildProgramIR(69, xmlPath);
+
+      expect(result.ir.id).toBe(69);
+      expect(result.ir.name).toBeTruthy(); // 'Extrait de compte' or similar
+      expect(result.errors).toEqual([]);
+      // ADH programs have sub-tasks
+      expect(result.ir.tasks.length).toBeGreaterThan(0);
+      // Should extract some handlers/logic from LogicUnits
+      const allHandlers = result.ir.tasks.flatMap(t => t.handlers);
+      expect(allHandlers.length).toBeGreaterThan(0);
+      // Should find CALL lines (navigation to sub-programs)
+      const allLines = allHandlers.flatMap(h => h.lines);
+      const callLines = allLines.filter(l => l.type === 'CALL');
+      expect(callLines.length).toBeGreaterThan(0);
+    });
+
     it('should detect complexity', () => {
       const xmlPath = path.join(fixturesDir, 'complex-program.xml');
       const complexXML = `<?xml version="1.0" encoding="UTF-8"?>

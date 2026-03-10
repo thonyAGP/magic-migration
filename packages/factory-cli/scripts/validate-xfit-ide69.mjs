@@ -21,8 +21,10 @@ const ROOT = path.resolve(__dirname, '../../../..');
 // ─── Config ──────────────────────────────────────────────────────────────────
 
 const PROGRAM_ID = 69;
+const XML_PATH = 'D:/Data/Migration/XPA/PMS/ADH/Source/Prg_69.xml';
 const DATASOURCES_PATH = 'D:/Data/Migration/XPA/PMS/REF/Source/DataSources.xml';
 const OUTPUT_DIR = path.join(ROOT, '.factory', 'xfit-test', `IDE-${PROGRAM_ID}`);
+const PROGRAM_DIR = path.join(ROOT, '.factory', 'programs', `IDE-${PROGRAM_ID}`);
 const V8_ANALYSIS_PATH = path.join(ROOT, '.openspec', 'migration', 'ADH', `ADH-IDE-${PROGRAM_ID}.analysis.json`);
 
 // IDE 69 uses these tables (from .openspec/migration/ADH/ADH-IDE-69.analysis.json + contract)
@@ -30,13 +32,42 @@ const IDE69_TABLE_ISNS = [847, 596, 34, 77, 67, 867, 40, 878, 31, 69, 263, 904, 
 
 console.log('\n🔧 XFIT-S Validation — IDE 69 (EXTRAIT_COMPTE)');
 console.log('='.repeat(60));
-console.log('Mode: KB-based (parser fix needed for IR logic rules)\n');
+console.log('Mode: Full pipeline (parser FIXED — LogicUnit/TaskLogic support)\n');
 
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+fs.mkdirSync(PROGRAM_DIR, { recursive: true });
+
+// ─── Step 0: PARSE — Prg_69.xml → ir.json ────────────────────────────────────
+
+console.log('🔍 Step 0: PARSE — Prg_69.xml → ir.json');
+
+const { buildProgramIR } = await import('@magic-migration/parser');
+const t0 = Date.now();
+const parseResult = buildProgramIR(PROGRAM_ID, XML_PATH);
+const d0 = Date.now() - t0;
+
+if (parseResult.errors.length > 0) {
+  console.error('  Parse errors:', parseResult.errors);
+  process.exit(1);
+}
+
+const ir = parseResult.ir;
+const irPath = path.join(PROGRAM_DIR, 'ir.json');
+fs.writeFileSync(irPath, JSON.stringify(ir, null, 2));
+
+const allHandlers = ir.tasks.flatMap(t => t.handlers);
+const allLines = allHandlers.flatMap(h => h.lines);
+const byType = allLines.reduce((a, l) => { a[l.type] = (a[l.type] || 0) + 1; return a; }, {});
+const callees = [...new Set(allLines.filter(l => l.callTarget).map(l => l.callTarget))];
+
+console.log(`  ✅ ${d0}ms — "${ir.name}"`);
+console.log(`  Tasks: ${ir.tasks.length}, Handlers: ${allHandlers.length}, Lines: ${allLines.length}`);
+console.log(`  By type: CALL=${byType.CALL || 0}, ASSIGNMENT=${byType.ASSIGNMENT || 0}, SELECT=${byType.SELECT || 0}, UPDATE=${byType.UPDATE || 0}`);
+console.log(`  Callees (IDEs): [${callees.join(', ')}]`);
 
 // ─── Step 1: Extract IDE 69 tables from KB ───────────────────────────────────
 
-console.log('📦 Step 1: Extract IDE 69 tables from KB (datasources-parser)');
+console.log('\n📦 Step 1: Extract IDE 69 tables from KB (datasources-parser)');
 
 const { parseDataSources } = await import('@magic-migration/data-model');
 const t1 = Date.now();
@@ -68,50 +99,25 @@ for (const t of programTables) {
   console.log(`    [${t.id}] ${t.name} — ${t.columns.length} columns`);
 }
 
-// ─── Step 2: Build rules from KB (data-read/write only) ──────────────────────
+// ─── Step 2: Extract business rules from real IR ─────────────────────────────
 
-console.log('\n📋 Step 2: Build rules from KB tables (no IR — no logic rules)');
+console.log('\n📋 Step 2: Extract business rules from real IR (parser now fixed)');
 
-const rules = {
-  programId: PROGRAM_ID,
-  programName: 'EXTRAIT_COMPTE',
-  generatedAt: new Date().toISOString(),
-  rules: programTables.flatMap((table, i) => [
-    {
-      id: `RM-${String(i * 2 + 1).padStart(3, '0')}`,
-      type: 'data-read',
-      description: `Read ${table.name} (${table.columns.length} columns)`,
-      source: `DataView ${table.id}`,
-      variables: [],
-      tables: [table.name],
-    },
-    {
-      id: `RM-${String(i * 2 + 2).padStart(3, '0')}`,
-      type: 'data-write',
-      description: `Write ${table.name} (primary operations)`,
-      source: `DataView ${table.id}`,
-      variables: [],
-      tables: [table.name],
-    },
-  ]),
-  summary: {
-    total: programTables.length * 2,
-    byType: {
-      validation: 0,
-      calculation: 0,
-      navigation: 0,
-      'data-read': programTables.length,
-      'data-write': programTables.length,
-    },
-    tablesRead: programTables.map(t => t.name),
-    tablesWritten: [],
-    calleesReferenced: [236, 229], // Known callees from contract
-  },
-};
+const { extractBusinessRules } = await import('@magic-migration/data-model');
+const t2b = Date.now();
+const rules = extractBusinessRules(ir);
+const d2b = Date.now() - t2b;
 
 fs.writeFileSync(path.join(OUTPUT_DIR, 'rules.json'), JSON.stringify(rules, null, 2));
-console.log(`  ✅ ${rules.summary.total} rules generated (${programTables.length} tables × read+write)`);
-console.log(`  ⚠️  Validation/calculation rules: 0 (needs IR parser fix)`);
+fs.writeFileSync(path.join(PROGRAM_DIR, 'rules.json'), JSON.stringify(rules, null, 2));
+
+console.log(`  ✅ ${d2b}ms — ${rules.summary.total} rules extracted from IR`);
+console.log(`    → validation: ${rules.summary.byType.validation}`);
+console.log(`    → calculation: ${rules.summary.byType.calculation}`);
+console.log(`    → navigation: ${rules.summary.byType.navigation}`);
+console.log(`    → data-read: ${rules.summary.byType['data-read']}`);
+console.log(`    → data-write: ${rules.summary.byType['data-write']}`);
+console.log(`  Callees referenced: [${rules.summary.calleesReferenced.join(', ')}]`);
 
 // ─── Step 3: Build XFIT-S CodegenModel ───────────────────────────────────────
 
