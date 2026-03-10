@@ -1,0 +1,33 @@
+program:
+  id: 33
+  name: ""
+  complexity: MEDIUM
+  callers: []
+  callees: []
+  tasks_count: 1
+  tables_count: 1
+  expressions_count: 6
+rules: []
+variables: []
+tables:
+  - id: 343
+    name: histo_fusionseparation_saisie
+    mode: W
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+callees: []
+overall:
+  rules_total: 0
+  rules_impl: 0
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 0
+  variables_key_count: 0
+  callees_total: 0
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 0
+  status: enriched
+  generated: 2026-03-04T15:29:21.677Z
+  notes: Auto-generated from ADH-IDE-33.md

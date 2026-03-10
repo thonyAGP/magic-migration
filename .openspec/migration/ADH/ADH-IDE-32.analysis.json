@@ -1,0 +1,191 @@
+{
+  "domain": "fusionSeparationHistory",
+  "domainPascal": "FusionSeparationHistory",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "FusionSeparationHistoryEntry",
+      "fields": [
+        {
+          "name": "chronoEF",
+          "type": "number",
+          "source": "histo_fusionseparation_saisie.i_chrono_e_f",
+          "nullable": false
+        },
+        {
+          "name": "societe",
+          "type": "string",
+          "source": "histo_fusionseparation_saisie.i_societe",
+          "nullable": false
+        },
+        {
+          "name": "compteReference",
+          "type": "number",
+          "source": "histo_fusionseparation_saisie.i_compte_reference",
+          "nullable": false
+        },
+        {
+          "name": "filiationReference",
+          "type": "number",
+          "source": "histo_fusionseparation_saisie.i_filiation_reference",
+          "nullable": false
+        },
+        {
+          "name": "comptePointeOld",
+          "type": "number",
+          "source": "histo_fusionseparation_saisie.i_compte_pointe_old",
+          "nullable": false
+        },
+        {
+          "name": "filiationPointeOld",
+          "type": "number",
+          "source": "histo_fusionseparation_saisie.i_filiation_pointe_old",
+          "nullable": false
+        },
+        {
+          "name": "comptePointeNew",
+          "type": "number",
+          "source": "histo_fusionseparation_saisie.i_compte_pointe_new",
+          "nullable": false
+        },
+        {
+          "name": "filiationPointeNew",
+          "type": "number",
+          "source": "histo_fusionseparation_saisie.i_filiation_pointe_new",
+          "nullable": false
+        },
+        {
+          "name": "typeEF",
+          "type": "string",
+          "source": "histo_fusionseparation_saisie.i_type_e_f",
+          "nullable": false
+        },
+        {
+          "name": "nom",
+          "type": "string",
+          "source": "histo_fusionseparation_saisie.i_nom",
+          "nullable": false
+        },
+        {
+          "name": "prenom",
+          "type": "string",
+          "source": "histo_fusionseparation_saisie.i_prenom",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "historyEntries",
+      "type": "FusionSeparationHistoryEntry[]",
+      "default": "[]"
+    },
+    {
+      "name": "isLoading",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "currentEntry",
+      "type": "FusionSeparationHistoryEntry | null",
+      "default": "null"
+    }
+  ],
+  "actions": [
+    {
+      "name": "writeHistoryEntry",
+      "params": [
+        "entry: FusionSeparationHistoryEntry"
+      ],
+      "businessRules": [
+        "Persist fusion/separation operation to history table",
+        "Generate audit trail for account operations",
+        "Ensure traceability of all account movements"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "formatFullName",
+      "params": [
+        "nom: string",
+        "prenom: string"
+      ],
+      "businessRules": [
+        "Concatenate trimmed nom and prenom with space separator"
+      ],
+      "returns": "string"
+    },
+    {
+      "name": "setCurrentEntry",
+      "params": [
+        "entry: FusionSeparationHistoryEntry"
+      ],
+      "businessRules": [
+        "Set the current history entry for processing"
+      ],
+      "returns": "void"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "POST",
+      "path": "/api/fusion-separation-history/entries",
+      "queryParams": [],
+      "response": "void"
+    },
+    {
+      "method": "GET",
+      "path": "/api/fusion-separation-history/entries",
+      "queryParams": [
+        "societe?",
+        "compteReference?",
+        "typeEF?"
+      ],
+      "response": "FusionSeparationHistoryEntry[]"
+    }
+  ],
+  "uiLayout": {
+    "type": "service-component",
+    "sections": [
+      {
+        "name": "historyForm",
+        "controls": [
+          "chronoEFInput",
+          "societeInput",
+          "compteReferenceInput",
+          "filiationReferenceInput",
+          "comptePointeOldInput",
+          "filiationPointeOldInput",
+          "comptePointeNewInput",
+          "filiationPointeNewInput",
+          "typeEFSelect",
+          "nomInput",
+          "prenomInput",
+          "submitButton"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 3,
+    "description": "Mock fusion/separation history entries with various operation types (fusion/separation) and account combinations"
+  },
+  "dependencies": {
+    "stores": [
+      "useDataSourceStore",
+      "useFusionSeparationHistoryStore"
+    ],
+    "sharedTypes": [
+      "FusionSeparationHistoryEntry"
+    ],
+    "externalApis": [
+      "fusionSeparationHistoryApi"
+    ]
+  }
+}

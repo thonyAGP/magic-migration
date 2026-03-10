@@ -13,8 +13,6 @@ import {
   FacturePage,
   PassPage,
   DataCatchPage,
-  SeparationPage,
-  FusionPage,
   AccountOpsPage,
   ParametresPage,
   DashboardPage,
@@ -58,7 +56,12 @@ import GestionCaissePage from '@/pages/GestionCaissePage';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { ToastContainer } from '@/components/ui/Toast';
 
-function LoginPage() {
+// New page imports
+import AccountStatementPage from '@/pages/AccountStatementPage';
+import AccountStatementPrintPage from '@/pages/AccountStatementPrintPage';
+import PrintExtraitPage from '@/pages/PrintExtraitPage';
+
+const LoginPage = () => {
   const login = useAuthStore((s) => s.login);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const navigate = useNavigate();
@@ -86,15 +89,15 @@ function LoginPage() {
       </div>
     </div>
   );
-}
+};
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   return <>{children}</>;
-}
+};
 
-export function App() {
+export const App = () => {
   return (
     <ErrorBoundary>
       <BrowserRouter>
@@ -128,8 +131,6 @@ export function App() {
           <Route path="/caisse/facture" element={<ProtectedRoute><FacturePage /></ProtectedRoute>} />
           <Route path="/caisse/pass" element={<ProtectedRoute><PassPage /></ProtectedRoute>} />
           <Route path="/caisse/datacatch" element={<ProtectedRoute><DataCatchPage /></ProtectedRoute>} />
-          <Route path="/caisse/separation" element={<ProtectedRoute><SeparationPage /></ProtectedRoute>} />
-          <Route path="/caisse/fusion" element={<ProtectedRoute><FusionPage /></ProtectedRoute>} />
           <Route path="/caisse/compte/:type" element={<ProtectedRoute><AccountOpsPage /></ProtectedRoute>} />
           <Route path="/caisse/operations" element={<ProtectedRoute><CaisseOpsPage /></ProtectedRoute>} />
           <Route path="/caisse/title-lookup" element={<ProtectedRoute><TitleLookupPage /></ProtectedRoute>} />
@@ -155,10 +156,16 @@ export function App() {
           <Route path="/caisse/reinit-aff-pyr" element={<ProtectedRoute><ReinitAffPyrPage /></ProtectedRoute>} />
           <Route path="/caisse/saisie-contenu-caisse" element={<ProtectedRoute><SaisieContenuCaissePage /></ProtectedRoute>} />
           <Route path="/caisse/gestion-caisse" element={<ProtectedRoute><GestionCaissePage /></ProtectedRoute>} />
+          
+          {/* New routes */}
+          <Route path="/caisse/account-statement" element={<ProtectedRoute><AccountStatementPage /></ProtectedRoute>} />
+          <Route path="/caisse/account-statement-print" element={<ProtectedRoute><AccountStatementPrintPage /></ProtectedRoute>} />
+          <Route path="/caisse/print-extrait" element={<ProtectedRoute><PrintExtraitPage /></ProtectedRoute>} />
+
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
         <ToastContainer />
       </BrowserRouter>
     </ErrorBoundary>
   );
-}
+};

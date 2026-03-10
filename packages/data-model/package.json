@@ -1,0 +1,35 @@
+{
+  "name": "@magic-migration/data-model",
+  "version": "1.0.0",
+  "description": "Data model inference - extract database schema and relations from Magic IR",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@magic-migration/parser": "workspace:*",
+    "fast-xml-parser": "^4.5.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@vitest/coverage-v8": "^2.1.8",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "keywords": [
+    "magic-unipaas",
+    "data-model",
+    "schema",
+    "relations",
+    "prisma"
+  ],
+  "author": "Claude Code",
+  "license": "MIT"
+}

@@ -5,9 +5,11 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 
-const mockUseSessionConcurrencyStore = vi.fn()
-const mockReset = vi.fn()
-const mockForceOpenSession = vi.fn()
+const { mockUseSessionConcurrencyStore, mockReset, mockForceOpenSession } = vi.hoisted(() => ({
+  mockUseSessionConcurrencyStore: vi.fn(),
+  mockReset: vi.fn(),
+  mockForceOpenSession: vi.fn(),
+}))
 
 vi.mock('@/stores/sessionConcurrencyStore', () => ({
   useSessionConcurrencyStore: mockUseSessionConcurrencyStore

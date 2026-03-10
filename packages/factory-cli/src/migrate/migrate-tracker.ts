@@ -4,7 +4,45 @@
  */
 
 import fs from 'node:fs';
-import type { MigratePhase, PhaseRecord, PhaseStatus, ProgramMigration } from './migrate-types.js';
+import { MigratePhase } from './migrate-types.js';
+import type { PhaseRecord, PhaseStatus, ProgramMigration } from './migrate-types.js';
+
+/**
+ * Phase weights based on real observed effort (generation time, AI tokens, complexity).
+ * Total = 100%
+ *
+ * Rationale:
+ * - SPEC/CONTRACT (2%): Automatic, templates (seconds)
+ * - ANALYZE/TYPES (5%): Light AI, TypeScript generation (minutes)
+ * - ENRICH phases (69%): Heavy AI generation (STORE→TESTS) - THE BIG CHUNK
+ *   - COMPONENTS (20%): Most complex phase (UI logic, state, interactions)
+ *   - PAGE (15%): React page with routing, layout
+ *   - TESTS (24%): Unit + UI tests with fixtures
+ * - VERIFY/FIX (14%): TypeScript + test verification/correction
+ * - INTEGRATE/REVIEW (3%): Finalization steps
+ */
+export const PHASE_WEIGHTS: Record<MigratePhase, number> = {
+  [MigratePhase.SPEC]: 1,
+  [MigratePhase.CONTRACT]: 1,
+  [MigratePhase.PARSE]: 2,
+  [MigratePhase.DATA_MODEL]: 2,
+  [MigratePhase.ANALYZE]: 3,
+  [MigratePhase.TYPES]: 2,
+  [MigratePhase.STORE]: 8,
+  [MigratePhase.API]: 2,
+  [MigratePhase.PAGE]: 15,
+  [MigratePhase.COMPONENTS]: 20, // Heaviest phase
+  [MigratePhase.TESTS_UNIT]: 12,
+  [MigratePhase.TESTS_UI]: 12,
+  [MigratePhase.VERIFY_TSC]: 2,
+  [MigratePhase.FIX_TSC]: 5,
+  [MigratePhase.VERIFY_TESTS]: 2,
+  [MigratePhase.FIX_TESTS]: 5,
+  [MigratePhase.REMEDIATE]: 5,
+  [MigratePhase.INTEGRATE]: 0.5,
+  [MigratePhase.REVIEW]: 2.5,
+  [MigratePhase.REFACTOR]: 5,
+};
 
 export interface MigrateTrackerData {
   migrate: Record<string, ProgramMigration>;
@@ -139,11 +177,29 @@ export const markProgramFailed = (prog: ProgramMigration, error: string): void =
 
 /**
  * Get completion stats for a program.
+ * Returns both simple phase count and weighted percentage based on effort.
  */
-export const getCompletionStats = (prog: ProgramMigration): { completed: number; total: number; pct: number } => {
+export const getCompletionStats = (
+  prog: ProgramMigration,
+): { completed: number; total: number; pct: number; weightedPct: number } => {
   const phases = Object.values(prog.phases);
   const completed = phases.filter(p => p.status === 'completed').length;
   const total = phases.length;
   const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
-  return { completed, total, pct };
+
+  // NEW: Weighted calculation based on effort
+  // Calculate completed weight (sum of weights for completed phases)
+  let completedWeight = 0;
+
+  for (const [phaseName, record] of Object.entries(prog.phases)) {
+    if (record.status === 'completed') {
+      const weight = PHASE_WEIGHTS[phaseName as MigratePhase] ?? 0;
+      completedWeight += weight;
+    }
+  }
+
+  // Divide by 100 (total weight of all phases) to get true percentage
+  const weightedPct = Math.round(completedWeight);
+
+  return { completed, total, pct, weightedPct };
 };

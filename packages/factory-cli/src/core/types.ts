@@ -248,6 +248,21 @@ export interface DeliverableModule {
   sccUnits: SCC[];
 }
 
+// ─── Functional Module (Manual Grouping) ────────────────────────────────
+
+export interface FunctionalModule {
+  id: string; // "MOD_EXTRAIT"
+  name: string; // "Extrait Compte"
+  description: string;
+  batches: string[]; // Batches covered ["B6"]
+  programs: (string | number)[]; // Programme IDs [69, 70, 71, ...]
+  domain: string; // "Extrait"
+  priority: number; // Migration order (1 = foundation)
+  wave: number; // Migration wave (0-5)
+  dependencies: string[]; // Module IDs required
+  estimatedHours: number;
+}
+
 export interface ModuleBlocker {
   programId: string | number;
   programName: string;
@@ -491,6 +506,8 @@ export interface FullMigrationReport {
   tokenStats?: { input: number; output: number; costUsd: number };
 }
 
+export type ModulePhase = 'NON_DÉMARRÉ' | 'PLANIFIÉ' | 'ENRICHI' | 'MIGRÉ' | 'VÉRIFIÉ' | 'LIVRABLE';
+
 export interface ModuleSummary {
   root: string | number;
   rootName: string;
@@ -501,6 +518,7 @@ export interface ModuleSummary {
   contracted: number;
   pending: number;
   deliverable: boolean;
+  phase: ModulePhase;
   blockerIds: (string | number)[];
   rank?: number;
   priorityScore?: number;

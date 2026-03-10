@@ -9,6 +9,7 @@ import path from 'node:path';
 import type { MigrateConfig, AnalysisDocument } from './migrate-types.js';
 import { parseContract } from '../core/contract.js';
 import type { MigrationContract } from '../core/types.js';
+import type { ProgramIR } from '@magic-migration/parser';
 
 // ─── Context Structures ────────────────────────────────────────
 
@@ -20,6 +21,8 @@ export interface MigrateContext {
   analysis: AnalysisDocument | null;
   dbMetadata: Record<string, string>;
   patternFiles: Record<string, string>;
+  ir: ProgramIR | null;
+  schema: string | null;
 }
 
 // ─── Build Context ──────────────────────────────────────────────
@@ -37,6 +40,8 @@ export const buildContext = (
     analysis: null,
     dbMetadata: {},
     patternFiles: {},
+    ir: null,
+    schema: null,
   };
 
   // Load spec
@@ -61,6 +66,18 @@ export const buildContext = (
   // Load DB metadata for tables used by this program
   if (config.dbMetadataFile && fs.existsSync(config.dbMetadataFile)) {
     ctx.dbMetadata = loadDbMetadata(config.dbMetadataFile, ctx.contract);
+  }
+
+  // Load IR (from Phase PARSE)
+  const irPath = path.join(config.projectDir, '.factory', 'programs', `IDE-${programId}`, 'ir.json');
+  if (fs.existsSync(irPath)) {
+    ctx.ir = JSON.parse(fs.readFileSync(irPath, 'utf-8'));
+  }
+
+  // Load schema (from Phase DATA_MODEL)
+  const schemaPath = path.join(config.projectDir, '.factory', 'data-model', 'schema.prisma');
+  if (fs.existsSync(schemaPath)) {
+    ctx.schema = fs.readFileSync(schemaPath, 'utf-8');
   }
 
   return ctx;

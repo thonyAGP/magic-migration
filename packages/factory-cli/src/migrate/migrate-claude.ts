@@ -81,6 +81,9 @@ export interface ClaudeCallResult {
 // ─── Main entry point (transparent switch) ───────────────────────
 
 export const callClaude = async (options: ClaudeCallOptions): Promise<ClaudeCallResult> => {
+  const promptSize = Buffer.byteLength(options.prompt, 'utf8');
+  console.log(`[migrate-claude] callClaude mode=${_mode} model=${options.model ?? 'default'} prompt=${promptSize} bytes${options.logLabel ? ` label=${options.logLabel}` : ''}`);
+
   let result: ClaudeCallResult;
 
   if (_mode === 'api') {
@@ -90,6 +93,9 @@ export const callClaude = async (options: ClaudeCallOptions): Promise<ClaudeCall
   } else {
     result = await callClaudeCli(options);
   }
+
+  const tokenInfo = result.tokens ? ` tokens=${result.tokens.input}in/${result.tokens.output}out` : '';
+  console.log(`[migrate-claude] callClaude done in ${result.durationMs}ms output=${result.output.length} chars${tokenInfo}`);
 
   // Accumulate tokens if tracker is active
   if (_tokenAccumulator && result.tokens) {
@@ -167,6 +173,8 @@ const callClaudeCli = async (options: ClaudeCallOptions): Promise<ClaudeCallResu
       ? `type "${tmpFile}" | ${cliBin} --print --output-format json ${modelArgs}`
       : `${cliBin} --print --output-format json ${modelArgs} < "${tmpFile}"`;
 
+    console.log(`[migrate-claude] CLI exec: ${cliBin} --print --output-format json ${modelArgs} (timeout: ${timeout}ms, prompt: ${promptSize} bytes)`);
+
     const { stdout } = await execAsync(cmd, {
       timeout,
       maxBuffer,
@@ -186,8 +194,10 @@ const callClaudeCli = async (options: ClaudeCallOptions): Promise<ClaudeCallResu
  * The CLI may return either:
  * - An object: `{ result: "...", usage?: { input_tokens, output_tokens }, cost_usd? }`
  * - An array:  `[{ type: "result", result: "...", usage?: {...} }]`
+ *
+ * @internal - Exported for testing only
  */
-const parseCliJsonOutput = (stdout: string, durationMs: number, promptLength: number): ClaudeCallResult => {
+export const parseCliJsonOutput = (stdout: string, durationMs: number, promptLength: number): ClaudeCallResult => {
   const estimateTokens = (textLen: number) => ({
     input: Math.ceil(promptLength / 4),
     output: Math.ceil(textLen / 4),
@@ -217,9 +227,30 @@ const parseCliJsonOutput = (stdout: string, durationMs: number, promptLength: nu
     }
 
     return { output: text, durationMs, tokens };
-  } catch {
-    // Fallback: if JSON parse fails, treat as raw text + estimate tokens
+  } catch (err) {
+    // Detect HTTP errors or other non-JSON responses from Claude CLI
     const text = stdout.trim();
+    const preview = text.slice(0, 200);
+
+    // Common patterns that indicate an error response instead of valid output
+    const errorPatterns = [
+      /^GET\s+\//i,
+      /^POST\s+\//i,
+      /^HTTP\/\d/i,
+      /^Error:/i,
+      /^<!DOCTYPE/i,
+      /^<html/i,
+    ];
+
+    if (errorPatterns.some(pattern => pattern.test(text))) {
+      throw new Error(
+        `Claude CLI returned an HTTP/error response instead of JSON. ` +
+        `Preview: "${preview}${text.length > 200 ? '...' : ''}"`
+      );
+    }
+
+    // If it's just malformed JSON but not an obvious error, fallback to raw text
+    // This preserves backward compatibility for edge cases
     return { output: text, durationMs, tokens: estimateTokens(text.length) };
   }
 };
@@ -227,10 +258,16 @@ const parseCliJsonOutput = (stdout: string, durationMs: number, promptLength: nu
 /**
  * Call Claude CLI and parse the response as JSON.
  * Extracts JSON from markdown code blocks if present.
+ * Returns both parsed data and token usage.
  */
-export const callClaudeJson = async <T = unknown>(options: ClaudeCallOptions): Promise<T> => {
+export const callClaudeJson = async <T = unknown>(
+  options: ClaudeCallOptions,
+): Promise<{ data: T; tokens?: { input: number; output: number } }> => {
   const result = await callClaude(options);
-  return parseJsonResponse<T>(result.output);
+  return {
+    data: parseJsonResponse<T>(result.output),
+    tokens: result.tokens,
+  };
 };
 
 /**
@@ -318,6 +355,9 @@ export const callClaudeWithRetry = async (
   let currentOptions = { ...options };
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    if (attempt > 0) {
+      console.log(`[migrate-claude] Retry attempt ${attempt + 1}/${maxAttempts} (model: ${currentModel ?? 'default'})`);
+    }
     try {
       return await callClaude(currentOptions);
     } catch (err) {

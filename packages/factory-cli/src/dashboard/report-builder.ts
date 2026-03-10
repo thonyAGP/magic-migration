@@ -16,7 +16,7 @@ import type { DecommissionResult } from '../core/types.js';
 import { computeModulePriority } from '../calculators/priority-calculator.js';
 import { estimateProject, computeRemainingHours } from '../calculators/effort-estimator.js';
 import { scoreProgram, DEFAULT_ESTIMATION_CONFIG } from '../calculators/complexity-scorer.js';
-import { inferDomain } from '../calculators/batch-planner.js';
+
 
 export interface ReportInput {
   projectName: string;
@@ -77,6 +77,12 @@ export const buildReport = (input: ReportInput): FullMigrationReport => {
       })
       .map(m => {
         const priority = priorityMap.get(m.root);
+        const phase: import('../core/types.js').ModulePhase = m.deliverable ? 'LIVRABLE'
+          : m.verified > 0 ? 'VÉRIFIÉ'
+          : m.enriched > 0 ? 'ENRICHI'
+          : m.contracted > 0 ? 'PLANIFIÉ'
+          : 'NON_DÉMARRÉ';
+
         return {
           root: m.root,
           rootName: m.rootName,
@@ -87,6 +93,7 @@ export const buildReport = (input: ReportInput): FullMigrationReport => {
           contracted: m.contracted,
           pending: m.pending,
           deliverable: m.deliverable,
+          phase,
           blockerIds: m.blockers.map(b => b.programId),
           rank: priority?.rank,
           priorityScore: priority?.priorityScore,
@@ -170,10 +177,10 @@ export const buildReport = (input: ReportInput): FullMigrationReport => {
     pipeline: { pending, contracted, enriched, verified },
     modules: {
       total: moduleList.length,
-      deliverable: moduleList.filter(m => m.deliverable).length,
-      close: moduleList.filter(m => !m.deliverable && m.readinessPct >= 50).length,
-      inProgress: moduleList.filter(m => !m.deliverable && m.readinessPct > 0 && m.readinessPct < 50).length,
-      notStarted: moduleList.filter(m => m.readinessPct === 0).length,
+      deliverable: moduleList.filter(m => m.phase === 'LIVRABLE').length,
+      close: moduleList.filter(m => m.phase === 'VÉRIFIÉ' || m.phase === 'MIGRÉ').length,
+      inProgress: moduleList.filter(m => m.phase === 'ENRICHI' || m.phase === 'PLANIFIÉ').length,
+      notStarted: moduleList.filter(m => m.phase === 'NON_DÉMARRÉ').length,
       list: moduleList,
     },
     decommission: decommission.stats,
@@ -204,7 +211,7 @@ export const buildModulesFromBatches = (
   batches.map((b, i) => {
     let vCount = 0, eCount = 0, cCount = 0, pCount = 0;
     for (const pid of b.priorityOrder) {
-      const status = programStatuses.get(pid) ?? 'pending';
+      const status = programStatuses.get(pid) ?? programStatuses.get(Number(pid)) ?? programStatuses.get(String(pid)) ?? 'pending';
       switch (status) {
         case 'verified': vCount++; break;
         case 'enriched': eCount++; break;
@@ -216,6 +223,19 @@ export const buildModulesFromBatches = (
     const readinessPct = Math.round((vCount / total) * 100);
     const deliverable = vCount === total && total > 0;
 
+    const coverageAvg = b.stats?.coverageAvgFrontend ?? 0;
+    const fullyImpl = b.stats?.fullyImpl ?? 0;
+    const allImpl = fullyImpl >= total && total > 0;
+
+    const phase: import('../core/types.js').ModulePhase = (() => {
+      if ((deliverable || allImpl) && coverageAvg >= 95) return 'LIVRABLE';
+      if (vCount > 0 || allImpl) return 'VÉRIFIÉ';
+      if (fullyImpl > 0 || coverageAvg > 0) return 'MIGRÉ';
+      if (eCount > 0 || b.status === 'enriched') return 'ENRICHI';
+      if (cCount > 0 || b.status === 'contracted') return 'PLANIFIÉ';
+      return 'NON_DÉMARRÉ';
+    })();
+
     return {
       root: b.root,
       rootName: b.name,
@@ -226,10 +246,11 @@ export const buildModulesFromBatches = (
       contracted: cCount,
       pending: pCount,
       deliverable,
+      phase,
       blockerIds: [],
       rank: i + 1,
       batchId: b.id,
-      domain: b.domain ?? inferDomain(b.name),
+      domain: b.domain ?? b.name,
       complexityGrade: b.complexityGrade,
       estimatedHours: b.estimatedHours,
     };

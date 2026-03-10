@@ -178,6 +178,72 @@ const gradeBadge = (grade: string): string => {
   return `<span class="grade-badge" style="background:${color}">${grade}</span>`;
 };
 
+const renderScenarioBModules = (report: FullMigrationReport | MultiProjectReport): string => {
+  // For multi-project, use first project's report
+  if ('projects' in report) {
+    const firstProject = report.projects[0];
+    if (!firstProject?.report) return '<p>No project data available</p>';
+    return renderScenarioBModulesSingle(firstProject.report);
+  }
+  return renderScenarioBModulesSingle(report);
+};
+
+const renderScenarioBModulesSingle = (report: FullMigrationReport): string => {
+  // Hardcoded Scenario B modules (6 modules, 66 programs)
+  const modules = [
+    { id: 'MOD_DIVERS', name: 'Divers + Utils', wave: 0, progs: 7, batches: ['B3', 'B4'], deps: [], hours: 8 },
+    { id: 'MOD_SESSIONS', name: 'Sessions/Caisse', wave: 1, progs: 6, batches: ['B1', 'B2'], deps: ['MOD_DIVERS'], hours: 30 },
+    { id: 'MOD_VENTES', name: 'Ventes', wave: 2, progs: 17, batches: ['B9'], deps: ['MOD_SESSIONS'], hours: 45 },
+    { id: 'MOD_EXTRAIT', name: 'Extrait Compte', wave: 2, progs: 7, batches: ['B6'], deps: ['MOD_SESSIONS'], hours: 20 },
+    { id: 'MOD_CHANGE_GARANTIES', name: 'Change + Garanties', wave: 3, progs: 10, batches: ['B7', 'B13'], deps: ['MOD_SESSIONS'], hours: 25 },
+    { id: 'MOD_ECO_FACTURES', name: 'Easy Check-Out + Factures', wave: 4, progs: 9, batches: ['B15', 'B16'], deps: ['MOD_SESSIONS', 'MOD_VENTES'], hours: 25 },
+  ];
+
+  const waves = [0, 1, 2, 3, 4];
+  const waveHTML = waves.map(wave => {
+    const waveMods = modules.filter(m => m.wave === wave);
+    if (waveMods.length === 0) return '';
+
+    const modCards = waveMods.map(mod => {
+      // Compute module status from batches
+      const batchStatuses = mod.batches.map((bid: string) =>
+        report.batches.find((b: any) => b.id === bid)?.status || 'pending'
+      );
+      const allVerified = batchStatuses.every(s => s === 'verified');
+      const anyEnriched = batchStatuses.some(s => s === 'enriched');
+      const status = allVerified ? 'verified' : anyEnriched ? 'enriched' : 'pending';
+      const statusColor = status === 'verified' ? 'var(--green)' : status === 'enriched' ? 'var(--blue)' : 'var(--gray)';
+      const statusLabel = status === 'verified' ? '✅ Vérifié' : status === 'enriched' ? '🔄 En cours' : '⏸️ Pending';
+
+      const depsList = mod.deps.length > 0
+        ? `<div style="margin-top:0.5rem;font-size:0.85rem;color:var(--text-dim)">Dépend de: ${mod.deps.join(', ')}</div>`
+        : '';
+
+      return `
+        <div class="module-card" style="border:1px solid ${statusColor};border-radius:8px;padding:1rem;background:var(--bg-card)">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+            <h3 style="margin:0;font-size:1.1rem">${mod.name}</h3>
+            <span style="color:${statusColor};font-weight:600">${statusLabel}</span>
+          </div>
+          <div style="color:var(--text-dim);font-size:0.9rem">
+            ${mod.progs} programmes • Batches: ${mod.batches.join(', ')} • Estimé: ${mod.hours}h
+          </div>
+          ${depsList}
+        </div>`;
+    }).join('');
+
+    return `
+      <div class="wave-section" style="margin-bottom:2rem">
+        <h3 style="color:var(--cyan);margin-bottom:1rem">🌊 VAGUE ${wave}</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem">
+          ${modCards}
+        </div>
+      </div>`;
+  }).join('');
+
+  return waveHTML;
+};
+
 const renderEstimationSection = (r: FullMigrationReport): string => {
   const est = r.estimation;
   if (!est) return '';
@@ -246,8 +312,8 @@ const renderModulesSection = (modules: FullMigrationReport['modules']): string =
   <div class="module-filters">
     <button class="filter-btn active" data-filter="all">Tous (${modules.total})</button>
     <button class="filter-btn" data-filter="deliverable">Livrables (${modules.deliverable})</button>
-    <button class="filter-btn" data-filter="close">Proches &ge;80% (${modules.close})</button>
-    <button class="filter-btn" data-filter="progress">En cours (${modules.inProgress})</button>
+    <button class="filter-btn" data-filter="close">Migr\u00e9s / V\u00e9rifi\u00e9s (${modules.close})</button>
+    <button class="filter-btn" data-filter="progress">Enrichis / Planifi\u00e9s (${modules.inProgress})</button>
     <button class="filter-btn" data-filter="notstarted">Non d\u00e9marr\u00e9 (${modules.notStarted})</button>
   </div>
   <div class="module-sort">
@@ -263,17 +329,25 @@ const renderModulesSection = (modules: FullMigrationReport['modules']): string =
 };
 
 const renderModuleRow = (m: ModuleSummary): string => {
-  const statusClass = m.deliverable ? 'deliverable'
-    : m.readinessPct >= 50 ? 'close'
-    : m.readinessPct > 0 ? 'progress'
-    : (m.enriched + m.contracted) > 0 ? 'progress'
-    : 'notstarted';
+  const phaseFilterMap: Record<string, string> = {
+    'LIVRABLE': 'deliverable',
+    'V\u00c9RIFI\u00c9': 'close',
+    'MIGR\u00c9': 'close',
+    'ENRICHI': 'progress',
+    'PLANIFI\u00c9': 'progress',
+    'NON_D\u00c9MARR\u00c9': 'notstarted',
+  };
+  const statusClass = phaseFilterMap[m.phase] ?? 'notstarted';
 
-  const statusBadge = m.deliverable ? '<span class="badge badge-green">LIVRABLE</span>'
-    : m.readinessPct >= 50 ? '<span class="badge badge-blue">PROCHE</span>'
-    : m.readinessPct > 0 ? '<span class="badge badge-yellow">EN COURS</span>'
-    : (m.enriched + m.contracted) > 0 ? '<span class="badge badge-yellow">EN COURS</span>'
-    : '<span class="badge badge-gray">NON D\u00c9MARR\u00c9</span>';
+  const phaseBadgeMap: Record<string, string> = {
+    'LIVRABLE': '<span class="badge badge-green">LIVRABLE</span>',
+    'V\u00c9RIFI\u00c9': '<span class="badge badge-blue">V\u00c9RIFI\u00c9</span>',
+    'MIGR\u00c9': '<span class="badge badge-yellow">MIGR\u00c9</span>',
+    'ENRICHI': '<span class="badge badge-teal">ENRICHI</span>',
+    'PLANIFI\u00c9': '<span class="badge badge-gray">PLANIFI\u00c9</span>',
+    'NON_D\u00c9MARR\u00c9': '<span class="badge badge-gray">NON D\u00c9MARR\u00c9</span>',
+  };
+  const statusBadge = phaseBadgeMap[m.phase] ?? phaseBadgeMap['NON_D\u00c9MARR\u00c9'];
 
   const blockerText = m.blockerIds.length > 0
     ? `<div class="module-blockers">Bloqueurs: ${m.blockerIds.slice(0, 5).join(', ')}${m.blockerIds.length > 5 ? '...' : ''}</div>`
@@ -323,7 +397,7 @@ const renderModuleRow = (m: ModuleSummary): string => {
           <div class="bar-fill bar-enriched" style="width: ${pct(m.enriched, m.memberCount)}%; left: ${pct(m.verified, m.memberCount)}%"></div>
           <div class="bar-fill bar-contracted" style="width: ${pct(m.contracted, m.memberCount)}%; left: ${pct(m.verified + m.enriched, m.memberCount)}%"></div>
         </div>
-        <span class="module-pct">${m.readinessPct}% v\u00e9rifi\u00e9</span>
+        <span class="module-pct">${m.readinessPct}%</span>
       </div>
       <div class="module-breakdown">
         <span class="tag tag-green">${m.verified} v\u00e9rifi\u00e9s</span>
@@ -511,6 +585,7 @@ ${MULTI_CSS}
 
 <nav class="project-tabs-bar">
   <button class="project-tab active" data-project="global"><span class="tab-dot tab-dot-global"></span>Vue Globale</button>
+  <button class="project-tab" data-project="scenario"><span class="tab-dot" style="background:var(--purple)"></span>Scénario B</button>
   ${projectTabs}
   <button class="project-tab" data-project="tokens"><span class="tab-dot" style="background:var(--yellow)"></span>Tokens &amp; Co\u00fbts</button>
 </nav>
@@ -808,6 +883,15 @@ ${projectContents}
     <div id="tokens-content" style="color:var(--text-dim);padding:20px 0">
       <p>Chargement...</p>
     </div>
+  </div>
+</div>
+
+<div class="tab-content" data-tab="scenario">
+  <div class="card">
+    <h2>📋 Scénario B - Migration Modulaire (66 programmes, 6 modules)</h2>
+    <p style="color:var(--text-dim);margin-bottom:2rem">Migration par module fonctionnel avec vagues de déploiement et gestion des dépendances.</p>
+
+    ${renderScenarioBModules(report)}
   </div>
 </div>
 
@@ -1189,6 +1273,7 @@ header h1 {
 .badge-yellow { background: rgba(210,153,34,0.2); color: var(--yellow); }
 .badge-gray { background: rgba(72,79,88,0.3); color: var(--text-dim); }
 .badge-purple { background: rgba(188,140,255,0.2); color: var(--purple); }
+.badge-teal { background: rgba(86,212,221,0.2); color: var(--cyan); }
 
 /* Decommission */
 .decommission-grid {
@@ -2520,6 +2605,21 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
               bars[1].style.width = enrichedPct + '%';
               bars[1].style.left = verifiedPct + '%';
             }
+            // Update phase badge dynamically
+            var badge = row.querySelector('.badge');
+            if (badge) {
+              var allDone = b.verified >= b.programCount && b.programCount > 0;
+              var covAvg = b.coverageAvg || 0;
+              var newPhase, newClass;
+              if (allDone && covAvg >= 95) { newPhase = 'LIVRABLE'; newClass = 'badge badge-green'; }
+              else if (allDone || b.verified > 0) { newPhase = 'V\\u00c9RIFI\\u00c9'; newClass = 'badge badge-blue'; }
+              else if (b.enriched > 0 || covAvg > 0) { newPhase = 'MIGR\\u00c9'; newClass = 'badge badge-yellow'; }
+              else if (b.status === 'enriched') { newPhase = 'ENRICHI'; newClass = 'badge badge-teal'; }
+              else if (b.status === 'contracted') { newPhase = 'PLANIFI\\u00c9'; newClass = 'badge badge-gray'; }
+              else { newPhase = 'NON D\\u00c9MARR\\u00c9'; newClass = 'badge badge-gray'; }
+              badge.textContent = newPhase;
+              badge.className = newClass;
+            }
             break;
           }
         }
@@ -2529,14 +2629,15 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     });
   }
 
-  // Load batches dropdown (hide fully verified)
+  // Load batches dropdown (show all batches)
   fetch('/api/status').then(function(r) { return r.json(); }).then(function(batches) {
     if (!Array.isArray(batches)) return;
     batches.forEach(function(b) {
-      if (b.status === 'verified') return;
       var opt = document.createElement('option');
       opt.value = b.id;
-      opt.textContent = b.id + ' - ' + b.name + ' (' + b.programCount + ' progs, ' + b.verified + '/' + b.programCount + ' v\\u00e9rifi\\u00e9s)';
+      var label = b.id + ' - ' + b.name + ' (' + b.programCount + ' progs, ' + b.verified + '/' + b.programCount + ' v\\u00e9rifi\\u00e9s)';
+      if (b.verified === b.programCount && b.programCount > 0) label += ' \\u2714';
+      opt.textContent = label;
       batchSelect.appendChild(opt);
     });
     updateModuleStats(); // Initial update
@@ -2827,7 +2928,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
 
   // ─── Migration state ──────────────────────────────────────────
   var ALL_PHASES = ['spec','contract','analyze','types','store','api','page','components',
-    'tests-unit','tests-ui','verify-tsc','fix-tsc','verify-tests','fix-tests','integrate','review'];
+    'tests-unit','tests-ui','verify-tsc','fix-tsc','verify-tests','fix-tests','remediate','integrate','review','refactor'];
 
   var migrateState = {
     totalProgs: 0, doneProgs: 0, failedProgs: 0,
@@ -3339,9 +3440,9 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
           if (bar) { bar.style.width = ''; bar.style.background = '#f59e0b'; bar.className = 'mp-bar-fill mp-bar-prog mp-pulse-bar'; }
           if (label) label.textContent = '';
         }
-        // Update batch progress from verify loop events (verifyProgress: 0..1 → batchProgress: 0..0.4)
+        // Update batch progress from verify loop events (verifyProgress: 0..1 → batchProgress: 0..0.3)
         if (msg.data && typeof msg.data.verifyProgress === 'number') {
-          migrateState.batchProgress = msg.data.verifyProgress * 0.4;
+          migrateState.batchProgress = msg.data.verifyProgress * 0.3;
           updateModuleProgress(migrateState.doneProgs, migrateState.totalProgs);
         }
       }
@@ -3373,17 +3474,36 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
           if (batchDurEl) { batchDurEl.textContent = formatElapsed(batchDur); batchDurEl.style.color = '#d2a8ff'; }
         }
       }
-      // Track batch progress for review per-program completions
+      // Track batch progress for remediate per-program completions
+      if (migrateState.batchPhaseActive && pid && phase === 'remediate') {
+        var remDone = 0;
+        for (var rmk in migrateState.programPhases) {
+          if (migrateState.programPhases[rmk].completedPhases['remediate']) remDone++;
+        }
+        var remPct = migrateState.totalProgs > 0 ? remDone / migrateState.totalProgs : 1;
+        migrateState.batchProgress = 0.3 + 0.2 * remPct;
+        updateModuleProgress(migrateState.doneProgs, migrateState.totalProgs);
+      }
+      // Track batch progress for review/refactor per-program completions
       if (migrateState.batchPhaseActive && pid && phase === 'review') {
         migrateState.batchReviewsDone++;
         var reviewPct = migrateState.totalProgs > 0 ? migrateState.batchReviewsDone / migrateState.totalProgs : 1;
-        migrateState.batchProgress = 0.7 + 0.3 * reviewPct;
+        migrateState.batchProgress = 0.5 + 0.25 * reviewPct;
+        updateModuleProgress(migrateState.doneProgs, migrateState.totalProgs);
+      }
+      if (migrateState.batchPhaseActive && pid && phase === 'refactor') {
+        var refactorDone = 0;
+        for (var rk in migrateState.programPhases) {
+          if (migrateState.programPhases[rk].completedPhases['refactor']) refactorDone++;
+        }
+        var refactorPct = migrateState.totalProgs > 0 ? refactorDone / migrateState.totalProgs : 1;
+        migrateState.batchProgress = 0.75 + 0.25 * refactorPct;
         updateModuleProgress(migrateState.doneProgs, migrateState.totalProgs);
       }
       if (phase && !pid) {
         // Batch-level phase completed - update prog section + batch progress
         if (migrateState.batchPhaseActive && phase === 'integrate') {
-          migrateState.batchProgress = 0.7;
+          migrateState.batchProgress = 0.5;
           updateModuleProgress(migrateState.doneProgs, migrateState.totalProgs);
         }
         var titleEl = document.getElementById('mp-prog-title');
@@ -3551,8 +3671,8 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     }
 
     if (msg.type === 'verify_pass') {
-      // Verification loop done (TSC + tests) = 40% of batch work
-      migrateState.batchProgress = 0.4;
+      // Verification loop done (TSC + tests) = 30% of batch work
+      migrateState.batchProgress = 0.3;
       updateModuleProgress(migrateState.doneProgs, migrateState.totalProgs);
       addMLog('[verify] ' + (msg.message || ''));
       return;

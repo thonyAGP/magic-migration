@@ -5,7 +5,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen, fireEvent, waitFor } from "@testing-library/react"
 
-const mockUseSaisieContenuCaisseStore = vi.fn()
+const mockUseSaisieContenuCaisseStore = vi.hoisted(() => vi.fn())
 
 vi.mock("@/stores/saisieContenuCaisseStore", () => ({
   useSaisieContenuCaisseStore: mockUseSaisieContenuCaisseStore
@@ -134,7 +134,8 @@ describe("SaisieContenuCaissePage", () => {
     render(<SaisieContenuCaissePage />)
     
     expect(screen.getByText("Chargement des données de caisse...")).toBeInTheDocument()
-    expect(screen.getByRole("generic")).toHaveClass("animate-spin")
+    const spinner = screen.getAllByRole("generic").find(el => el.classList.contains("animate-spin"))
+    expect(spinner).toHaveClass("animate-spin")
   })
 
   it("displays error state", () => {

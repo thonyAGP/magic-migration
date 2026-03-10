@@ -75,6 +75,8 @@ tools/_archive/
 
 # === Migration logs (contain connection strings) ===
 .migration-log/
+.openspec/migration/**/MOD_*-warnings.json
+.openspec/migration/**/archives/
 
 # === Turbo ===
 .turbo/

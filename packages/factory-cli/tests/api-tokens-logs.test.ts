@@ -83,7 +83,7 @@ describe('API Tokens & Logs Endpoints', () => {
   });
 
   it('should return populated data after updateTokens (GET /api/tokens)', () => {
-    updateTokens(FULL_MIG_DIR, 117, 'types', { input: 1000, output: 500 });
+    updateTokens(MIG_DIR, 117, 'types', { input: 1000, output: 500 });
 
     const { res, getResult } = createMockRes();
     handleTokensGet(makeCtx(), new URLSearchParams(), res);

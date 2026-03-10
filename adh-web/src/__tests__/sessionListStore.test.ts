@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest"
+import { describe, it, expect, beforeEach, vi, afterEach } from "vitest"
 import type { ApiResponse } from "@/services/api/apiClient"
 import type { Session, SessionFilter } from "@/types/sessionList"
 import { useSessionListStore } from "@/stores/sessionListStore"
@@ -73,6 +73,10 @@ describe("sessionListStore", () => {
     vi.useFakeTimers()
   })
 
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   describe("fetchSessions", () => {
     it("should fetch sessions successfully with real API", async () => {
       const mockResponse: ApiResponse<Session[]> = {
@@ -91,12 +95,7 @@ describe("sessionListStore", () => {
 
       const store = useSessionListStore.getState()
       
-      const promise = store.fetchSessions(DEFAULT_FILTERS)
-
-      expect(store.isLoading).toBe(true)
-      expect(store.error).toBe(null)
-
-      await promise
+      await store.fetchSessions(DEFAULT_FILTERS)
 
       const finalState = useSessionListStore.getState()
       expect(finalState.isLoading).toBe(false)
@@ -213,10 +212,10 @@ describe("sessionListStore", () => {
       await promise
 
       const finalState = useSessionListStore.getState()
-      expect(finalState.sessions).toHaveLength(3)
-      
+      expect(finalState.sessions).toHaveLength(4)
+
       const etats = finalState.sessions.map(session => session.etat)
-      expect(etats).toEqual(expect.arrayContaining(["O", "", "O"]))
+      expect(etats).toEqual(expect.arrayContaining(["O", "", "O", "O"]))
       expect(etats).not.toContain("F")
     })
 

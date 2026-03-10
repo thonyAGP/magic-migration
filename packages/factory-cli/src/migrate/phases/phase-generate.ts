@@ -20,16 +20,51 @@ export interface GenerateResult {
   duration: number;
 }
 
+/** Write file with retry logic for Windows file locking (UNKNOWN errors). */
 const writeFile = (filePath: string, content: string, dryRun: boolean): void => {
   if (dryRun) return;
   const dir = path.dirname(filePath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(filePath, content, 'utf8');
+  const maxRetries = 3;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      fs.writeFileSync(filePath, content, 'utf8');
+      return;
+    } catch (err) {
+      const code = (err as NodeJS.ErrnoException).code ?? 'UNKNOWN';
+      if (attempt < maxRetries && (code === 'UNKNOWN' || code === 'EBUSY' || code === 'EPERM')) {
+        const delayMs = attempt * 200;
+        console.warn(`[phase-generate] writeFile retry ${attempt}/${maxRetries} for ${path.basename(filePath)} (${code}), waiting ${delayMs}ms`);
+        const start = Date.now();
+        while (Date.now() - start < delayMs) { /* busy wait for sync retry */ }
+        continue;
+      }
+      const errMsg = err instanceof Error ? err.message : String(err);
+      throw new Error(`Failed to write ${filePath} after ${attempt} attempt(s): ${errMsg}`);
+    }
+  }
 };
 
+/** Read file if it exists, with retry for Windows transient locks. */
 const readIfExists = (filePath: string): string | null => {
   if (!fs.existsSync(filePath)) return null;
-  return fs.readFileSync(filePath, 'utf8');
+  const maxRetries = 3;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return fs.readFileSync(filePath, 'utf8');
+    } catch (err) {
+      const code = (err as NodeJS.ErrnoException).code ?? 'UNKNOWN';
+      if (attempt < maxRetries && (code === 'UNKNOWN' || code === 'EBUSY' || code === 'EPERM')) {
+        const delayMs = attempt * 200;
+        console.warn(`[phase-generate] readIfExists retry ${attempt}/${maxRetries} for ${path.basename(filePath)} (${code}), waiting ${delayMs}ms`);
+        const start = Date.now();
+        while (Date.now() - start < delayMs) { /* busy wait for sync retry */ }
+        continue;
+      }
+      throw err;
+    }
+  }
+  return null;
 };
 
 // ─── Phase 3: TYPES ────────────────────────────────────────────
@@ -42,6 +77,7 @@ export const runTypesPhase = async (
   const outFile = path.join(config.targetDir, 'src', 'types', `${analysis.domain}.ts`);
 
   if (fs.existsSync(outFile)) {
+    console.log(`[phase-generate] TYPES: skip ${path.basename(outFile)} (exists)`);
     return { file: outFile, skipped: true, duration: 0 };
   }
 
@@ -50,8 +86,10 @@ export const runTypesPhase = async (
   const patterns = loadReferencePatterns(config.targetDir);
 
   const prompt = buildTypesPrompt(ctx, analysis, patterns.types);
+  console.log(`[phase-generate] TYPES: calling Claude (prompt: ${prompt.length} chars)`);
   const result = await callClaude({ prompt, model: getModelForPhase(config, MP.TYPES), cliBin: config.cliBin });
   const content = parseFileResponse(result.output);
+  console.log(`[phase-generate] TYPES: response ${result.output.length} chars → ${content.length} chars in ${result.durationMs}ms`);
 
   writeFile(outFile, content, config.dryRun);
   return { file: outFile, skipped: false, duration: Date.now() - start };
@@ -67,6 +105,7 @@ export const runStorePhase = async (
   const outFile = path.join(config.targetDir, 'src', 'stores', `${analysis.domain}Store.ts`);
 
   if (fs.existsSync(outFile)) {
+    console.log(`[phase-generate] STORE: skip ${path.basename(outFile)} (exists)`);
     return { file: outFile, skipped: true, duration: 0 };
   }
 
@@ -79,6 +118,7 @@ export const runStorePhase = async (
   const typesContent = readIfExists(typesFile) ?? '';
 
   const prompt = buildStorePrompt(ctx, analysis, typesContent, patterns.store);
+  console.log(`[phase-generate] STORE: calling Claude (prompt: ${prompt.length} chars)`);
   const result = await callClaude({
     prompt,
     model: getModelForPhase(config, MP.STORE),
@@ -86,6 +126,7 @@ export const runStorePhase = async (
     timeoutMs: 180_000,
   });
   const content = parseFileResponse(result.output);
+  console.log(`[phase-generate] STORE: response ${result.output.length} chars → ${content.length} chars in ${result.durationMs}ms`);
 
   writeFile(outFile, content, config.dryRun);
   return { file: outFile, skipped: false, duration: Date.now() - start };
@@ -101,6 +142,7 @@ export const runApiPhase = async (
   const outFile = path.join(config.targetDir, 'src', 'services', 'api', `endpoints-${analysis.domain}.ts`);
 
   if (fs.existsSync(outFile)) {
+    console.log(`[phase-generate] API: skip ${path.basename(outFile)} (exists)`);
     return { file: outFile, skipped: true, duration: 0 };
   }
 
@@ -111,8 +153,10 @@ export const runApiPhase = async (
   const typesContent = readIfExists(typesFile) ?? '';
 
   const prompt = buildApiPrompt(analysis, typesContent, patterns.api);
+  console.log(`[phase-generate] API: calling Claude (prompt: ${prompt.length} chars)`);
   const result = await callClaude({ prompt, model: getModelForPhase(config, MP.API), cliBin: config.cliBin });
   const content = parseFileResponse(result.output);
+  console.log(`[phase-generate] API: response ${result.output.length} chars → ${content.length} chars in ${result.durationMs}ms`);
 
   writeFile(outFile, content, config.dryRun);
   return { file: outFile, skipped: false, duration: Date.now() - start };
@@ -128,6 +172,7 @@ export const runPagePhase = async (
   const outFile = path.join(config.targetDir, 'src', 'pages', `${analysis.domainPascal}Page.tsx`);
 
   if (fs.existsSync(outFile)) {
+    console.log(`[phase-generate] PAGE: skip ${path.basename(outFile)} (exists)`);
     return { file: outFile, skipped: true, duration: 0 };
   }
 
@@ -142,6 +187,7 @@ export const runPagePhase = async (
   const storeContent = readIfExists(storeFile) ?? '';
 
   const prompt = buildPagePrompt(ctx, analysis, storeContent, typesContent, patterns.page);
+  console.log(`[phase-generate] PAGE: calling Claude (prompt: ${prompt.length} chars)`);
   const result = await callClaude({
     prompt,
     model: getModelForPhase(config, MP.PAGE),
@@ -149,6 +195,7 @@ export const runPagePhase = async (
     timeoutMs: 180_000,
   });
   const content = parseFileResponse(result.output);
+  console.log(`[phase-generate] PAGE: response ${result.output.length} chars → ${content.length} chars in ${result.durationMs}ms`);
 
   writeFile(outFile, content, config.dryRun);
   return { file: outFile, skipped: false, duration: Date.now() - start };
@@ -186,14 +233,17 @@ export const runComponentsPhase = async (
     const outFile = path.join(compDir, `${compName}.tsx`);
 
     if (fs.existsSync(outFile)) {
+      console.log(`[phase-generate] COMPONENT: skip ${compName} (exists)`);
       results.push({ file: outFile, skipped: true, duration: 0 });
       continue;
     }
 
     const sectionStart = Date.now();
     const prompt = buildComponentPrompt(compName, analysis, section, typesContent, pageContent);
+    console.log(`[phase-generate] COMPONENT ${compName}: calling Claude (prompt: ${prompt.length} chars)`);
     const result = await callClaude({ prompt, model: getModelForPhase(config, MP.COMPONENTS), cliBin: config.cliBin });
     const content = parseFileResponse(result.output);
+    console.log(`[phase-generate] COMPONENT ${compName}: response ${result.output.length} chars → ${content.length} chars in ${result.durationMs}ms`);
 
     writeFile(outFile, content, config.dryRun);
     results.push({ file: outFile, skipped: false, duration: Date.now() - sectionStart });

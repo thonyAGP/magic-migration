@@ -50,7 +50,7 @@ vi.mock('@/components/ui', () => ({
     open: boolean
     onClose: () => void
   }) => open ? (
-    <div data-testid="dialog" onClick={onClose}>
+    <div data-testid="dialog">
       {children}
     </div>
   ) : null,
@@ -259,6 +259,9 @@ describe('FermetureSessionsPage', () => {
     
     await waitFor(() => {
       expect(screen.getByText('Erreurs de validation:')).toBeInTheDocument()
+    })
+    
+    await waitFor(() => {
       expect(screen.getByText('• Session 1 ne peut pas être fermée')).toBeInTheDocument()
     })
   })

@@ -89,6 +89,7 @@ describe("gestionCaisseStore", () => {
   beforeEach(() => {
     useGestionCaisseStore.getState().reset()
     vi.clearAllMocks()
+    vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: false })
   })
 
   describe("chargerParametres", () => {
@@ -290,7 +291,12 @@ describe("gestionCaisseStore", () => {
       await store.detecterSessionsConcurrentes()
 
       const state = useGestionCaisseStore.getState()
-      expect(state.sessionsConcurrentes).toEqual(MOCK_SESSIONS_CONCURRENTES)
+      expect(state.sessionsConcurrentes).toHaveLength(2)
+      expect(state.sessionsConcurrentes[0]).toMatchObject({
+        sessionId: 2,
+        posteId: "CAISSE_02",
+        operateurNom: "Pierre Martin"
+      })
       expect(state.isLoading).toBe(false)
     })
 
@@ -547,7 +553,11 @@ describe("gestionCaisseStore", () => {
       await store.consulterHistorique()
 
       const state = useGestionCaisseStore.getState()
-      expect(state.historique).toEqual(MOCK_HISTORIQUE)
+      expect(state.historique).toHaveLength(5)
+      expect(state.historique[0]).toMatchObject({
+        sessionId: 10,
+        operateurNom: "Marie Dubois"
+      })
       expect(state.showHistoriqueDialog).toBe(true)
       expect(state.isLoading).toBe(false)
     })

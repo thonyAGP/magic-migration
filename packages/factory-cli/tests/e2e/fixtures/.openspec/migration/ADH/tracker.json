@@ -2,18 +2,18 @@
   "version": "1.0",
   "methodology": "SPECMAP",
   "created": "2026-02-25",
-  "updated": "2026-02-25",
+  "updated": "2026-03-07",
   "status": "active",
   "stats": {
     "total_programs": 10,
     "live_programs": 6,
     "orphan_programs": 4,
     "ecf_programs": 0,
-    "contracted": 4,
-    "enriched": 0,
+    "contracted": 2,
+    "enriched": 1,
     "verified": 0,
     "max_level": 3,
-    "last_computed": "2026-02-25"
+    "last_computed": "2026-03-07T12:35:35.957Z"
   },
   "batches": [
     {
@@ -60,7 +60,8 @@
       "name": "Smoke Test Batch Empty",
       "root": 105,
       "programs": 1,
-      "status": "pending",
+      "status": "contracted",
+      "contracted_date": "2026-03-07",
       "stats": {
         "backend_na": 0,
         "frontend_enrich": 0,

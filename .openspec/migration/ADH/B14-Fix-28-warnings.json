@@ -1,0 +1,15 @@
+{
+  "batchId": "B14-Fix-28",
+  "batchName": "B14-Fix-28",
+  "timestamp": "2026-03-03T15:00:24.601Z",
+  "warnings": [
+    {
+      "type": "tests",
+      "attempts": 3,
+      "message": "Tests failed after 3 attempts (1 test)",
+      "details": "[\n  {\n    \"testFile\": \"unknown\",\n    \"testName\": \"vitest run\",\n    \"error\": \"{\\\"numTotalTestSuites\\\":920,\\\"numPassedTestSuites\\\":871,\\\"numFailedTestSuites\\\":49,\\\"numPendingTestSuites\\\":0,\\\"numTotalTests\\\":2291,\\\"numPassedTests\\\":2238,\\\"numFailedTests\\\":53,\\\"numPendingTests\\\":0,\\\"numTodoTests\\\":0,\\\"snapshot\\\":{\\\"added\\\":0,\\\"failure\\\":false,\\\"filesAdded\\\":0,\\\"filesRemoved\\\":0,\\\"filesRemovedList\\\":[],\\\"filesUnmatched\\\":0,\\\"filesUpdated\\\":0,\\\"matched\\\":0,\\\"total\\\":0,\\\"unchecked\\\":0,\\\"uncheckedKeysByFile\\\":[],\\\"unmatched\\\":0,\\\"updated\\\":0,\\\"didUpdate\\\":false},\\\"startTime\\\":1772549996256,\\\"success\\\":false,\\\"testResults\\\":[{\\\"asser\"\n  }\n]"
+    }
+  ],
+  "tscPasses": 1,
+  "testPasses": 3
+}

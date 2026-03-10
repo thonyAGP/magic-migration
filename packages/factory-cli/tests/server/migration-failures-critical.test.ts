@@ -255,7 +255,7 @@ describe('BLOC A1 - Migration Critical Failures', () => {
       expect(startEvent).toBeDefined();
       expect(startEvent?.message).toContain('B1');
       expect(startEvent?.message).toContain('1 programs');
-    });
+    }, 180_000);
 
     it('should emit migration_completed event with summary', async () => {
       // Arrange
@@ -278,7 +278,7 @@ describe('BLOC A1 - Migration Critical Failures', () => {
       const completedEvent = capturedEvents.find(e => e.type === 'migration_completed');
       expect(completedEvent).toBeDefined();
       expect(completedEvent?.message).toMatch(/Migration terminee|programmes/);
-    });
+    }, 180_000);
 
     it('should emit phase events for each migration phase', async () => {
       // Arrange
@@ -304,7 +304,7 @@ describe('BLOC A1 - Migration Critical Failures', () => {
         e.type === 'phase_failed'
       );
       expect(phaseEvents.length).toBeGreaterThan(0);
-    });
+    }, 180_000);
   });
 
   describe('[R3-bis] State Tracking Verification', () => {

@@ -223,8 +223,9 @@ import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
   test: {
+    globals: true,
     environment: 'jsdom',
-    setupFiles: [],
+    setupFiles: ['./vitest.setup.ts'],
   },
   resolve: {
     alias: {
@@ -232,6 +233,9 @@ export default defineConfig({
     },
   },
 });
+`;
+
+const VITEST_SETUP = `import '@testing-library/jest-dom';
 `;
 
 export const scaffoldTargetDir = (config: MigrateConfig): { created: number; skipped: number } => {
@@ -269,6 +273,13 @@ export const scaffoldTargetDir = (config: MigrateConfig): { created: number; ski
   const vitestPath = path.join(targetDir, 'vitest.config.ts');
   if (!fs.existsSync(vitestPath)) {
     fs.writeFileSync(vitestPath, VITEST_CONFIG, 'utf8');
+    created++;
+  } else skipped++;
+
+  // vitest.setup.ts
+  const vitestSetupPath = path.join(targetDir, 'vitest.setup.ts');
+  if (!fs.existsSync(vitestSetupPath)) {
+    fs.writeFileSync(vitestSetupPath, VITEST_SETUP, 'utf8');
     created++;
   } else skipped++;
 

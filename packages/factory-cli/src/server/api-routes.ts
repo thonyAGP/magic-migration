@@ -21,7 +21,7 @@ import type { LogEntry } from './log-storage.js';
 import { runCodegen, runCodegenEnriched } from '../generators/codegen/codegen-runner.js';
 import type { CodegenEnrichConfig, EnrichMode } from '../generators/codegen/enrich-model.js';
 import { runMigration, getMigrateStatus, createBatch } from '../migrate/migrate-runner.js';
-import { BUILD_INFO } from '../build-info.js';
+import { getBuildInfo } from '../build-info.js';
 import { getGitStatus } from './git-status.js';
 import { DEFAULT_PHASE_MODELS } from '../migrate/migrate-types.js';
 import type { MigrateConfig, MigratePhase } from '../migrate/migrate-types.js';
@@ -640,9 +640,8 @@ export const handleAnalyzeGet = async (
 export const handleTokensGet = (ctx: RouteContext, query: URLSearchParams, res: ServerResponse): void => {
   const dir = query.get('dir') ?? ctx.dir;
   const config = resolveConfig({ ...ctx, dir });
-  const migrationDir = path.join(config.migrationDir, config.contractSubDir);
 
-  const data = getTokensData(migrationDir);
+  const data = getTokensData(config.migrationDir);
   if (!data) {
     json(res, { global: { input: 0, output: 0, costUsd: 0, totalCalls: 0 }, batches: {}, programs: {} });
     return;
@@ -664,9 +663,8 @@ export const handleTokensBatchGet = (ctx: RouteContext, query: URLSearchParams, 
   }
 
   const config = resolveConfig({ ...ctx, dir });
-  const migrationDir = path.join(config.migrationDir, config.contractSubDir);
 
-  const data = getBatchTokens(migrationDir, batch);
+  const data = getBatchTokens(config.migrationDir, batch);
   if (!data) {
     json(res, { input: 0, output: 0, costUsd: 0, perPhase: {} });
     return;
@@ -688,9 +686,8 @@ export const handleTokensProgramGet = (ctx: RouteContext, query: URLSearchParams
   }
 
   const config = resolveConfig({ ...ctx, dir });
-  const migrationDir = path.join(config.migrationDir, config.contractSubDir);
 
-  const data = getProgramTokens(migrationDir, program);
+  const data = getProgramTokens(config.migrationDir, program);
   if (!data) {
     json(res, { input: 0, output: 0, costUsd: 0 });
     return;
@@ -777,7 +774,7 @@ export const handleLogsLatestGet = (ctx: RouteContext, query: URLSearchParams, r
  */
 export const handleVersion = (_ctx: RouteContext, res: ServerResponse): void => {
   json(res, {
-    ...BUILD_INFO,
+    ...getBuildInfo(), // Call function to get fresh commit hash
     serverStartTime: new Date().toISOString(),
   });
 };
@@ -795,24 +792,28 @@ export const handleGitStatus = (ctx: RouteContext, res: ServerResponse): void =>
  * POST /api/server/restart
  * Triggers server restart script.
  */
-export const handleServerRestart = async (_ctx: RouteContext, res: ServerResponse): Promise<void> => {
-  const { exec } = await import('node:child_process');
+export const handleServerRestart = async (ctx: RouteContext, res: ServerResponse): Promise<void> => {
+  const { spawn } = await import('node:child_process');
 
-  // Execute restart script in background
-  exec('powershell -ExecutionPolicy Bypass -File ./restart-server-qa.ps1', {
-    cwd: process.cwd(),
-  }, (err) => {
-    if (err) {
-      console.error('[SERVER RESTART FAILED]', err);
-    }
-  });
-
-  // Return immediately (server will restart)
+  // Return immediately (before restart)
   json(res, { restarting: true, message: 'Server restart initiated. Dashboard will reconnect automatically.' });
 
-  // Shutdown current server after response sent
+  // Delay to let response finish, then restart
   setTimeout(() => {
     console.log('[SERVER RESTART] Shutting down for restart...');
-    process.exit(0);
-  }, 1000);
+
+    // Spawn new server as completely detached process BEFORE exit
+    const newServer = spawn('npx', ['tsx', 'src/cli.ts', 'serve', '--port', '3070', '--dir', 'ADH'], {
+      cwd: process.cwd(),
+      detached: true,
+      stdio: 'ignore',
+      windowsHide: true, // Prevent DOS window from opening on Windows
+    });
+    newServer.unref(); // Detach from parent
+
+    // Give the spawn 500ms to initialize, then exit current process
+    setTimeout(() => {
+      process.exit(0);
+    }, 500);
+  }, 100);
 };

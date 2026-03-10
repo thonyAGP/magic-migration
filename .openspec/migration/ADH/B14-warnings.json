@@ -1,0 +1,15 @@
+{
+  "batchId": "B14",
+  "batchName": "Fusion",
+  "timestamp": "2026-03-05T20:02:56.473Z",
+  "warnings": [
+    {
+      "type": "tests",
+      "attempts": 3,
+      "message": "Tests failed after 3 attempts (1 test)",
+      "details": "[\n  {\n    \"testFile\": \"D:/Projects/ClubMed/LecteurMagic/adh-web/src/__tests__/accountMergeStore.test.ts\",\n    \"testName\": \"accountMergeStore executeMerge with mock data should execute merge with mock data and create history with completed status (RM-008)\",\n    \"error\": \"AssertionError: expected 'passed' to be 'completed' // Object.is equality\\n    at D:\\\\Projects\\\\ClubMed\\\\LecteurMagic\\\\adh-web\\\\src\\\\__tests__\\\\accountMergeStore.test.ts:308:33\\n    at file:///D:/Projects/ClubMed/LecteurMagic/adh-web/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20\"\n  }\n]"
+    }
+  ],
+  "tscPasses": 1,
+  "testPasses": 3
+}

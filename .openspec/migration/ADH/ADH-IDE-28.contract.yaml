@@ -30,7 +30,7 @@ rules:
     variables:
       - EZ
     status: IMPL
-    target_file: adh-web/src/__tests__/fermetureSessionsStore.test.ts
+    target_file: adh-web/src/__tests__/accountMergeStore.test.ts
     gap_notes: ""
   - id: RM-004
     description: "Condition: W0 chrono histo [BA] egale 'F'"
@@ -38,7 +38,7 @@ rules:
     variables:
       - FN
     status: IMPL
-    target_file: adh-web/src/__tests__/sessionListStore.test.ts
+    target_file: adh-web/src/__tests__/accountMergeStore.test.ts
     gap_notes: ""
   - id: RM-005
     description: "Condition: W0 chrono histo [BA] different de 'F'"
@@ -186,14 +186,14 @@ tables:
   - id: 340
     name: histo_fusionseparation
     mode: RW
-    status: MISSING
-    target_file: ""
+    status: IMPL
+    target_file: adh-web/src/stores/accountMergeStore.ts
     gap_notes: ""
   - id: 47
     name: compte_gm________cgm
     mode: RW
-    status: MISSING
-    target_file: ""
+    status: IMPL
+    target_file: adh-web/src/stores/accountMergeStore.ts
     gap_notes: ""
   - id: 23
     name: reseau_cloture___rec
@@ -210,8 +210,8 @@ tables:
   - id: 33
     name: prestations______pre
     mode: RW
-    status: MISSING
-    target_file: ""
+    status: IMPL
+    target_file: adh-web/src/stores/accountMergeStore.ts
     gap_notes: ""
   - id: 131
     name: fichier_validation
@@ -282,8 +282,8 @@ tables:
   - id: 32
     name: prestations
     mode: RW
-    status: MISSING
-    target_file: ""
+    status: IMPL
+    target_file: adh-web/src/stores/accountMergeStore.ts
     gap_notes: ""
   - id: 312
     name: ez_card
@@ -331,13 +331,13 @@ tables:
     name: change___________chg
     mode: RW
     status: IMPL
-    target_file: adh-web/src/components/caisse/articleZoom/HeaderPanel.tsx
+    target_file: adh-web/src/components/caisse/accountMerge/AccountSelectionPanelPanel.tsx
     gap_notes: ""
   - id: 266
     name: cc_comptable
     mode: W
-    status: MISSING
-    target_file: ""
+    status: IMPL
+    target_file: adh-web/src/stores/accountMergeStore.ts
     gap_notes: ""
   - id: 309
     name: vente____________vep
@@ -439,7 +439,7 @@ tables:
     name: import_mod
     mode: W
     status: IMPL
-    target_file: adh-web/src/components/caisse/articleZoom/ArticleGridPanel.tsx
+    target_file: adh-web/src/components/caisse/accountMerge/AccountSelectionPanelPanel.tsx
     gap_notes: ""
   - id: 42
     name: depot_devises____dda
@@ -528,8 +528,8 @@ tables:
   - id: 342
     name: histo__fusionseparation_log
     mode: R
-    status: MISSING
-    target_file: ""
+    status: IMPL
+    target_file: adh-web/src/stores/accountMergeStore.ts
     gap_notes: ""
   - id: 70
     name: date_comptable___dat
@@ -639,7 +639,7 @@ overall:
   callees_total: 13
   callees_impl: 0
   callees_missing: 9
-  coverage_pct: 11
-  status: contracted
-  generated: 2026-02-26T09:10:53.572Z
+  coverage_pct: 18
+  status: enriched
+  generated: 2026-03-03T16:48:44.405Z
   notes: Auto-generated from ADH-IDE-28.md

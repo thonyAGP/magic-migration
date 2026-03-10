@@ -139,24 +139,32 @@ describe('createBatch', () => {
 });
 
 describe('shouldSkipProgram', () => {
-  it('should skip verified programs', () => {
-    expect(shouldSkipProgram(PipelineStatus.VERIFIED)).toBe(true);
+  it('should skip when both contract AND batch are verified', () => {
+    expect(shouldSkipProgram(PipelineStatus.VERIFIED, PipelineStatus.VERIFIED)).toBe(true);
+  });
+
+  it('should NOT skip when contract verified but batch is enriched', () => {
+    expect(shouldSkipProgram(PipelineStatus.VERIFIED, PipelineStatus.ENRICHED)).toBe(false);
+  });
+
+  it('should NOT skip when contract verified but batch is undefined', () => {
+    expect(shouldSkipProgram(PipelineStatus.VERIFIED, undefined)).toBe(false);
   });
 
   it('should NOT skip enriched programs', () => {
-    expect(shouldSkipProgram(PipelineStatus.ENRICHED)).toBe(false);
+    expect(shouldSkipProgram(PipelineStatus.ENRICHED, PipelineStatus.VERIFIED)).toBe(false);
   });
 
   it('should NOT skip contracted programs', () => {
-    expect(shouldSkipProgram(PipelineStatus.CONTRACTED)).toBe(false);
+    expect(shouldSkipProgram(PipelineStatus.CONTRACTED, PipelineStatus.VERIFIED)).toBe(false);
   });
 
   it('should NOT skip pending programs', () => {
-    expect(shouldSkipProgram(PipelineStatus.PENDING)).toBe(false);
+    expect(shouldSkipProgram(PipelineStatus.PENDING, PipelineStatus.VERIFIED)).toBe(false);
   });
 
   it('should NOT skip programs without contract', () => {
-    expect(shouldSkipProgram(undefined)).toBe(false);
+    expect(shouldSkipProgram(undefined, PipelineStatus.VERIFIED)).toBe(false);
   });
 });
 

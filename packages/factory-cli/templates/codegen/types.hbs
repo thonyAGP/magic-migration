@@ -1,0 +1,63 @@
+/**
+ * Types for {{domainPascal}} (IDE {{programId}})
+ * Auto-generated from Magic Unipaas via XFIT-S
+ *
+ * Coverage: {{coverage.tables}}/{{coverage.totalTables}} tables ({{coverage.percentage}}%)
+ * Generated: {{timestamp}}
+ */
+
+{{#each entities}}
+/**
+ * {{description}}
+ * SQL Table: {{sqlTableName}} (Magic ISN {{tableIsn}})
+ * Columns: {{columnCount}} fields
+ */
+export interface {{interfaceName}} {
+{{#if fields.length}}
+{{#each fields}}
+  /** Table SQL: {{sqlTable}}.{{sqlColumn}} ({{magicType}}) */
+  {{name}}: {{type}}{{#if nullable}} | null{{/if}};
+{{/each}}
+{{else}}
+  // TODO: Add fields from DataSources.xml table {{tableIsn}}
+  // Run: pnpm factory enrich-types --table {{tableIsn}}
+  id: number;
+{{/if}}
+}
+
+{{/each}}
+
+/**
+ * Store state for {{domainPascal}}
+ */
+export interface {{domainPascal}}State {
+  // Loading & Error states
+  isLoading: boolean;
+  error: string | null;
+
+  // Data state
+{{#each stateFields}}
+  {{name}}: {{type}};
+{{/each}}
+}
+
+/**
+ * Store actions for {{domainPascal}}
+ */
+export interface {{domainPascal}}Actions {
+{{#each actions}}
+  /**
+   * {{description}}
+   {{#if magicSource}}* Magic source: {{magicSource}}{{/if}}
+   */
+  {{handlerName}}: ({{#each params}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}) => {{{returnType}}};
+{{/each}}
+
+  /** Reset store to initial state */
+  reset: () => void;
+}
+
+/**
+ * Complete store type
+ */
+export type {{domainPascal}}Store = {{domainPascal}}State & {{domainPascal}}Actions;

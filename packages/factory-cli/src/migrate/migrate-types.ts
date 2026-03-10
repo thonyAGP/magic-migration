@@ -1,6 +1,6 @@
 /**
  * Types for the v10 full module migration pipeline.
- * 15 phases: SPEC → CONTRACT → ANALYZE → TYPES → STORE → API → PAGE → COMPONENTS → TESTS-UNIT → TESTS-UI → VERIFY-TSC → FIX-TSC → VERIFY-TESTS → FIX-TESTS → INTEGRATE → REVIEW
+ * 18 phases: SPEC → CONTRACT → ANALYZE → TYPES → STORE → API → PAGE → COMPONENTS → TESTS-UNIT → TESTS-UI → VERIFY-TSC → FIX-TSC → VERIFY-TESTS → FIX-TESTS → REMEDIATE → INTEGRATE → REVIEW → REFACTOR
  */
 
 // ─── Phase Names ────────────────────────────────────────────────
@@ -8,6 +8,8 @@
 export const MigratePhase = {
   SPEC: 'spec',
   CONTRACT: 'contract',
+  PARSE: 'parse',
+  DATA_MODEL: 'data-model',
   ANALYZE: 'analyze',
   TYPES: 'types',
   STORE: 'store',
@@ -20,14 +22,18 @@ export const MigratePhase = {
   FIX_TSC: 'fix-tsc',
   VERIFY_TESTS: 'verify-tests',
   FIX_TESTS: 'fix-tests',
+  REMEDIATE: 'remediate',
   INTEGRATE: 'integrate',
   REVIEW: 'review',
+  REFACTOR: 'refactor',
 } as const;
 export type MigratePhase = (typeof MigratePhase)[keyof typeof MigratePhase];
 
 export const GENERATION_PHASES: MigratePhase[] = [
   MigratePhase.SPEC,
   MigratePhase.CONTRACT,
+  MigratePhase.PARSE,
+  MigratePhase.DATA_MODEL,
   MigratePhase.ANALYZE,
   MigratePhase.TYPES,
   MigratePhase.STORE,
@@ -43,8 +49,10 @@ export const VERIFICATION_PHASES: MigratePhase[] = [
   MigratePhase.FIX_TSC,
   MigratePhase.VERIFY_TESTS,
   MigratePhase.FIX_TESTS,
+  MigratePhase.REMEDIATE,
   MigratePhase.INTEGRATE,
   MigratePhase.REVIEW,
+  MigratePhase.REFACTOR,
 ];
 
 // ─── Phase Status ───────────────────────────────────────────────
@@ -166,6 +174,14 @@ export interface MigrateConfig {
   autoCommit?: boolean;
   /** AbortSignal to cancel migration in progress. */
   abortSignal?: AbortSignal;
+  /** Skip refactoring phase. Default false. */
+  skipRefactor?: boolean;
+  /** Minimum coverage % target for remediation loop. Default 100. */
+  coverageTarget?: number;
+  /** Max remediation passes per program. Default 5. */
+  maxRemediationPasses?: number;
+  /** Current batch status (used by shouldSkipProgram to avoid skipping when batch is not verified). */
+  batchStatus?: string;
 }
 
 /**
@@ -190,7 +206,9 @@ export const DEFAULT_PHASE_MODELS: Partial<Record<MigratePhase, string>> = {
   [MigratePhase.TESTS_UI]: 'sonnet',
   [MigratePhase.FIX_TSC]: 'sonnet',
   [MigratePhase.FIX_TESTS]: 'sonnet',
+  [MigratePhase.REMEDIATE]: 'sonnet',
   [MigratePhase.REVIEW]: 'sonnet',
+  [MigratePhase.REFACTOR]: 'sonnet',
 };
 
 // ─── Events ─────────────────────────────────────────────────────
@@ -210,6 +228,7 @@ export const MigrateEventType = {
   GIT_COMPLETED: 'git_completed',
   GIT_FAILED: 'git_failed',
   PARALLEL_RESOLVED: 'parallel_resolved',
+  WARNING: 'warning',
   ERROR: 'error',
 } as const;
 export type MigrateEventType = (typeof MigrateEventType)[keyof typeof MigrateEventType];
@@ -271,4 +290,24 @@ export interface ReviewReport {
   rulesTotal: number;
   missingRules: string[];
   recommendations: string[];
+}
+
+// ─── Coverage Report (programmatic checker) ─────────────────────
+
+export interface CoverageItem {
+  id: string;
+  name: string;
+  found: boolean;
+  file?: string;
+  line?: number;
+}
+
+export interface CoverageReport {
+  programId: string | number;
+  rules: CoverageItem[];
+  tables: CoverageItem[];
+  variables: CoverageItem[];
+  callees: CoverageItem[];
+  coveragePct: number;
+  gaps: string[];
 }

@@ -4,53 +4,6 @@
   "complexity": "MEDIUM",
   "entities": [
     {
-      "name": "MergeRequest",
-      "fields": [
-        {
-          "name": "id",
-          "type": "number",
-          "source": "histo_fusionseparation.chrono",
-          "nullable": false
-        },
-        {
-          "name": "sourceAccountId",
-          "type": "number",
-          "source": "fusion_eclatement.compte_source",
-          "nullable": false
-        },
-        {
-          "name": "targetAccountId",
-          "type": "number",
-          "source": "fusion_eclatement.compte_cible",
-          "nullable": false
-        },
-        {
-          "name": "status",
-          "type": "string",
-          "source": "histo_fusionseparation.statut",
-          "nullable": false
-        },
-        {
-          "name": "validatedBy",
-          "type": "string",
-          "source": "histo_fusionseparation.user_validation",
-          "nullable": true
-        },
-        {
-          "name": "validatedAt",
-          "type": "Date",
-          "source": "histo_fusionseparation.date_validation",
-          "nullable": true
-        },
-        {
-          "name": "chronoCode",
-          "type": "string",
-          "source": "histo_fusionseparation.code_chrono",
-          "nullable": false
-        }
-      ]
-    },
-    {
       "name": "MergeHistory",
       "fields": [
         {
@@ -60,74 +13,33 @@
           "nullable": false
         },
         {
-          "name": "mergeRequestId",
-          "type": "number",
-          "source": "histo_fusionseparation.merge_id",
+          "name": "sourceAccount",
+          "type": "string",
+          "source": "histo_fusionseparation.compte_source",
           "nullable": false
         },
         {
-          "name": "timestamp",
+          "name": "targetAccount",
+          "type": "string",
+          "source": "histo_fusionseparation.compte_cible",
+          "nullable": false
+        },
+        {
+          "name": "mergeDate",
           "type": "Date",
-          "source": "histo_fusionseparation.timestamp",
+          "source": "histo_fusionseparation.date_fusion",
           "nullable": false
         },
         {
-          "name": "operation",
+          "name": "operator",
           "type": "string",
-          "source": "histo_fusionseparation.operation",
+          "source": "histo_fusionseparation.operateur",
           "nullable": false
         },
         {
-          "name": "details",
+          "name": "status",
           "type": "string",
-          "source": "histo_fusionseparation.details",
-          "nullable": true
-        }
-      ]
-    },
-    {
-      "name": "MergeLog",
-      "fields": [
-        {
-          "name": "id",
-          "type": "number",
-          "source": "histo__fusionseparation_log.id",
-          "nullable": false
-        },
-        {
-          "name": "mergeId",
-          "type": "number",
-          "source": "histo__fusionseparation_log.merge_id",
-          "nullable": false
-        },
-        {
-          "name": "operation",
-          "type": "string",
-          "source": "histo__fusionseparation_log.operation",
-          "nullable": false
-        },
-        {
-          "name": "tableName",
-          "type": "string",
-          "source": "histo__fusionseparation_log.table_name",
-          "nullable": false
-        },
-        {
-          "name": "recordCount",
-          "type": "number",
-          "source": "histo__fusionseparation_log.record_count",
-          "nullable": false
-        },
-        {
-          "name": "timestamp",
-          "type": "Date",
-          "source": "histo__fusionseparation_log.timestamp",
-          "nullable": false
-        },
-        {
-          "name": "success",
-          "type": "boolean",
-          "source": "histo__fusionseparation_log.success",
+          "source": "histo_fusionseparation.statut",
           "nullable": false
         }
       ]
@@ -136,15 +48,9 @@
       "name": "Account",
       "fields": [
         {
-          "name": "id",
-          "type": "number",
-          "source": "compte_gm.numero_compte",
-          "nullable": false
-        },
-        {
-          "name": "status",
+          "name": "accountNumber",
           "type": "string",
-          "source": "compte_gm.statut",
+          "source": "compte_gm.numero_compte",
           "nullable": false
         },
         {
@@ -154,38 +60,38 @@
           "nullable": false
         },
         {
-          "name": "clientName",
+          "name": "status",
           "type": "string",
-          "source": "compte_gm.nom_client",
-          "nullable": true
+          "source": "compte_gm.statut",
+          "nullable": false
         },
         {
-          "name": "linkedAccounts",
-          "type": "number",
-          "source": "compte_gm.comptes_lies",
-          "nullable": true
+          "name": "createdDate",
+          "type": "Date",
+          "source": "compte_gm.date_creation",
+          "nullable": false
         }
       ]
     },
     {
-      "name": "ValidationStatus",
+      "name": "MergeValidation",
       "fields": [
         {
-          "name": "network",
+          "name": "isClosureInProgress",
           "type": "boolean",
-          "source": "reseau_cloture.reseau_actif",
+          "source": "reseau_cloture.en_cours",
           "nullable": false
         },
         {
-          "name": "closure",
-          "type": "boolean",
-          "source": "reseau_cloture.cloture_en_cours",
-          "nullable": false
-        },
-        {
-          "name": "validation",
+          "name": "networkStatus",
           "type": "string",
-          "source": "fichier_validation.statut",
+          "source": "w0_reseau",
+          "nullable": false
+        },
+        {
+          "name": "validationStatus",
+          "type": "string",
+          "source": "w0_validation",
           "nullable": false
         }
       ]
@@ -193,9 +99,9 @@
   ],
   "stateFields": [
     {
-      "name": "mergeRequest",
-      "type": "MergeRequest | null",
-      "default": "null"
+      "name": "mergeHistories",
+      "type": "MergeHistory[]",
+      "default": "[]"
     },
     {
       "name": "sourceAccount",
@@ -208,27 +114,12 @@
       "default": "null"
     },
     {
-      "name": "mergeHistory",
-      "type": "MergeHistory[]",
-      "default": "[]"
-    },
-    {
-      "name": "mergeLogs",
-      "type": "MergeLog[]",
-      "default": "[]"
-    },
-    {
-      "name": "validationStatus",
-      "type": "ValidationStatus | null",
+      "name": "validationState",
+      "type": "MergeValidation | null",
       "default": "null"
     },
     {
-      "name": "currentStep",
-      "type": "'validation' | 'preparation' | 'execution' | 'completion'",
-      "default": "'validation'"
-    },
-    {
-      "name": "isProcessing",
+      "name": "isLoading",
       "type": "boolean",
       "default": "false"
     },
@@ -238,298 +129,178 @@
       "default": "null"
     },
     {
-      "name": "progressData",
-      "type": "{ current: number; total: number; table: string }",
-      "default": "{ current: 0, total: 0, table: '' }"
+      "name": "mergeProgress",
+      "type": "number",
+      "default": "0"
+    },
+    {
+      "name": "currentStep",
+      "type": "string",
+      "default": "'validation'"
     }
   ],
   "actions": [
     {
-      "name": "validatePrerequisites",
-      "params": [],
-      "businessRules": [
-        "RM-001: Vérifier que le réseau n'est pas en mode 'R' (reseau différent de 'R')",
-        "RM-002/003: Vérifier que la validation est à 'V' ou différente de 'V' selon le contexte",
-        "RM-004: Vérifier que chrono histo est égal à 'F' pour fusion",
-        "Bloquer si clôture en cours (tâche 28.1)",
-        "Vérifier l'état des comptes source et cible (existence, statut actif)"
-      ],
-      "returns": "Promise<ValidationStatus>"
-    },
-    {
-      "name": "loadAccounts",
+      "name": "validateMergeConditions",
       "params": [
-        "sourceAccountId: number",
-        "targetAccountId: number"
+        "sourceAccountId: string",
+        "targetAccountId: string"
       ],
       "businessRules": [
-        "Charger les détails complets du compte source depuis compte_gm",
-        "Charger les détails complets du compte cible depuis compte_gm",
-        "Vérifier que les deux comptes existent et sont actifs",
-        "Charger les données associées (prestations, garanties, transactions)"
+        "Verify closure not in progress (W0 validation != 'V')",
+        "Check network status (W0 reseau != 'R')",
+        "Validate account states before merge"
       ],
-      "returns": "Promise<{ source: Account; target: Account }>"
+      "returns": "Promise<void>"
     },
     {
       "name": "executeMerge",
       "params": [
-        "autoResume?: boolean",
-        "withoutInterface?: boolean"
+        "sourceAccountId: string",
+        "targetAccountId: string"
       ],
       "businessRules": [
-        "RM-010: Si autoResume=true ou condition spéciale ([BK]=6), activer la reprise automatique",
-        "RM-012: Si withoutInterface=false, afficher les écrans de progression (28.3.2, 28.4.x)",
-        "RM-007/008: Gérer les filiations garanties et confirmer la reprise si nécessaire",
-        "Transférer toutes les données du compte source vers le compte cible (60 tables)",
-        "Enregistrer chaque opération dans histo_fusionseparation_log (13 appels)",
-        "Mettre à jour fusion_eclatement avec la relation source->cible",
-        "Supprimer le compte source après transfert complet"
-      ],
-      "returns": "Promise<MergeRequest>"
-    },
-    {
-      "name": "saveMergeHistory",
-      "params": [
-        "mergeId: number",
-        "operation: string",
-        "details?: string"
-      ],
-      "businessRules": [
-        "RM-006: Vérifier que le code LOG n'existe pas déjà avant création",
-        "Enregistrer l'opération dans histo_fusionseparation (6 appels callees)",
-        "Enregistrer les détails dans histo_fusionseparation_det (10 appels)",
-        "Associer un chrono unique pour traçabilité complète"
+        "Transfer all transactions from source to target account",
+        "Update account balances and status",
+        "Create merge history record",
+        "Generate merge completion log"
       ],
       "returns": "Promise<void>"
     },
     {
-      "name": "writeMergeLogs",
+      "name": "createMergeHistory",
       "params": [
-        "mergeId: number",
-        "tableName: string",
-        "recordCount: number",
-        "success: boolean"
+        "sourceAccount: string",
+        "targetAccount: string",
+        "operator: string"
       ],
       "businessRules": [
-        "Écrire un log pour chaque table traitée dans histo__fusionseparation_log",
-        "Enregistrer le nombre d'enregistrements transférés",
-        "Marquer le succès/échec de chaque opération table par table",
-        "Permettre la reprise en cas d'erreur (RM-011: reprise confirmée)"
+        "Record merge operation in history table",
+        "Set merge timestamp and operator",
+        "Track merge status progression"
       ],
       "returns": "Promise<void>"
     },
     {
-      "name": "cleanupTemporaryData",
+      "name": "rollbackMerge",
       "params": [
-        "mergeId: number"
+        "mergeHistoryId: number"
       ],
       "businessRules": [
-        "Supprimer les données de saisie temporaires (histo_fusionseparation_saisie)",
-        "Nettoyer les enregistrements intermédiaires (callees 33: Delete histo_Fus_Sep_Saisie)",
-        "Garder uniquement l'historique définitif et les logs pour audit"
+        "Restore original account states",
+        "Reverse transaction transfers",
+        "Update merge history with rollback status"
       ],
       "returns": "Promise<void>"
     },
     {
       "name": "printMergeTicket",
       "params": [
-        "mergeId: number"
+        "mergeHistoryId: number"
       ],
       "businessRules": [
-        "RM-013: Si VG78 est actif, ne pas imprimer",
-        "Récupérer le titre du document (callees 43)",
-        "Générer le ticket de fusion avec les détails (callees 36: Print Separation ou fusion)",
-        "Inclure les comptes source/cible, date, user, opérations effectuées"
+        "Generate merge completion ticket",
+        "Include source and target account details",
+        "Show transaction summary and timestamps"
       ],
       "returns": "Promise<void>"
-    },
-    {
-      "name": "cancelMerge",
-      "params": [],
-      "businessRules": [
-        "Annuler la fusion en cours si pas encore validée",
-        "Nettoyer les données temporaires",
-        "Enregistrer l'annulation dans l'historique",
-        "Restaurer l'état initial si possible"
-      ],
-      "returns": "Promise<void>"
-    },
-    {
-      "name": "getMergeHistory",
-      "params": [
-        "filters?: { startDate?: Date; endDate?: Date; accountId?: number }"
-      ],
-      "businessRules": [
-        "Récupérer l'historique des fusions depuis histo_fusionseparation",
-        "Filtrer par période ou compte si spécifié",
-        "Inclure les détails et logs associés"
-      ],
-      "returns": "Promise<MergeHistory[]>"
-    },
-    {
-      "name": "getMergeLogs",
-      "params": [
-        "mergeId: number"
-      ],
-      "businessRules": [
-        "Récupérer tous les logs détaillés d'une fusion spécifique",
-        "Inclure les opérations sur toutes les tables (60 tables modifiées)",
-        "Afficher le statut de chaque opération (succès/échec, recordCount)"
-      ],
-      "returns": "Promise<MergeLog[]>"
     }
   ],
   "apiEndpoints": [
     {
-      "method": "POST",
-      "path": "/api/account-merge/validate",
-      "queryParams": [],
-      "response": "ValidationStatus"
-    },
-    {
-      "method": "POST",
-      "path": "/api/account-merge/load-accounts",
-      "queryParams": [],
-      "response": "{ source: Account; target: Account }"
-    },
-    {
-      "method": "POST",
-      "path": "/api/account-merge/execute",
+      "method": "GET",
+      "path": "/api/accountMerge/validation",
       "queryParams": [
-        "autoResume?",
-        "withoutInterface?"
+        "sourceAccountId",
+        "targetAccountId"
       ],
-      "response": "MergeRequest"
+      "response": "MergeValidation"
     },
     {
       "method": "POST",
-      "path": "/api/account-merge/history",
+      "path": "/api/accountMerge/execute",
       "queryParams": [],
-      "response": "void"
-    },
-    {
-      "method": "POST",
-      "path": "/api/account-merge/logs",
-      "queryParams": [],
-      "response": "void"
-    },
-    {
-      "method": "DELETE",
-      "path": "/api/account-merge/cleanup/:mergeId",
-      "queryParams": [],
-      "response": "void"
-    },
-    {
-      "method": "POST",
-      "path": "/api/account-merge/print/:mergeId",
-      "queryParams": [],
-      "response": "void"
-    },
-    {
-      "method": "DELETE",
-      "path": "/api/account-merge/cancel",
-      "queryParams": [],
-      "response": "void"
+      "response": "MergeHistory"
     },
     {
       "method": "GET",
-      "path": "/api/account-merge/history",
+      "path": "/api/accountMerge/history",
       "queryParams": [
-        "startDate?",
-        "endDate?",
-        "accountId?"
+        "accountId?",
+        "dateFrom?",
+        "dateTo?"
       ],
       "response": "MergeHistory[]"
     },
     {
-      "method": "GET",
-      "path": "/api/account-merge/logs/:mergeId",
+      "method": "POST",
+      "path": "/api/accountMerge/rollback",
       "queryParams": [],
-      "response": "MergeLog[]"
+      "response": "Promise<void>"
+    },
+    {
+      "method": "POST",
+      "path": "/api/accountMerge/print-ticket",
+      "queryParams": [],
+      "response": "Promise<void>"
     }
   ],
   "uiLayout": {
-    "type": "wizard-multi-step",
+    "type": "wizard-form",
     "sections": [
       {
-        "name": "AccountSelectionPanel",
+        "name": "accountSelection",
         "controls": [
           "sourceAccountInput",
           "targetAccountInput",
-          "validateButton",
-          "validationStatusDisplay"
+          "accountValidationButton"
         ]
       },
       {
-        "name": "ValidationPanel",
+        "name": "validationStatus",
         "controls": [
-          "networkStatusIndicator",
           "closureStatusIndicator",
-          "validationStatusIndicator",
-          "accountsStatusDisplay",
-          "errorMessageDisplay"
+          "networkStatusIndicator",
+          "validationResultPanel"
         ]
       },
       {
-        "name": "ProgressPanel",
+        "name": "mergeExecution",
         "controls": [
-          "currentStepDisplay",
           "progressBar",
-          "currentTableDisplay",
-          "recordCountDisplay",
-          "statusMessagesLog"
+          "currentStepIndicator",
+          "executeMergeButton",
+          "cancelButton"
         ]
       },
       {
-        "name": "HistoryPanel",
+        "name": "completion",
         "controls": [
-          "historyGrid",
-          "dateRangeFilter",
-          "accountFilter",
-          "viewLogsButton"
-        ]
-      },
-      {
-        "name": "ActionsPanel",
-        "controls": [
-          "executeButton",
-          "cancelButton",
+          "mergeResultSummary",
           "printTicketButton",
-          "viewHistoryButton"
-        ]
-      },
-      {
-        "name": "LogsPanel",
-        "controls": [
-          "logsGrid",
-          "tableNameColumn",
-          "recordCountColumn",
-          "statusColumn",
-          "timestampColumn"
+          "closeButton"
         ]
       }
     ]
   },
   "mockData": {
     "count": 5,
-    "description": "5 paires de comptes source/cible fictifs avec soldes variés, 10 entrées d'historique de fusions précédentes avec statuts (validée, en cours, annulée), logs détaillés pour chaque fusion montrant les 60 tables traitées avec nombre d'enregistrements transférés, statuts de validation (réseau OK, clôture inactive, validation 'V')"
+    "description": "Sample account merge operations with various statuses (completed, in-progress, failed) including validation states, merge histories, and associated account details"
   },
   "dependencies": {
     "stores": [
       "useAccountStore",
       "useValidationStore",
-      "useMergeHistoryStore"
+      "useHistoryStore"
     ],
     "sharedTypes": [
       "Account",
-      "MergeStatus",
-      "ValidationResult",
-      "MergeStep"
+      "ValidationStatus",
+      "NetworkStatus"
     ],
     "externalApis": [
-      "/api/accounts",
-      "/api/validation/network-status",
-      "/api/validation/closure-status"
+      "printingService",
+      "networkValidationService"
     ]
   }
 }

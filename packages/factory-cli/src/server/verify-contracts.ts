@@ -78,7 +78,7 @@ export const verifyContracts = (contractDir: string, options?: { programs?: stri
     } else {
       if (!dryRun) {
         contract.overall.status = PipelineStatus.VERIFIED;
-        contract.overall.coveragePct = 100;
+        // coveragePct preserved — actual code coverage is computed by phase-coverage
         writeContract(contract, filePath);
       }
       verified++;

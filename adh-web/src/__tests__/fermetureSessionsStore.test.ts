@@ -68,7 +68,14 @@ const MOCK_VALIDATION_SUCCESS: SessionValidationResponse = {
 describe('fermetureSessionsStore', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    useFermetureSessionsStore.getState().reset()
+    useFermetureSessionsStore.setState({
+      sessions: [],
+      currentSession: null,
+      unilateralBilateralTypes: [],
+      isLoading: false,
+      error: null,
+      isClosing: false
+    })
   })
 
   describe('loadSessions', () => {
@@ -83,48 +90,41 @@ describe('fermetureSessionsStore', () => {
         }))
       })
 
-      const store = useFermetureSessionsStore.getState()
-      
-      await store.loadSessions()
+      await useFermetureSessionsStore.getState().loadSessions()
       
       expect(apiClient.get).toHaveBeenCalledWith('/api/fermeture-sessions/sessions?statut=O')
-      expect(store.sessions).toHaveLength(2)
-      expect(store.sessions[0].id).toBe(101)
-      expect(store.isLoading).toBe(false)
-      expect(store.error).toBeNull()
+      expect(useFermetureSessionsStore.getState().sessions).toHaveLength(2)
+      expect(useFermetureSessionsStore.getState().sessions[0].id).toBe(101)
+      expect(useFermetureSessionsStore.getState().isLoading).toBe(false)
+      expect(useFermetureSessionsStore.getState().error).toBeNull()
     })
 
     it('should load sessions successfully with mock data', async () => {
       vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: false })
 
-      const store = useFermetureSessionsStore.getState()
+      await useFermetureSessionsStore.getState().loadSessions()
       
-      await store.loadSessions()
-      
-      expect(store.sessions).toHaveLength(2)
-      expect(store.sessions.every(s => s.statut === 'O')).toBe(true)
-      expect(store.isLoading).toBe(false)
-      expect(store.error).toBeNull()
+      expect(useFermetureSessionsStore.getState().sessions).toHaveLength(5)
+      expect(useFermetureSessionsStore.getState().sessions.every(s => s.statut === 'O')).toBe(true)
+      expect(useFermetureSessionsStore.getState().isLoading).toBe(false)
+      expect(useFermetureSessionsStore.getState().error).toBeNull()
     })
 
     it('should handle API error', async () => {
       vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true })
       vi.mocked(apiClient.get).mockRejectedValue(new Error('Network error'))
 
-      const store = useFermetureSessionsStore.getState()
+      await useFermetureSessionsStore.getState().loadSessions()
       
-      await store.loadSessions()
-      
-      expect(store.sessions).toHaveLength(0)
-      expect(store.error).toBe('Network error')
-      expect(store.isLoading).toBe(false)
+      expect(useFermetureSessionsStore.getState().sessions).toHaveLength(0)
+      expect(useFermetureSessionsStore.getState().error).toBe('Network error')
+      expect(useFermetureSessionsStore.getState().isLoading).toBe(false)
     })
 
     it('should set loading state during request', async () => {
       vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: false })
       
-      const store = useFermetureSessionsStore.getState()
-      const loadPromise = store.loadSessions()
+      const loadPromise = useFermetureSessionsStore.getState().loadSessions()
       
       expect(useFermetureSessionsStore.getState().isLoading).toBe(true)
       
@@ -134,31 +134,19 @@ describe('fermetureSessionsStore', () => {
     })
 
     it('should filter only open sessions (status O)', async () => {
-      const sessionsWithClosed = [
-        ...MOCK_SESSIONS,
-        {
-          id: 103,
-          dateOuverture: new Date('2024-01-17T09:00:00'),
-          dateFermeture: new Date('2024-01-17T18:00:00'),
-          statut: 'C'
-        }
-      ]
-
       vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true })
       vi.mocked(apiClient.get).mockResolvedValue({
         success: true,
-        data: sessionsWithClosed.map(s => ({
+        data: MOCK_SESSIONS.map(s => ({
           ...s,
           dateOuverture: s.dateOuverture.toISOString(),
           dateFermeture: s.dateFermeture?.toISOString() || null
         }))
       })
 
-      const store = useFermetureSessionsStore.getState()
+      await useFermetureSessionsStore.getState().loadSessions()
       
-      await store.loadSessions()
-      
-      expect(store.sessions.every(s => s.statut === 'O')).toBe(true)
+      expect(useFermetureSessionsStore.getState().sessions.every(s => s.statut === 'O')).toBe(true)
     })
   })
 
@@ -170,48 +158,48 @@ describe('fermetureSessionsStore', () => {
         data: MOCK_TYPES
       })
 
-      const store = useFermetureSessionsStore.getState()
-      
-      await store.loadUnilateralBilateralTypes()
+      await useFermetureSessionsStore.getState().loadUnilateralBilateralTypes()
       
       expect(apiClient.get).toHaveBeenCalledWith('/api/fermeture-sessions/types')
-      expect(store.unilateralBilateralTypes).toHaveLength(2)
-      expect(store.unilateralBilateralTypes[0].code).toBe('UNI')
-      expect(store.isLoading).toBe(false)
-      expect(store.error).toBeNull()
+      expect(useFermetureSessionsStore.getState().unilateralBilateralTypes).toHaveLength(2)
+      expect(useFermetureSessionsStore.getState().unilateralBilateralTypes[0].code).toBe('UNI')
+      expect(useFermetureSessionsStore.getState().isLoading).toBe(false)
+      expect(useFermetureSessionsStore.getState().error).toBeNull()
     })
 
     it('should load types successfully with mock data', async () => {
       vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: false })
 
-      const store = useFermetureSessionsStore.getState()
+      await useFermetureSessionsStore.getState().loadUnilateralBilateralTypes()
       
-      await store.loadUnilateralBilateralTypes()
-      
-      expect(store.unilateralBilateralTypes).toHaveLength(3)
-      expect(store.unilateralBilateralTypes.find(t => t.code === 'MIX')).toBeDefined()
-      expect(store.isLoading).toBe(false)
-      expect(store.error).toBeNull()
+      expect(useFermetureSessionsStore.getState().unilateralBilateralTypes).toHaveLength(3)
+      expect(useFermetureSessionsStore.getState().unilateralBilateralTypes.find(t => t.code === 'MIX')).toBeDefined()
+      expect(useFermetureSessionsStore.getState().isLoading).toBe(false)
+      expect(useFermetureSessionsStore.getState().error).toBeNull()
     })
 
     it('should handle API error', async () => {
       vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true })
       vi.mocked(apiClient.get).mockRejectedValue(new Error('API error'))
 
-      const store = useFermetureSessionsStore.getState()
+      await useFermetureSessionsStore.getState().loadUnilateralBilateralTypes()
       
-      await store.loadUnilateralBilateralTypes()
-      
-      expect(store.unilateralBilateralTypes).toHaveLength(0)
-      expect(store.error).toBe('API error')
-      expect(store.isLoading).toBe(false)
+      expect(useFermetureSessionsStore.getState().unilateralBilateralTypes).toHaveLength(0)
+      expect(useFermetureSessionsStore.getState().error).toBe('API error')
+      expect(useFermetureSessionsStore.getState().isLoading).toBe(false)
     })
   })
 
   describe('fermerSession', () => {
     beforeEach(() => {
-      const store = useFermetureSessionsStore.getState()
-      store.sessions = [...MOCK_SESSIONS]
+      useFermetureSessionsStore.setState({
+        sessions: [...MOCK_SESSIONS],
+        currentSession: null,
+        unilateralBilateralTypes: [],
+        isLoading: false,
+        error: null,
+        isClosing: false
+      })
     })
 
     it('should close session successfully with real API', async () => {
@@ -220,29 +208,26 @@ describe('fermetureSessionsStore', () => {
         .mockResolvedValueOnce({ success: true, data: { valid: true, errors: [] } })
         .mockResolvedValueOnce({ success: true, data: MOCK_SESSION_CLOSE_SUCCESS })
 
-      const store = useFermetureSessionsStore.getState()
-      
-      await store.fermerSession(101)
+      await useFermetureSessionsStore.getState().fermerSession(101)
       
       expect(apiClient.post).toHaveBeenCalledWith('/api/fermeture-sessions/validate/101')
       expect(apiClient.post).toHaveBeenCalledWith('/api/fermeture-sessions/close/101')
-      expect(store.sessions.find(s => s.id === 101)).toBeUndefined()
-      expect(store.isClosing).toBe(false)
-      expect(store.error).toBeNull()
+      expect(useFermetureSessionsStore.getState().sessions.find(s => s.id === 101)).toBeUndefined()
+      expect(useFermetureSessionsStore.getState().isClosing).toBe(false)
+      expect(useFermetureSessionsStore.getState().error).toBeNull()
     })
 
     it('should close session successfully with mock data', async () => {
       vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: false })
 
-      const store = useFermetureSessionsStore.getState()
-      const initialCount = store.sessions.length
+      const initialCount = useFermetureSessionsStore.getState().sessions.length
       
-      await store.fermerSession(101)
+      await useFermetureSessionsStore.getState().fermerSession(101)
       
-      expect(store.sessions).toHaveLength(initialCount - 1)
-      expect(store.sessions.find(s => s.id === 101)).toBeUndefined()
-      expect(store.isClosing).toBe(false)
-      expect(store.error).toBeNull()
+      expect(useFermetureSessionsStore.getState().sessions).toHaveLength(initialCount - 1)
+      expect(useFermetureSessionsStore.getState().sessions.find(s => s.id === 101)).toBeUndefined()
+      expect(useFermetureSessionsStore.getState().isClosing).toBe(false)
+      expect(useFermetureSessionsStore.getState().error).toBeNull()
     })
 
     it('should handle validation failure', async () => {
@@ -252,13 +237,11 @@ describe('fermetureSessionsStore', () => {
         data: { valid: false, errors: ['Pending operations'] } 
       })
 
-      const store = useFermetureSessionsStore.getState()
+      await useFermetureSessionsStore.getState().fermerSession(101)
       
-      await store.fermerSession(101)
-      
-      expect(store.error).toBe('La session ne peut pas être fermée')
-      expect(store.isClosing).toBe(false)
-      expect(store.sessions.find(s => s.id === 101)).toBeDefined()
+      expect(useFermetureSessionsStore.getState().error).toBe('La session ne peut pas être fermée')
+      expect(useFermetureSessionsStore.getState().isClosing).toBe(false)
+      expect(useFermetureSessionsStore.getState().sessions.find(s => s.id === 101)).toBeDefined()
     })
 
     it('should handle API error during closure', async () => {
@@ -267,19 +250,16 @@ describe('fermetureSessionsStore', () => {
         .mockResolvedValueOnce({ success: true, data: { valid: true, errors: [] } })
         .mockRejectedValueOnce(new Error('Closure failed'))
 
-      const store = useFermetureSessionsStore.getState()
+      await useFermetureSessionsStore.getState().fermerSession(101)
       
-      await store.fermerSession(101)
-      
-      expect(store.error).toBe('Closure failed')
-      expect(store.isClosing).toBe(false)
+      expect(useFermetureSessionsStore.getState().error).toBe('Closure failed')
+      expect(useFermetureSessionsStore.getState().isClosing).toBe(false)
     })
 
     it('should set closing state during request', async () => {
       vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: false })
       
-      const store = useFermetureSessionsStore.getState()
-      const closePromise = store.fermerSession(101)
+      const closePromise = useFermetureSessionsStore.getState().fermerSession(101)
       
       expect(useFermetureSessionsStore.getState().isClosing).toBe(true)
       
@@ -291,15 +271,20 @@ describe('fermetureSessionsStore', () => {
 
   describe('generateClosureCode', () => {
     beforeEach(() => {
-      const store = useFermetureSessionsStore.getState()
-      store.sessions = [...MOCK_SESSIONS]
+      useFermetureSessionsStore.setState({
+        sessions: [...MOCK_SESSIONS],
+        currentSession: null,
+        unilateralBilateralTypes: [],
+        isLoading: false,
+        error: null,
+        isClosing: false
+      })
     })
 
     it('should generate closure code with RM-001 format', () => {
       vi.spyOn(Math, 'random').mockReturnValue(0.5)
 
-      const store = useFermetureSessionsStore.getState()
-      const code = store.generateClosureCode(101)
+      const code = useFermetureSessionsStore.getState().generateClosureCode(101)
       
       expect(code).toBe('N15.5CZ')
     })
@@ -307,15 +292,13 @@ describe('fermetureSessionsStore', () => {
     it('should generate closure code without decimal when D=0', () => {
       vi.spyOn(Math, 'random').mockReturnValue(0.05)
 
-      const store = useFermetureSessionsStore.getState()
-      const code = store.generateClosureCode(101)
+      const code = useFermetureSessionsStore.getState().generateClosureCode(101)
       
       expect(code).toBe('N15CZ')
     })
 
     it('should return empty string for non-existent session', () => {
-      const store = useFermetureSessionsStore.getState()
-      const code = store.generateClosureCode(999)
+      const code = useFermetureSessionsStore.getState().generateClosureCode(999)
       
       expect(code).toBe('')
     })
@@ -323,8 +306,7 @@ describe('fermetureSessionsStore', () => {
     it('should handle maximum D value (9)', () => {
       vi.spyOn(Math, 'random').mockReturnValue(0.95)
 
-      const store = useFermetureSessionsStore.getState()
-      const code = store.generateClosureCode(101)
+      const code = useFermetureSessionsStore.getState().generateClosureCode(101)
       
       expect(code).toBe('N15.9CZ')
     })
@@ -332,8 +314,14 @@ describe('fermetureSessionsStore', () => {
 
   describe('validateSessionClosure', () => {
     beforeEach(() => {
-      const store = useFermetureSessionsStore.getState()
-      store.sessions = [...MOCK_SESSIONS]
+      useFermetureSessionsStore.setState({
+        sessions: [...MOCK_SESSIONS],
+        currentSession: null,
+        unilateralBilateralTypes: [],
+        isLoading: false,
+        error: null,
+        isClosing: false
+      })
     })
 
     it('should validate session successfully with real API', async () => {
@@ -343,8 +331,7 @@ describe('fermetureSessionsStore', () => {
         data: MOCK_VALIDATION_SUCCESS
       })
 
-      const store = useFermetureSessionsStore.getState()
-      const isValid = await store.validateSessionClosure(101)
+      const isValid = await useFermetureSessionsStore.getState().validateSessionClosure(101)
       
       expect(apiClient.post).toHaveBeenCalledWith('/api/fermeture-sessions/validate/101')
       expect(isValid).toBe(true)
@@ -353,8 +340,7 @@ describe('fermetureSessionsStore', () => {
     it('should validate session successfully with mock data', async () => {
       vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: false })
 
-      const store = useFermetureSessionsStore.getState()
-      const isValid = await store.validateSessionClosure(101)
+      const isValid = await useFermetureSessionsStore.getState().validateSessionClosure(101)
       
       expect(isValid).toBe(true)
     })
@@ -362,22 +348,27 @@ describe('fermetureSessionsStore', () => {
     it('should return false for non-existent session', async () => {
       vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: false })
 
-      const store = useFermetureSessionsStore.getState()
-      const isValid = await store.validateSessionClosure(999)
+      const isValid = await useFermetureSessionsStore.getState().validateSessionClosure(999)
       
       expect(isValid).toBe(false)
     })
 
     it('should return false for closed session', async () => {
-      const store = useFermetureSessionsStore.getState()
-      store.sessions = [{
-        id: 103,
-        dateOuverture: new Date('2024-01-17T09:00:00'),
-        dateFermeture: new Date('2024-01-17T18:00:00'),
-        statut: 'C'
-      }]
+      useFermetureSessionsStore.setState({
+        sessions: [{
+          id: 103,
+          dateOuverture: new Date('2024-01-17T09:00:00'),
+          dateFermeture: new Date('2024-01-17T18:00:00'),
+          statut: 'C'
+        }],
+        currentSession: null,
+        unilateralBilateralTypes: [],
+        isLoading: false,
+        error: null,
+        isClosing: false
+      })
 
-      const isValid = await store.validateSessionClosure(103)
+      const isValid = await useFermetureSessionsStore.getState().validateSessionClosure(103)
       
       expect(isValid).toBe(false)
     })
@@ -386,8 +377,7 @@ describe('fermetureSessionsStore', () => {
       vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true })
       vi.mocked(apiClient.post).mockRejectedValue(new Error('Validation error'))
 
-      const store = useFermetureSessionsStore.getState()
-      const isValid = await store.validateSessionClosure(101)
+      const isValid = await useFermetureSessionsStore.getState().validateSessionClosure(101)
       
       expect(isValid).toBe(false)
     })
@@ -399,8 +389,7 @@ describe('fermetureSessionsStore', () => {
         data: { valid: false, errors: ['Pending operations'] }
       })
 
-      const store = useFermetureSessionsStore.getState()
-      const isValid = await store.validateSessionClosure(101)
+      const isValid = await useFermetureSessionsStore.getState().validateSessionClosure(101)
       
       expect(isValid).toBe(false)
     })
@@ -408,21 +397,23 @@ describe('fermetureSessionsStore', () => {
 
   describe('reset', () => {
     it('should reset all state to initial values', () => {
-      const store = useFermetureSessionsStore.getState()
-      store.sessions = [...MOCK_SESSIONS]
-      store.unilateralBilateralTypes = [...MOCK_TYPES]
-      store.error = 'Some error'
-      store.isLoading = true
-      store.isClosing = true
+      useFermetureSessionsStore.setState({
+        sessions: [...MOCK_SESSIONS],
+        currentSession: null,
+        unilateralBilateralTypes: [...MOCK_TYPES],
+        isLoading: true,
+        error: 'Some error',
+        isClosing: true
+      })
       
-      store.reset()
+      useFermetureSessionsStore.getState().reset()
       
-      expect(store.sessions).toHaveLength(0)
-      expect(store.currentSession).toBeNull()
-      expect(store.unilateralBilateralTypes).toHaveLength(0)
-      expect(store.isLoading).toBe(false)
-      expect(store.error).toBeNull()
-      expect(store.isClosing).toBe(false)
+      expect(useFermetureSessionsStore.getState().sessions).toHaveLength(0)
+      expect(useFermetureSessionsStore.getState().currentSession).toBeNull()
+      expect(useFermetureSessionsStore.getState().unilateralBilateralTypes).toHaveLength(0)
+      expect(useFermetureSessionsStore.getState().isLoading).toBe(false)
+      expect(useFermetureSessionsStore.getState().error).toBeNull()
+      expect(useFermetureSessionsStore.getState().isClosing).toBe(false)
     })
   })
 })

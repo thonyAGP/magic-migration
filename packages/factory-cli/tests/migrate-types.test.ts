@@ -5,8 +5,8 @@ import {
 } from '../src/migrate/migrate-types.js';
 
 describe('MigratePhase', () => {
-  it('should define 16 phases', () => {
-    expect(Object.keys(MigratePhase)).toHaveLength(16);
+  it('should define 20 phases', () => {
+    expect(Object.keys(MigratePhase)).toHaveLength(20);
   });
 
   it('should include spec through review', () => {
@@ -15,12 +15,13 @@ describe('MigratePhase', () => {
   });
 
   it('should separate generation and verification phases', () => {
-    expect(GENERATION_PHASES).toHaveLength(10);
-    expect(VERIFICATION_PHASES).toHaveLength(6);
+    expect(GENERATION_PHASES).toHaveLength(12);
+    expect(VERIFICATION_PHASES).toHaveLength(8);
     expect(GENERATION_PHASES[0]).toBe('spec');
-    expect(GENERATION_PHASES[9]).toBe('tests-ui');
+    expect(GENERATION_PHASES[11]).toBe('tests-ui');
     expect(VERIFICATION_PHASES[0]).toBe('verify-tsc');
-    expect(VERIFICATION_PHASES[5]).toBe('review');
+    expect(VERIFICATION_PHASES[6]).toBe('review');
+    expect(VERIFICATION_PHASES[7]).toBe('refactor');
   });
 });
 

@@ -1,0 +1,138 @@
+{
+  "domain": "historyCleanup",
+  "domainPascal": "HistoryCleanup",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "HistoFusionSeparationSaisie",
+      "fields": [
+        {
+          "name": "chronoEF",
+          "type": "number",
+          "source": "histo_fusionseparation_saisie.i_chrono_ef",
+          "nullable": false
+        },
+        {
+          "name": "societe",
+          "type": "string",
+          "source": "histo_fusionseparation_saisie.i_societe",
+          "nullable": false
+        },
+        {
+          "name": "compteReference",
+          "type": "number",
+          "source": "histo_fusionseparation_saisie.i_compte_reference",
+          "nullable": false
+        },
+        {
+          "name": "filiationReference",
+          "type": "number",
+          "source": "histo_fusionseparation_saisie.i_filiation_reference",
+          "nullable": false
+        },
+        {
+          "name": "comptePointeOld",
+          "type": "number",
+          "source": "histo_fusionseparation_saisie.i_compte_pointe_old",
+          "nullable": false
+        },
+        {
+          "name": "filiationPointeOld",
+          "type": "number",
+          "source": "histo_fusionseparation_saisie.i_filiation_pointe_old",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "isLoading",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "deletionCriteria",
+      "type": "HistoFusionSeparationCriteria | null",
+      "default": "null"
+    },
+    {
+      "name": "deletionResult",
+      "type": "DeletionResult | null",
+      "default": "null"
+    }
+  ],
+  "actions": [
+    {
+      "name": "deleteHistoFusionSeparationSaisie",
+      "params": [
+        "criteria: HistoFusionSeparationCriteria"
+      ],
+      "businessRules": [
+        "Delete historical records from histo_fusionseparation_saisie table based on fusion/separation operation criteria",
+        "Operation should only be executed after fusion/separation process is completed",
+        "Purge records to maintain data integrity and reclaim disk space"
+      ],
+      "returns": "Promise<DeletionResult>"
+    },
+    {
+      "name": "validateDeletionCriteria",
+      "params": [
+        "criteria: HistoFusionSeparationCriteria"
+      ],
+      "businessRules": [
+        "Ensure deletion criteria are valid before executing deletion",
+        "Prevent deletion of critical data that hasn't been processed"
+      ],
+      "returns": "Promise<boolean>"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "DELETE",
+      "path": "/api/historyCleanup/fusionSeparationSaisie",
+      "queryParams": [
+        "chronoEF?",
+        "societe?",
+        "compteReference?",
+        "filiationReference?"
+      ],
+      "response": "DeletionResult"
+    }
+  ],
+  "uiLayout": {
+    "type": "service-interface",
+    "sections": [
+      {
+        "name": "deletionService",
+        "controls": [
+          "criteriaInput",
+          "deleteButton",
+          "statusIndicator",
+          "resultDisplay"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 3,
+    "description": "Mock deletion criteria and results for testing fusion/separation history cleanup operations"
+  },
+  "dependencies": {
+    "stores": [
+      "useHistoryCleanupStore"
+    ],
+    "sharedTypes": [
+      "HistoFusionSeparationCriteria",
+      "DeletionResult"
+    ],
+    "externalApis": [
+      "fusionService"
+    ]
+  }
+}

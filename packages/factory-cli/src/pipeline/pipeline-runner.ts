@@ -572,22 +572,17 @@ export const getBatchesStatus = (config: PipelineConfig): BatchStatusView[] => {
     const lastActivity: string | undefined = batch.enrichedDate ?? batch.verifiedDate ?? batch.contractedDate;
 
     // Check if batch.stats exists and is non-empty (has real data)
+    // Note: readTracker's mapBatch already converts snake_case to camelCase
     const hasStats = batch.stats && (
-      (batch.stats as any).fully_impl > 0 || (batch.stats as any).fullyImpl > 0 ||
-      (batch.stats as any).frontend_enrich > 0 || (batch.stats as any).frontendEnrich > 0
+      batch.stats.fullyImpl > 0 || batch.stats.frontendEnrich > 0
     );
 
     if (hasStats) {
-      // Post-migration: use stats from tracker (written by migrate-runner)
-      // Map tracker stats format (snake_case JSON) to API format
-      const stats = batch.stats as Record<string, any>;
-      const fullyImpl = stats['fully_impl'] ?? stats.fullyImpl ?? 0;
-      const frontendEnrich = stats['frontend_enrich'] ?? stats.frontendEnrich ?? 0;
-
-      verified = fullyImpl; // fully_impl means verified (100% coverage)
-      enriched = frontendEnrich; // frontend_enrich means enriched (partial)
+      // Post-migration: use stats from tracker (already camelCase via mapBatch)
+      verified = batch.stats.fullyImpl;
+      enriched = batch.stats.frontendEnrich;
       pending = Math.max(0, total - verified - enriched);
-      coverageAvg = stats['coverage_avg_frontend'] ?? stats.coverageAvgFrontend ?? 0;
+      coverageAvg = batch.stats.coverageAvgFrontend;
     } else {
       // Pre-migration: scan contracts to compute stats
       let coverageSum = 0;

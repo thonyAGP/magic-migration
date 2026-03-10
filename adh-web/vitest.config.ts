@@ -4,8 +4,9 @@ import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
   test: {
+    globals: true,
     environment: 'jsdom',
-    setupFiles: [],
+    setupFiles: ['./vitest.setup.ts'],
   },
   resolve: {
     alias: {
