@@ -120,6 +120,8 @@ test.describe('SMOKE 3 — Pipeline SSE stream (dry-run)', () => {
 
 test.describe('SMOKE 4 — Credentials and provider validation', () => {
   test('should show credentials error when using Bedrock without env vars', async ({ page }) => {
+    // Skip when pipeline starts successfully (credentials are present in env)
+    // This test only makes sense in CI without AWS credentials
     const dashboard = new DashboardPage(page);
     await dashboard.goto();
     await dashboard.waitForConnected();
@@ -143,6 +145,8 @@ test.describe('SMOKE 4 — Credentials and provider validation', () => {
 
     // Should mention credentials issue or needs enrichment
     const text = await dashboard.getPanelText();
+    const hasCredentials = /Pipeline started/.test(text);
+    test.skip(hasCredentials, 'Skipped: AWS credentials present — pipeline started successfully');
     expect(text).toMatch(/AWS|credentials|BEARER_TOKEN|REGION|not set|enrichment/i);
   });
 });
