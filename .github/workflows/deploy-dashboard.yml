@@ -22,14 +22,15 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Ensure index.html fallback (viewer OpenSpec)
         run: cp .openspec/viewer.html packages/specmap-dashboard/index.html
 
-      - name: Install factory-cli deps
-        run: cd packages/factory-cli && npm ci
-
       - name: Regenerate dashboard (best-effort)
         run: |
+          pnpm install --filter factory-cli...
           cd packages/factory-cli
           npx tsx src/cli.ts report --project ${{ github.workspace }} --multi
           cp ${{ github.workspace }}/.openspec/migration/migration-report.html ${{ github.workspace }}/packages/specmap-dashboard/index.html
