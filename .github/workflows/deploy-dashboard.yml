@@ -4,9 +4,9 @@ on:
   push:
     branches: [master]
     paths:
-      - '.openspec/migration/**'
-      - 'tools/migration-factory/**'
-      - 'dashboard/**'
+      - '.openspec/**'
+      - 'packages/factory-cli/**'
+      - 'packages/specmap-dashboard/**'
       - '.github/workflows/deploy-dashboard.yml'
   workflow_dispatch:
 
@@ -22,18 +22,31 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install migration-factory deps
-        run: cd tools/migration-factory && npm ci
+      - name: Ensure index.html fallback (viewer OpenSpec)
+        run: cp .openspec/viewer.html packages/specmap-dashboard/index.html
 
-      - name: Regenerate dashboard
+      - name: Install factory-cli deps
+        run: cd packages/factory-cli && npm ci
+
+      - name: Regenerate dashboard (best-effort)
         run: |
-          cd tools/migration-factory
+          cd packages/factory-cli
           npx tsx src/cli.ts report --project ${{ github.workspace }} --multi
-          cp ${{ github.workspace }}/.openspec/migration/migration-report.html ${{ github.workspace }}/dashboard/index.html
+          cp ${{ github.workspace }}/.openspec/migration/migration-report.html ${{ github.workspace }}/packages/specmap-dashboard/index.html
+        continue-on-error: true
+
+      - name: Copy OpenSpec data for viewer
+        run: |
+          cp .openspec/index.json packages/specmap-dashboard/
+          cp -r .openspec/specs packages/specmap-dashboard/
+          cp -r .openspec/tickets packages/specmap-dashboard/
+
+      - name: Verify index.html exists
+        run: test -f packages/specmap-dashboard/index.html || exit 1
 
       - name: Deploy to Vercel
         run: npx vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
-        working-directory: dashboard
+        working-directory: packages/specmap-dashboard
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
