@@ -187,6 +187,16 @@
                              "lastAnalysis":  "2026-03-18",
                              "program":  "PVE Prg_178 - Menu Equipment inventory",
                              "createdDate":  "2026-03-17"
+                         },
+                         {
+                             "hasLocalData": true,
+                             "status": "analyse-complete",
+                             "key": "CMDS-188610",
+                             "summary": "Edition VENTE TPE - Total VISA double (Da Balaia) - Double lecture caisse_vente + tickets_tpe",
+                             "lastAnalysis": "2026-03-28",
+                             "program": "VIL Prg_583 (Genere tempo vente telecollec)",
+                             "rootCause": "Prg_583 copie transactions VISA depuis caisse_vente ET tickets_tpe dans meme table temporaire - doublement total",
+                             "createdDate": "2026-03-25"
                          }
                      ],
     "tickets":  []
